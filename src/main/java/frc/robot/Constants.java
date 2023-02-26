@@ -4,17 +4,30 @@
 
 package frc.robot;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverLeftJoystickPort = 0;
     public static final int kDriverRightJoystickPort = 1;
+
+    public static float kInputDeadzone = 0.1f;
+    public static float kInputLinearity = 0.0f;
+  }
+  public static class DriveConstants {
+    public static final int kLeftMotorPort1 = 1;
+    public static final int kLeftMotorPort2 = 2;
+    public static final boolean kLeftMotorsInverted = false;
+
+    public static final int kRightMotorPort1 = 3;
+    public static final int kRightMotorPort2 = 4;
+    public static final boolean kRightMotorsInverted = true;
+
+    public static final int kShifterPort = 22;
+    public static final int kShifterHighSpeedChannel = 0;
+    public static final int kShifterLowSpeedChannel = 1;
+
+    public static final Value kShifterHighSpeed = Value.kForward;
+    public static final Value kShifterLowSpeed = Value.kReverse;
   }
 }
