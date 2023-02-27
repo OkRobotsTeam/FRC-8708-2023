@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Arm m_arm = new Arm();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverLeftJoystick =
@@ -48,6 +49,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
+    
   }
 
   /**
@@ -68,6 +70,15 @@ public class RobotContainer {
         m_driverRightJoystick.trigger().getAsBoolean()
       ),
       m_drivetrain
+    );
+  }
+
+  public Command getArmControlCommand() {
+    return new RunCommand(
+      () -> m_arm.setPistonRaised(m_driverLeftJoystick.trigger().getAsBoolean()),
+      m_arm
+    ).andThen(
+      () -> m_arm.setElevatorExtended(m_driverLeftJoystick.button(2).getAsBoolean())
     );
   }
 }
