@@ -20,8 +20,8 @@ public class Arm extends SubsystemBase{
     private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
 
-    private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotorPort1, MotorType.kBrushless);
-    private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotorPort2, MotorType.kBrushless);
+    private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotor1Port, MotorType.kBrushless);
+    private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
 

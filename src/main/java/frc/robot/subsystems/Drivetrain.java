@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase{
     
-    private final CANSparkMax m_leftMotor1 = new CANSparkMax(DriveConstants.kLeftMotorPort1, MotorType.kBrushless);
-    private final CANSparkMax m_leftMotor2 = new CANSparkMax(DriveConstants.kLeftMotorPort2, MotorType.kBrushless);
+    private final CANSparkMax m_leftMotor1 = new CANSparkMax(DriveConstants.kLeftMotor1Port, MotorType.kBrushless);
+    private final CANSparkMax m_leftMotor2 = new CANSparkMax(DriveConstants.kLeftMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
-    private final CANSparkMax m_rightMotor1 = new CANSparkMax(DriveConstants.kRightMotorPort1, MotorType.kBrushless);
-    private final CANSparkMax m_rightMotor2 = new CANSparkMax(DriveConstants.kRightMotorPort2, MotorType.kBrushless);
+    private final CANSparkMax m_rightMotor1 = new CANSparkMax(DriveConstants.kRightMotor1Port, MotorType.kBrushless);
+    private final CANSparkMax m_rightMotor2 = new CANSparkMax(DriveConstants.kRightMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
     private final PneumaticHub m_pneumaticHub = new PneumaticHub();
@@ -46,7 +46,7 @@ public class Drivetrain extends SubsystemBase{
             return 0;
         }
         else {
-            return speed * (1 - deadzone); // Preserve a "live" zone of 0.0-1.0
+            return (speed - deadzone) / (1 - deadzone); // Preserve a "live" zone of 0.0-1.0
         }
     }
 
@@ -65,7 +65,8 @@ public class Drivetrain extends SubsystemBase{
             previousFast = fast;
         }
 
-        // both leftSpeed and rightSpeed are doubles from -1.0 to 1.0
+
+        // leftSpeed and rightSpeed are doubles from -1.0 to 1.0
         // Apply a deadzone to the motor speeds
         leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
         rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
@@ -73,8 +74,8 @@ public class Drivetrain extends SubsystemBase{
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
         // Send the values to the motors
-        m_leftMotors.set(leftSpeed);
-        m_rightMotors.set(rightSpeed);
+        m_leftMotors.set(leftSpeed * DriveConstants.kMaximumSpeed);
+        m_rightMotors.set(rightSpeed * DriveConstants.kMaximumSpeed);
         
     }
 }
