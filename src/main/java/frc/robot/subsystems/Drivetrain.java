@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.PneumaticsConstants;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -24,7 +25,7 @@ public class Drivetrain extends SubsystemBase{
     private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
     private final PneumaticHub m_pneumaticHub = new PneumaticHub();
-    private final DoubleSolenoid m_shifter_solenoid = new DoubleSolenoid(DriveConstants.kShifterPort, PneumaticsModuleType.REVPH, DriveConstants.kShifterHighSpeedChannel, DriveConstants.kShifterLowSpeedChannel);
+    private final DoubleSolenoid m_shifter_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, DriveConstants.kShifterHighSpeedChannel, DriveConstants.kShifterLowSpeedChannel);
 
     private boolean previousFast;
 
@@ -35,7 +36,7 @@ public class Drivetrain extends SubsystemBase{
         // previousFast is a boolean value holding whether the fast trigger was clicked last time we checked
         previousFast = false;
         // Shift to low gear by default
-        m_shifter_solenoid.set(DriveConstants.kShifterLowSpeed);
+        m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
         // Enable the compressor using a digital sensor to stop it when it gets to pressure
         m_pneumaticHub.enableCompressorDigital();
     }
@@ -57,9 +58,9 @@ public class Drivetrain extends SubsystemBase{
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast){
             if (fast) {
-                m_shifter_solenoid.set(DriveConstants.kShifterHighSpeed);
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
             } else {
-                m_shifter_solenoid.set(DriveConstants.kShifterLowSpeed);
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
             }
             previousFast = fast;
         }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.PneumaticsConstants;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 public class Arm extends SubsystemBase{
 
-    private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
+    private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
     private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
