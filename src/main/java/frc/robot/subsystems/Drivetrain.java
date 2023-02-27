@@ -29,9 +29,14 @@ public class Drivetrain extends SubsystemBase{
     private boolean previousFast;
 
     public Drivetrain() {
+        // Invert motor groups according to the constants
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
+        // previousFast is a boolean value holding whether the fast trigger was clicked last time we checked
+        previousFast = false;
+        // Shift to low gear by default
         m_shifter_solenoid.set(DriveConstants.kShifterLowSpeed);
+        // Enable the compressor using a digital sensor to stop it when it gets to pressure
         m_pneumaticHub.enableCompressorDigital();
     }
 
@@ -49,18 +54,24 @@ public class Drivetrain extends SubsystemBase{
     }
 
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
-        // TODO: only update the pneumatics if their state has changed
-        if (fast) {
-            m_shifter_solenoid.set(DriveConstants.kShifterHighSpeed);
-        } else {
-            m_shifter_solenoid.set(DriveConstants.kShifterLowSpeed);
+        // Only update the pneumatics state if it changed from its last state
+        if (fast != previousFast){
+            if (fast) {
+                m_shifter_solenoid.set(DriveConstants.kShifterHighSpeed);
+            } else {
+                m_shifter_solenoid.set(DriveConstants.kShifterLowSpeed);
+            }
+            previousFast = fast;
         }
 
+        // both leftSpeed and rightSpeed are doubles from -1.0 to 1.0
+        // Apply a deadzone to the motor speeds
         leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
         rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
-        if (leftSpeed > 0.0d) {}
+        // Apply a cubic function to the motor speeds
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
+        // Send the values to the motors
         m_leftMotors.set(leftSpeed);
         m_rightMotors.set(rightSpeed);
         
