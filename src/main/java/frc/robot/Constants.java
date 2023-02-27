@@ -22,8 +22,8 @@ public final class Constants {
     public static final Value kShifterHighSpeed = Value.kForward;
     public static final Value kShifterLowSpeed = Value.kReverse;
 
-    public static final Value kArmExtend = Value.kForward;
-    public static final Value kArmRetract = Value.kReverse;
+    public static final Value kArmRaise = Value.kForward;
+    public static final Value kArmLower = Value.kReverse;
   }
   public static class DriveConstants {
     //HARDWARE CONFIG:
@@ -52,5 +52,8 @@ public final class Constants {
     public static final int kElbowMotorPort = 5;
     public static final int kElevatorMotor1Port = 6;
     public static final int kElevatorMotor2Port = 7;
+
+    public static final double kElevatorExtendRotations = 20.0;
+    public static final double kMaxElevatorSpeed = 1.0;
   }
 }
