@@ -26,6 +26,8 @@ public class Drivetrain extends SubsystemBase{
     private final PneumaticHub m_pneumaticHub = new PneumaticHub();
     private final DoubleSolenoid m_shifter_solenoid = new DoubleSolenoid(DriveConstants.kShifterPort, PneumaticsModuleType.REVPH, DriveConstants.kShifterHighSpeedChannel, DriveConstants.kShifterLowSpeedChannel);
 
+    private boolean previousFast;
+
     public Drivetrain() {
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
@@ -38,15 +40,16 @@ public class Drivetrain extends SubsystemBase{
             return 0;
         }
         else {
-            return speed * (1 - deadzone);
+            return speed * (1 - deadzone); // Preserve a "live" zone of 0.0-1.0
         }
     }
 
     public double applyCubic(double speed, double linearity) {
-        return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity);
+        return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity); // Apply a cubic function to the input with the passed linearity
     }
 
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
+        // TODO: only update the pneumatics if their state has changed
         if (fast) {
             m_shifter_solenoid.set(DriveConstants.kShifterHighSpeed);
         } else {
@@ -55,6 +58,7 @@ public class Drivetrain extends SubsystemBase{
 
         leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
         rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
+        if (leftSpeed > 0.0d) {}
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
         m_leftMotors.set(leftSpeed);
