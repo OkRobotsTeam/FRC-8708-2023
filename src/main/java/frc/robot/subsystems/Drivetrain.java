@@ -74,8 +74,8 @@ public class Drivetrain extends SubsystemBase{
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
         // Send the values to the motors
-        m_leftMotors.set(leftSpeed * DriveConstants.kMaximumSpeed);
-        m_rightMotors.set(rightSpeed * DriveConstants.kMaximumSpeed);
+        m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+        m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         
     }
 }

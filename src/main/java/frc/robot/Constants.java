@@ -41,7 +41,7 @@ public final class Constants {
     public static final int kShifterHighSpeedChannel = 0;
     public static final int kShifterLowSpeedChannel = 1;
     //SOFTWARE CONFIG:
-    public static final double kMaximumSpeed = 1.0;
+    public static final double kMaximumDrivetrainSpeed = 1.0;
   }
   public final class ArmConstants {
     //HARDWARE CONFIG:
@@ -54,6 +54,6 @@ public final class Constants {
     public static final int kElevatorMotor2Port = 7;
 
     public static final double kElevatorExtendRotations = 20.0;
-    public static final double kMaxElevatorSpeed = 1.0;
+    public static final double kMaximumElevatorSpeed = 1.0;
   }
 }

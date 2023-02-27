@@ -50,9 +50,9 @@ public class Arm extends SubsystemBase{
 
     private void updateElevatorSpeed() {
         if (elevatorExtended) {
-            m_elevator.set(ArmConstants.kMaxElevatorSpeed);
+            m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
         } else {
-            m_elevator.set(-ArmConstants.kMaxElevatorSpeed);
+            m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
         }
     }
 
