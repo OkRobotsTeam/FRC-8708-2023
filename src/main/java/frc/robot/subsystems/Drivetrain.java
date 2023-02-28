@@ -54,6 +54,20 @@ public class Drivetrain extends SubsystemBase{
         return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity); // Apply a cubic function to the input with the passed linearity
     }
 
+    public double applySquare(double speed, double linearity) {
+        return (speed * Math.abs(speed) + (linearity * speed))/ (1+linearity);
+    }
+
+    public void scaleDifference(double leftSpeed, double rightSpeed) {
+        double average = (leftSpeed + rightSpeed) / 2.0;
+        double difference = (leftSpeed - rightSpeed) / 2.0;
+        double scaledDifference = applySquare(difference,0.1);
+        m_leftMotors.set(average + scaledDifference);
+        m_rightMotors.set(average - scaledDifference);
+    }
+
+
+
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast){
