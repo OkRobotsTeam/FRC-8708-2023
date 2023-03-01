@@ -52,7 +52,7 @@ public class TurnFor extends CommandBase{
     @Override
     public boolean isFinished() {
         double avgWheelRev = (m_drive.getLeftEncoder() - m_drive.getRightEncoder()) / 2;
-        double degreesTurned = avgWheelRev / DriveConstants.kTurnCircumference * 360;
+        double degreesTurned = avgWheelRev * cmPerRot / DriveConstants.kTurnCircumference * 360;
 
         return (degreesTurned >= m_degrees);
     }
