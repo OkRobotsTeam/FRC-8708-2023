@@ -6,11 +6,14 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PneumaticsConstants;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+//import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,13 +22,17 @@ public class Drivetrain extends SubsystemBase{
     private final CANSparkMax m_leftMotor1 = new CANSparkMax(DriveConstants.kLeftMotor1Port, MotorType.kBrushless);
     private final CANSparkMax m_leftMotor2 = new CANSparkMax(DriveConstants.kLeftMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
+    public final RelativeEncoder m_leftEncoder = m_leftMotor1.getEncoder();
 
     private final CANSparkMax m_rightMotor1 = new CANSparkMax(DriveConstants.kRightMotor1Port, MotorType.kBrushless);
     private final CANSparkMax m_rightMotor2 = new CANSparkMax(DriveConstants.kRightMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_rightMotors = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
+    public final RelativeEncoder m_rightEncoder = m_rightMotor1.getEncoder();
 
     private final PneumaticHub m_pneumaticHub = new PneumaticHub();
     private final DoubleSolenoid m_shifter_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, DriveConstants.kShifterHighSpeedChannel, DriveConstants.kShifterLowSpeedChannel);
+
+    //public final Gyro m_gyro = new ADXRS450_Gyro();
 
     private boolean previousFast;
 
@@ -39,6 +46,21 @@ public class Drivetrain extends SubsystemBase{
         m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
         // Enable the compressor using a digital sensor to stop it when it gets to pressure
         m_pneumaticHub.enableCompressorDigital();
+    }
+
+    public void resetEncoders() {
+        m_leftEncoder.setPosition(0);
+        m_rightEncoder.setPosition(0);
+    }
+
+    public double getLeftEncoder() {
+        return m_leftEncoder.getPosition();
+    }
+    public double getRightEncoder() {
+        return m_rightEncoder.getPosition();
+    }
+    public double getAvgEncoder() {
+        return (m_leftEncoder.getPosition() + m_rightEncoder.getPosition())/2;
     }
 
     public double applyDeadzone(double speed, double deadzone) {

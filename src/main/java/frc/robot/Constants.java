@@ -7,6 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public final class Constants {
+  
+  public static final double pi = 3.14159265359;
+
   public static class OperatorConstants {
     //HARDWARE CONFIG:
     public static final int kDriverLeftJoystickPort = 0;
@@ -42,6 +45,11 @@ public final class Constants {
     public static final int kShifterLowSpeedChannel = 1;
     //SOFTWARE CONFIG:
     public static final double kMaximumDrivetrainSpeed = 1.0;
+
+    public static final double kFastRevPerRot = 55/544; // wheel revolutions per motor rotation
+    public static final double kSlowRevPerRot = 11/288;
+    public static final double kWheelCircumference = 6 * pi * 2.54;
+    public static final double kTurnCircumference = 20 * pi * 2.54;
   }
   public final class ArmConstants {
     //HARDWARE CONFIG:
