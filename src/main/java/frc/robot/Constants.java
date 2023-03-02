@@ -54,6 +54,19 @@ public final class Constants {
     public static final int kElevatorMotor2Port = 7;
 
     public static final double kElevatorExtendRotations = 20.0;
-    public static final double kMaximumElevatorSpeed = 1.0;
+    public static final double kMaximumElevatorSpeed = 0.5;
+  }
+  public final class IntakeConstants {
+    public static final int kIntakeMotorTop = 8;
+    public static final int kIntakeMotorBottom = 9;
+
+    public static final boolean kIntakeMotorTopReversed = false;
+    public static final boolean kIntakeMotorBottomReversed = false;
+
+    public static final double kMaximumIntakeSpeed = 1;
+
+    public static final int kIntakeDisabled = 0;
+    public static final int kIntakeIn = 1;
+    public static final int kIntakeOut = 2;
   }
 }

@@ -33,7 +33,7 @@ public class Drivetrain extends SubsystemBase{
         // Invert motor groups according to the constants
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
-        // previousFast is a boolean value holding whether the fast trigger was clicked last time we checked
+        // previousFast is a boolean value holding whether the fast argument was true last time we checked
         previousFast = false;
         // Shift to low gear by default
         m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
