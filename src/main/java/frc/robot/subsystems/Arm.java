@@ -29,11 +29,15 @@ public class Arm extends SubsystemBase{
     private boolean elevatorExtended = false;
     
     public Arm() {
+
+        m_elevator1.setInverted(true);
+        m_elevator1.setInverted(true);
+
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
 
-        m_elevator1.setSmartCurrentLimit(1);
-        m_elevator2.setSmartCurrentLimit(1);
+        m_elevator1.setSmartCurrentLimit(20);
+        m_elevator2.setSmartCurrentLimit(20);
 
         m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
@@ -41,9 +45,9 @@ public class Arm extends SubsystemBase{
         m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
         m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0.0f);
         m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0.0f);
 
         m_elevatorEncoder.setPosition(0);
     }
@@ -80,15 +84,28 @@ public class Arm extends SubsystemBase{
         }
     }
 
-    public void setPistonRaised(boolean isRaised) {
+    public void setPistonRaised(boolean isDown) {
         if (getElevatorExtended()) {
             setElevatorExtended(false);
         }
-        if (isRaised) {
-            m_piston.set(PneumaticsConstants.kArmRaise);
-        } else {
+        if (isDown) {
             m_piston.set(PneumaticsConstants.kArmLower);
+        } else {
+            m_piston.set(PneumaticsConstants.kArmRaise);
         }
+    }
+    
+    public void SetElevatorMotors(double speed) {
+        m_elevator.set(speed);
+        System.out.println("Elevator Encoder: " + m_elevatorEncoder.getPosition());
+
+    }
+
+
+
+    public void setAllMotors(boolean piston, boolean elevator) {
+        setPistonRaised(piston);
+        setElevatorExtended(elevator);
     }
 
     @Override

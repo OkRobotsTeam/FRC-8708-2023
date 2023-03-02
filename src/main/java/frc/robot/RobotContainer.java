@@ -5,16 +5,20 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LightStripConstants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Lights;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.XboxController.Button;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,13 +30,19 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
-  private final Lights m_lights = new Lights();
+  //private final Lights m_lights = new Lights();
+  private final Intake m_claw = new Intake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverLeftJoystick =
       new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
   private final CommandJoystick m_driverRightJoystick = 
       new CommandJoystick(OperatorConstants.kDriverRightJoystickPort);
+    
+  private final CommandXboxController m_manipulator = 
+      new CommandXboxController(OperatorConstants.kManipulatorControllerPort);
+
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -54,7 +64,11 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
     m_arm.setDefaultCommand(getArmControlCommand());
-    m_lights.setDefaultCommand(getLightStripCommand());
+    //m_lights.setDefaultCommand(getLightStripCommand());
+
+    m_manipulator.a().onTrue(
+      new InstantCommand
+    )
   }
 
   /**
@@ -73,24 +87,45 @@ public class RobotContainer {
         m_driverLeftJoystick.getY(),
         m_driverRightJoystick.getY(),
         m_driverRightJoystick.trigger().getAsBoolean()
-      ),
-      m_drivetrain
+      ),m_drivetrain
     );
   }
 
   public Command getArmControlCommand() {
     return new RunCommand(
-      () -> m_arm.setPistonRaised(m_driverLeftJoystick.trigger().getAsBoolean()),
-      m_arm
-    ).andThen(
-    () -> m_arm.setElevatorExtended(m_driverLeftJoystick.button(2).getAsBoolean())
+      () ->m_arm.setAllMotors(
+        m_manipulator.leftTrigger().getAsBoolean(),
+        m_manipulator.rightTrigger().getAsBoolean()
+      ),m_arm
     );
-  }
 
-  public Command getLightStripCommand() {
-    return new RunCommand(
-      () -> m_lights.UpdateLights(LightStripConstants.kOrange), 
-      m_lights
-    );
+      //() -> m_arm.setElevatorExtended(m_manipulator.rightTrigger().getAsBoolean()),m_arm
+    }
+
+  // public Command getLightStripCommand() {
+  //   // return new RunCommand(
+  //   //   () -> m_lights.UpdateLights(LightStripConstants.kOrange), 
+  //   //   m_lights
+  //   // );
+  //   return new RunCommand(() -> m_lights.doNothing(), m_lights);
+  // }
+
+  public Command getClawControlCommand() {
+    if (m_manipulator.a().getAsBoolean()) {
+      return new RunCommand(
+        () -> m_claw.setIntakeState(IntakeConstants.kIntakeIn),
+        m_claw
+      );
+    } else if (m_manipulator.b().getAsBoolean()) {
+      return new RunCommand(
+        () -> m_claw.setIntakeState(IntakeConstants.kIntakeIn),
+        m_claw
+      );
+    } else {
+      return new RunCommand(
+        () -> m_claw.setIntakeState(IntakeConstants.kIntakeDisabled),
+        m_claw
+      );
+    }
   }
 }

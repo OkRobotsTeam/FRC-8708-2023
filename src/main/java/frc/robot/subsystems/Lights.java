@@ -32,5 +32,9 @@ public class Lights extends SubsystemBase {
 
         m_LEDstrip.setData(m_ledBuffer);
     }
+
+    public void doNothing() {
+        
+    }
     
 }

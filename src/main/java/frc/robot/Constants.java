@@ -60,8 +60,8 @@ public final class Constants {
     public static final int kElevatorMotor1Port = 6;
     public static final int kElevatorMotor2Port = 7;
 
-    public static final double kElevatorExtendRotations = 20.0;
-    public static final double kMaximumElevatorSpeed = 0.5;
+    public static final double kElevatorExtendRotations = 10.0;
+    public static final double kMaximumElevatorSpeed = 0.1;
   }
   public final class IntakeConstants {
     public static final int kIntakeMotorTop = 8;
@@ -70,7 +70,7 @@ public final class Constants {
     public static final boolean kIntakeMotorTopReversed = false;
     public static final boolean kIntakeMotorBottomReversed = false;
 
-    public static final double kMaximumIntakeSpeed = 1;
+    public static final double kMaximumIntakeSpeed = 0.5;
 
     public static final int kIntakeDisabled = 0;
     public static final int kIntakeIn = 1;
@@ -81,11 +81,11 @@ public final class Constants {
     public static final int kLightstripPort = 0;
     public static final int kLightstripLength = 60;
 
-
-    public static final int kOrange = 0;
-    public static final int kYellow = 1;
-    public static final int kPurple = 2;
-    public static final int kSlowChaser = 3;
-    public static final int kFastChaser = 4;
+    public static final int kOff = 0;
+    public static final int kOrange = 1;
+    public static final int kYellow = 2;
+    public static final int kPurple = 3;
+    public static final int kSlowChaser = 4;
+    public static final int kFastChaser = 5;
   }
 }
