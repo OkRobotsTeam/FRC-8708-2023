@@ -76,4 +76,16 @@ public final class Constants {
     public static final int kIntakeIn = 1;
     public static final int kIntakeOut = 2;
   }
+
+  public final class LightStripConstants {
+    public static final int kLightstripPort = 0;
+    public static final int kLightstripLength = 60;
+
+
+    public static final int kOrange = 0;
+    public static final int kYellow = 1;
+    public static final int kPurple = 2;
+    public static final int kSlowChaser = 3;
+    public static final int kFastChaser = 4;
+  }
 }

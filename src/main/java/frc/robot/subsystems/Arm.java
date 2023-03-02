@@ -31,12 +31,6 @@ public class Arm extends SubsystemBase{
     public Arm() {
         // m_elevator1.setIdleMode(IdleMode.kBrake);
         // m_elevator2.setIdleMode(IdleMode.kBrake);
-<<<<<<< HEAD
-        
-        m_elevator1.setIdleMode(IdleMode.kCoast);
-        m_elevator2.setIdleMode(IdleMode.kCoast);
-=======
->>>>>>> 23c1c721e814edae61bf911e9f1165980df3b0cc
 
         // m_elevator1.setSmartCurrentLimit(1);
         // m_elevator2.setSmartCurrentLimit(1);

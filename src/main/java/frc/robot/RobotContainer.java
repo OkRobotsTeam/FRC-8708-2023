@@ -5,8 +5,11 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.LightStripConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Lights;
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -23,6 +26,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
+  private final Lights m_lights = new Lights();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverLeftJoystick =
@@ -50,6 +54,7 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
     m_arm.setDefaultCommand(getArmControlCommand());
+    m_lights.setDefaultCommand(getLightStripCommand());
   }
 
   /**
@@ -80,5 +85,12 @@ public class RobotContainer {
     );//.andThen(
     //   () -> m_arm.setElevatorExtended(m_driverLeftJoystick.button(2).getAsBoolean())
     // );
+  }
+
+  public Command getLightStripCommand() {
+    return new RunCommand(
+      () -> m_lights.UpdateLights(LightStripConstants.kOrange), 
+      m_lights
+    );
   }
 }
