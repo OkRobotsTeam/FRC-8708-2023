@@ -18,59 +18,59 @@ public class Arm extends SubsystemBase{
 
     private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
-    // private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
-    // private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
+    private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
+    private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
 
-    // private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotor1Port, MotorType.kBrushless);
-    // private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotor2Port, MotorType.kBrushless);
-    // private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
-    // private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
+    private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotor1Port, MotorType.kBrushless);
+    private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotor2Port, MotorType.kBrushless);
+    private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
+    private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
 
     private boolean elevatorExtended = false;
     
     public Arm() {
-        // m_elevator1.setIdleMode(IdleMode.kBrake);
-        // m_elevator2.setIdleMode(IdleMode.kBrake);
+        m_elevator1.setIdleMode(IdleMode.kBrake);
+        m_elevator2.setIdleMode(IdleMode.kBrake);
 
-        // m_elevator1.setSmartCurrentLimit(1);
-        // m_elevator2.setSmartCurrentLimit(1);
+        m_elevator1.setSmartCurrentLimit(1);
+        m_elevator2.setSmartCurrentLimit(1);
 
-        // m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
-        // m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        // m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
-        // m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-        // m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        // m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0);
-        // m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        // m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0);
 
-        // m_elevatorEncoder.setPosition(0);
+        m_elevatorEncoder.setPosition(0);
     }
 
-    // private void updateElevatorSpeed() {
-    //     if (elevatorExtended) {
-    //         m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
-    //     } else {
-    //         m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
-    //     }
-    // }
+    private void updateElevatorSpeed() {
+        if (elevatorExtended) {
+            m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
+        } else {
+            m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
+        }
+    }
 
-    // public boolean getElevatorExtended() {
-    //     if (m_elevatorEncoder.getPosition() > 1) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
+    public boolean getElevatorExtended() {
+        if (m_elevatorEncoder.getPosition() > 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    // public void setElevatorExtended(boolean isExtended) {
-    //     if (getPistonRaised()) {
-    //         elevatorExtended = isExtended;
-    //     } else {
-    //         elevatorExtended = false;
-    //     }
-    // }
+    public void setElevatorExtended(boolean isExtended) {
+        if (getPistonRaised()) {
+            elevatorExtended = isExtended;
+        } else {
+            elevatorExtended = false;
+        }
+    }
 
     public boolean getPistonRaised() {
         if (m_piston.get() == PneumaticsConstants.kArmRaise) {
@@ -81,9 +81,9 @@ public class Arm extends SubsystemBase{
     }
 
     public void setPistonRaised(boolean isRaised) {
-        // if (getElevatorExtended()) {
-        //     setElevatorExtended(false);
-        // }
+        if (getElevatorExtended()) {
+            setElevatorExtended(false);
+        }
         if (isRaised) {
             m_piston.set(PneumaticsConstants.kArmRaise);
         } else {
@@ -93,6 +93,6 @@ public class Arm extends SubsystemBase{
 
     @Override
     public void periodic() {
-        // updateElevatorSpeed();
+        updateElevatorSpeed();
     }
 }

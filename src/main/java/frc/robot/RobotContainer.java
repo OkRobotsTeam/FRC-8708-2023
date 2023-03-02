@@ -82,9 +82,9 @@ public class RobotContainer {
     return new RunCommand(
       () -> m_arm.setPistonRaised(m_driverLeftJoystick.trigger().getAsBoolean()),
       m_arm
-    );//.andThen(
-    //   () -> m_arm.setElevatorExtended(m_driverLeftJoystick.button(2).getAsBoolean())
-    // );
+    ).andThen(
+    () -> m_arm.setElevatorExtended(m_driverLeftJoystick.button(2).getAsBoolean())
+    );
   }
 
   public Command getLightStripCommand() {
