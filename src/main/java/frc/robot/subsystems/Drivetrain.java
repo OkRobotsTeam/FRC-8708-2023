@@ -89,29 +89,43 @@ public class Drivetrain extends SubsystemBase{
     }
 
 
-
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast){
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
+                m_leftMotor1.setOpenLoopRampRate(0);
+                m_leftMotor2.setOpenLoopRampRate(0);
+                m_rightMotor1.setOpenLoopRampRate(0);
+                m_rightMotor2.setOpenLoopRampRate(0); 
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
+                m_leftMotor1.setOpenLoopRampRate(1);
+                m_leftMotor2.setOpenLoopRampRate(1);
+                m_rightMotor1.setOpenLoopRampRate(1);
+                m_rightMotor2.setOpenLoopRampRate(1);
+
             }
             previousFast = fast;
         }
 
 
         // leftSpeed and rightSpeed are doubles from -1.0 to 1.0
+        
+        
         // Apply a deadzone to the motor speeds
         leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
         rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
         // Apply a cubic function to the motor speeds
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
-        // Send the values to the motors
-        m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
-        m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+
+        if (OperatorConstants.ScaleDifference) {
+            scaleDifference(leftSpeed, rightSpeed);
+        } else {
+            m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+            m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+        }
         
     }
 }
