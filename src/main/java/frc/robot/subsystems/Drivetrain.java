@@ -79,7 +79,7 @@ public class Drivetrain extends SubsystemBase{
     public double applySquare(double speed, double linearity) {
         return (speed * Math.abs(speed) + (linearity * speed))/ (1+linearity);
     }
-
+    /*
     public void scaleDifference(double leftSpeed, double rightSpeed) {
         double average = (leftSpeed + rightSpeed) / 2.0;
         double difference = (leftSpeed - rightSpeed) / 2.0;
@@ -87,7 +87,23 @@ public class Drivetrain extends SubsystemBase{
         m_leftMotors.set(average + scaledDifference);
         m_rightMotors.set(average - scaledDifference);
     }
+    */
 
+    // https://www.desmos.com/calculator/ww0xcpzoio
+
+    private double snap(double angle) {
+        return -Math.sin(8*angle)/8+angle;
+    }
+
+    public void snapToClosestDirection(double leftSpeed, double rightSpeed) {
+        double r = Math.sqrt(Math.pow(leftSpeed, 2)+Math.pow(rightSpeed, 2));
+        double a = Math.atan2(rightSpeed,leftSpeed);
+        a = snap(a);
+        double newLeft = r*Math.cos(a);
+        double newRight = r*Math.sin(a);
+        m_leftMotors.set(newLeft);
+        m_rightMotors.set(newRight);
+    } 
 
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
         // Only update the pneumatics state if it changed from its last state
@@ -121,7 +137,7 @@ public class Drivetrain extends SubsystemBase{
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
 
         if (OperatorConstants.ScaleDifference) {
-            scaleDifference(leftSpeed, rightSpeed);
+            snapToClosestDirection(leftSpeed, rightSpeed);
         } else {
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
