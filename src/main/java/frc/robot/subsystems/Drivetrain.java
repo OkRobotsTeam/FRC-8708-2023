@@ -92,7 +92,7 @@ public class Drivetrain extends SubsystemBase{
     // https://www.desmos.com/calculator/ww0xcpzoio
 
     private double snap(double angle) {
-        return -Math.sin(8*angle)/8+angle;
+        return Math.sin(4*angle)/4+angle;
     }
 
     public void snapToClosestDirection(double leftSpeed, double rightSpeed) {
