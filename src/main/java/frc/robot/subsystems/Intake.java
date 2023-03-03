@@ -21,11 +21,11 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeIn() {
-        m_intake.set(IntakeConstants.kMaximumIntakeSpeed);
+        m_intake.set(IntakeConstants.kMaximumIntakeInSpeed);
     }
 
     public void intakeOut() {
-        m_intake.set(-IntakeConstants.kMaximumIntakeSpeed);
+        m_intake.set(-IntakeConstants.kMaximumIntakeOutSpeed);
     }
 
     public void intakeStop() {

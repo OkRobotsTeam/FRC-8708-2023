@@ -81,7 +81,8 @@ public final class Constants {
     public static final boolean kIntakeMotorTopReversed = true;
     public static final boolean kIntakeMotorBottomReversed = true;
 
-    public static final double kMaximumIntakeSpeed = 0.5;
+    public static final double kMaximumIntakeInSpeed = 0.5;
+    public static final double kMaximumIntakeOutSpeed = 0.25;
 
     public static final int kIntakeDisabled = 0;
     public static final int kIntakeIn = 1;

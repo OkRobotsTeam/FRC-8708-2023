@@ -10,6 +10,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elbow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -27,6 +28,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
+  private final Elbow m_elbow = new Elbow(m_arm);
   private final Intake m_claw = new Intake();
   private final Lights m_lights = new Lights();
   private final CommandJoystick m_driverLeftJoystick =
@@ -88,24 +90,24 @@ public class RobotContainer {
         () -> m_arm.setPistonRaised(false), m_arm
       )
     );
-    m_manipulator.povRight().onTrue(
+    m_manipulator.povLeft().onTrue(
       new InstantCommand(
         () -> m_arm.setElevatorExtended(false), m_arm
       )
     );
-    m_manipulator.povLeft().onTrue(
+    m_manipulator.povRight().onTrue(
       new InstantCommand(
         () -> m_arm.setElevatorExtended(true), m_arm
       )
     );
     m_manipulator.rightTrigger().onTrue(
       new InstantCommand(
-        () -> m_arm.setElbowExtended(true), m_arm
+        () -> m_elbow.setElbowExtended(true), m_arm
       )
     );
     m_manipulator.rightTrigger().onFalse(
       new InstantCommand(
-        () -> m_arm.setElbowExtended(false), m_arm
+        () -> m_elbow.setElbowExtended(false), m_arm
       )
     );
     m_manipulator.leftBumper().onTrue(
@@ -138,7 +140,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new AutonSimple(m_drivetrain, m_arm, m_claw);
+    return new AutonSimple(m_drivetrain, m_arm, m_elbow, m_claw);
   }
 
   public Command getTankDriveCommand() {

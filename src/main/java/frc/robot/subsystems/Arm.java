@@ -18,16 +18,12 @@ public class Arm extends SubsystemBase{
 
     private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
-    private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
-    private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
-
     private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotor1Port, MotorType.kBrushless);
     private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
-
+    
     private boolean elevatorExtended = false;
-    private boolean elbowExtended = false;
     
     public Arm() {
         m_elevator1.setInverted(true);
@@ -35,8 +31,6 @@ public class Arm extends SubsystemBase{
 
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
-
-        m_elbow.setIdleMode(IdleMode.kBrake);
 
         m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
@@ -67,38 +61,6 @@ public class Arm extends SubsystemBase{
         }
     }
 
-    private void updateElbowSpeed() {
-        if (getPistonRaised()) {
-            if (elbowExtended) {
-                if (m_elbowEncoder.getPosition() > ArmConstants.kHighElbowExtendRotations - ArmConstants.kHighElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(ArmConstants.kHighMaximumElbowSpeed);
-                }
-            } else {
-                if (m_elbowEncoder.getPosition() < ArmConstants.kHighElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(-ArmConstants.kHighMaximumElbowSpeed);
-                }
-            }
-        } else {
-            if (elbowExtended) {
-                if (m_elbowEncoder.getPosition() > ArmConstants.kLowElbowExtendRotations - ArmConstants.kLowElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(ArmConstants.kLowMaximumElbowSpeed);
-                }
-            } else {
-                if (m_elbowEncoder.getPosition() < ArmConstants.kLowElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(-ArmConstants.kLowMaximumElbowSpeed);
-                }
-            }
-        }
-    }
-
     public boolean getElevatorExtended() {
         if (m_elevatorEncoder.getPosition() > 1) {
             return true;
@@ -113,10 +75,6 @@ public class Arm extends SubsystemBase{
         } else {
             elevatorExtended = false;
         }
-    }
-
-    public void setElbowExtended(boolean isExtended) {
-        elbowExtended = isExtended;
     }
 
     public boolean getPistonRaised() {
@@ -148,6 +106,5 @@ public class Arm extends SubsystemBase{
     @Override
     public void periodic() {
         updateElevatorSpeed();
-        updateElbowSpeed();
     }
 }
