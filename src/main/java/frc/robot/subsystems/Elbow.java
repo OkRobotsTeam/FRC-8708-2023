@@ -19,12 +19,14 @@ public class Elbow extends SubsystemBase {
 
     private double target;
 
-    private final PIDController pid = new PIDController(0.1,0,0);
+    private final PIDController pid = new PIDController(0.2,0,0);
 
     public Elbow(Arm arm) {
         m_arm = arm;
         m_elbow.setInverted(true);
         m_elbow.setIdleMode(IdleMode.kBrake);
+        m_elbowEncoder.setPosition(0);
+        pid.setTolerance(1);
     }
 
     public void setElbowExtended(boolean isExtended) {
@@ -41,6 +43,8 @@ public class Elbow extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_elbow.set(pid.calculate(m_elbowEncoder.getPosition(),target));
+        double output = pid.calculate(m_elbowEncoder.getPosition(),target);
+        m_elbow.set(0.1*output);
+        System.out.println(output);
     }
 }

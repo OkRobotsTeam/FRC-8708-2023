@@ -92,6 +92,6 @@ public class Arm extends SubsystemBase{
 
     @Override
     public void periodic() {
-        m_elevator.set(pid.calculate(m_elevatorEncoder.getPosition(),desiredPos));
+        m_elevator.set(0.25*pid.calculate(m_elevatorEncoder.getPosition(),desiredPos));
     }
 }
