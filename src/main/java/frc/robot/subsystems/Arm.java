@@ -38,19 +38,22 @@ public class Arm extends SubsystemBase{
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
 
+
         m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
         m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0.0f);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, -1f);
         m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0.0f);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, -1f);
 
         m_elevatorEncoder.setPosition(0);
 
         m_piston.set(PneumaticsConstants.kArmRaise);
+
+        pid.setTolerance(ArmConstants.kElevatorStopThreshold);
     }
 
     public boolean getElevatorExtended() {
@@ -66,7 +69,7 @@ public class Arm extends SubsystemBase{
         if (getPistonRaised() && isExtended) {
             desiredPos = (ArmConstants.kElevatorExtendRotations);
         } else {
-            desiredPos = (0);
+            desiredPos = (-1);
         }
     }
 

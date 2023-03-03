@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonSimple;
 import frc.robot.subsystems.Arm;
@@ -59,6 +58,19 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+// TODO: Button to spit faster
+// TODO: Lower elbow more for low pickup
+// TODO: Fix controls
+// TODO: Score in auto, 1.5m forward, turn 90
+
+// A = claw in
+// RT = claw out fast
+// LT = elbow out/in (hold)
+// LB/RB = adjust elbow
+// Start/Back = colors purple start yellow back
+
+
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
 
     m_manipulator.a().onTrue(
@@ -66,7 +78,7 @@ public class RobotContainer {
         m_claw::intakeIn, m_claw
       )
     );
-    m_manipulator.b().onTrue(
+    m_manipulator.rightTrigger().onTrue(
       new InstantCommand(
         m_claw::intakeOut, m_claw
       )
@@ -76,7 +88,7 @@ public class RobotContainer {
         m_claw::intakeStop, m_claw
       )
     );
-    m_manipulator.b().onFalse(
+    m_manipulator.rightTrigger().onFalse(
       new InstantCommand(
         m_claw::intakeStop, m_claw
       )
@@ -101,18 +113,18 @@ public class RobotContainer {
         () -> m_arm.setElevatorExtended(true), m_arm
       )
     );
-    m_manipulator.rightTrigger().onTrue(
+    m_manipulator.leftTrigger().onTrue(
       new InstantCommand(
         () -> m_elbow.setElbowExtended(true), m_arm
       )
     );
-    m_manipulator.leftTrigger().onTrue(
+    m_manipulator.leftTrigger().onFalse(
       new InstantCommand(
         () -> m_elbow.setElbowExtended(false), m_arm
       )
     );
 
-    m_manipulator.back().onTrue(
+    m_manipulator.start().onTrue(
       new InstantCommand(
         m_lights::setViolet, m_lights
       ).andThen(
@@ -120,7 +132,7 @@ public class RobotContainer {
         new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
-    m_manipulator.start().onTrue(
+    m_manipulator.back().onTrue(
       new InstantCommand(
         m_lights::setYellow, m_lights
       ).andThen(

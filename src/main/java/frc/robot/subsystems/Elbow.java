@@ -54,6 +54,6 @@ public class Elbow extends SubsystemBase {
     public void periodic() {
         double output = pid.calculate(m_elbowEncoder.getPosition(),target);
         m_elbow.set(0.1*output);
-        System.out.println(output);
+        //System.out.println(output);
     }
 }
