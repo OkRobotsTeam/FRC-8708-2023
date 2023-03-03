@@ -18,6 +18,7 @@ public final class Constants {
     public static double kInputLinearity = 0.0f;
     public static boolean kScaleDifference = true;
     public static double kSlowModeMultiplier = 0.3;
+    public static double kLightsTimeoutSeconds = 5;
   }
   public static final class PneumaticsConstants{
     //HARDWARE CONFIG:

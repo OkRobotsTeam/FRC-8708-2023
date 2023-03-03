@@ -6,14 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonSimple;
-// import frc.robot.Constants.LightStripConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.Drivetrain;
-// import frc.robot.subsystems.Lights;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,10 +27,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
-  //private final Lights m_lights = new Lights();
   private final Intake m_claw = new Intake();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  private final Lights m_lights = new Lights();
   private final CommandJoystick m_driverLeftJoystick =
       new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
   private final CommandJoystick m_driverRightJoystick = 
@@ -58,50 +56,80 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
-    // m_lights.setDefaultCommand(getLightStripCommand());
 
     m_manipulator.a().onTrue(
       new InstantCommand(
-        () -> m_claw.intakeIn()
+        m_claw::intakeIn, m_claw
       )
     );
     m_manipulator.b().onTrue(
       new InstantCommand(
-        () -> m_claw.intakeOut()
+        m_claw::intakeOut, m_claw
       )
     );
     m_manipulator.a().onFalse(
       new InstantCommand(
-        () -> m_claw.intakeStop()
+        m_claw::intakeStop, m_claw
       )
     );
     m_manipulator.b().onFalse(
       new InstantCommand(
-        () -> m_claw.intakeStop()
+        m_claw::intakeStop, m_claw
       )
     );
     m_manipulator.povUp().onTrue(
       new InstantCommand(
-        () -> m_arm.setPistonRaised(true)
+        () -> m_arm.setPistonRaised(true), m_arm
       )
     );
     m_manipulator.povDown().onTrue(
       new InstantCommand(
-        () -> m_arm.setPistonRaised(false)
-      )
-    );
-    m_manipulator.povLeft().onTrue(
-      new InstantCommand(
-        () -> m_arm.setElevatorExtended(false)
+        () -> m_arm.setPistonRaised(false), m_arm
       )
     );
     m_manipulator.povRight().onTrue(
       new InstantCommand(
-        () -> m_arm.setElevatorExtended(true)
+        () -> m_arm.setElevatorExtended(false), m_arm
       )
     );
+    m_manipulator.povLeft().onTrue(
+      new InstantCommand(
+        () -> m_arm.setElevatorExtended(true), m_arm
+      )
+    );
+    m_manipulator.rightTrigger().onTrue(
+      new InstantCommand(
+        () -> m_arm.setElbowExtended(true), m_arm
+      )
+    );
+    m_manipulator.rightTrigger().onFalse(
+      new InstantCommand(
+        () -> m_arm.setElbowExtended(false), m_arm
+      )
+    );
+    m_manipulator.leftBumper().onTrue(
+      new InstantCommand(
+        m_lights::setViolet, m_lights
+      )
+    );
+    m_manipulator.rightBumper().onTrue(
+      new InstantCommand(
+        m_lights::setYellow, m_lights
+      ).andThen(
+        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+        new InstantCommand(m_lights::setChaser, m_lights)
+      )
+    );
+    m_manipulator.leftBumper().onTrue(
+      new InstantCommand(
+        m_lights::setViolet, m_lights
+      ).andThen(
+        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+        new InstantCommand(m_lights::setChaser, m_lights)
+      )
+    );
+    
   }
 
   /**
@@ -123,13 +151,4 @@ public class RobotContainer {
       ),m_drivetrain
     );
   }
-
-  // public Command getLightStripCommand() {
-  //   // return new RunCommand(
-  //   //   () -> m_lights.UpdateLights(LightStripConstants.kOrange), 
-  //   //   m_lights
-  //   // );
-  //   return new RunCommand(() -> m_lights.doNothing(), m_lights);
-  // }
-
 }
