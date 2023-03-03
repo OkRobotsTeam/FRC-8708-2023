@@ -36,6 +36,8 @@ public class Arm extends SubsystemBase{
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
 
+        m_elbow.setIdleMode(IdleMode.kBrake);
+
         m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
