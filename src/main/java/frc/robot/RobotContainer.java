@@ -106,13 +106,13 @@ public class RobotContainer {
         () -> m_elbow.setElbowExtended(true), m_arm
       )
     );
-    m_manipulator.rightTrigger().onFalse(
+    m_manipulator.leftTrigger().onTrue(
       new InstantCommand(
         () -> m_elbow.setElbowExtended(false), m_arm
       )
     );
 
-    m_manipulator.leftBumper().onTrue(
+    m_manipulator.back().onTrue(
       new InstantCommand(
         m_lights::setViolet, m_lights
       ).andThen(
@@ -120,13 +120,19 @@ public class RobotContainer {
         new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
-    m_manipulator.rightBumper().onTrue(
+    m_manipulator.start().onTrue(
       new InstantCommand(
         m_lights::setYellow, m_lights
       ).andThen(
         new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
         new InstantCommand(m_lights::setChaser, m_lights)
       )
+    );
+    m_manipulator.leftBumper().onTrue(
+      new InstantCommand(m_elbow::decTarget,m_elbow)
+    );
+    m_manipulator.rightBumper().onTrue(
+      new InstantCommand(m_elbow::incTarget,m_elbow)
     );
   }
 

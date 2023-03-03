@@ -19,6 +19,7 @@ public class Elbow extends SubsystemBase {
 
     private double target;
 
+
     private final PIDController pid = new PIDController(0.2,0,0);
 
     public Elbow(Arm arm) {
@@ -39,6 +40,14 @@ public class Elbow extends SubsystemBase {
         } else {
             target = (0);
         }
+    }
+
+    public void incTarget() {
+        target += 0.5;
+    }
+
+    public void decTarget() {
+        target -= 0.5;
     }
 
     @Override
