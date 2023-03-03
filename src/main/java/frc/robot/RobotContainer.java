@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -118,8 +119,24 @@ public class RobotContainer {
     m_manipulator.rightBumper().onTrue(
       new InstantCommand(
         m_lights::setYellow, m_lights
+      ).andThen(
+        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+        new InstantCommand(
+          m_lights::setChaser, m_lights
+        )
       )
     );
+    m_manipulator.leftBumper().onTrue(
+      new InstantCommand(
+        m_lights::setViolet, m_lights
+      ).andThen(
+        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+        new InstantCommand(
+          m_lights::setChaser, m_lights
+        )
+      )
+    );
+    
   }
 
   /**
