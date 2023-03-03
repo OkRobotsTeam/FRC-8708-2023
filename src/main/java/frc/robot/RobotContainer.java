@@ -113,6 +113,9 @@ public class RobotContainer {
     m_manipulator.leftBumper().onTrue(
       new InstantCommand(
         m_lights::setViolet, m_lights
+      ).andThen(
+        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+        new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
     m_manipulator.rightBumper().onTrue(
@@ -123,15 +126,6 @@ public class RobotContainer {
         new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
-    m_manipulator.leftBumper().onTrue(
-      new InstantCommand(
-        m_lights::setViolet, m_lights
-      ).andThen(
-        new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-        new InstantCommand(m_lights::setChaser, m_lights)
-      )
-    );
-    
   }
 
   /**

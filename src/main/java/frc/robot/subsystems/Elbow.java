@@ -16,8 +16,8 @@ public class Elbow extends SubsystemBase {
     private boolean elbowExtended = false;
     private Arm m_arm;
 
-    public Elbow(Arm arm) {
-        m_arm = arm;
+    public Elbow(Arm m_arm) {
+        this.m_arm = m_arm;
         m_elbow.setInverted(true);
         m_elbow.setIdleMode(IdleMode.kBrake);
     }
