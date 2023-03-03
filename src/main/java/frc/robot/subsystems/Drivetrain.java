@@ -9,11 +9,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-//import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,8 +29,6 @@ public class Drivetrain extends SubsystemBase{
 
     private final PneumaticHub m_pneumaticHub = new PneumaticHub();
     private final DoubleSolenoid m_shifter_solenoid = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, DriveConstants.kShifterHighSpeedChannel, DriveConstants.kShifterLowSpeedChannel);
-
-    //public final Gyro m_gyro = new ADXRS450_Gyro();
 
     private boolean previousFast;
 
@@ -79,28 +75,19 @@ public class Drivetrain extends SubsystemBase{
     public double applySquare(double speed, double linearity) {
         return (speed * Math.abs(speed) + (linearity * speed))/ (1+linearity);
     }
-    /*
-    public void scaleDifference(double leftSpeed, double rightSpeed) {
-        double average = (leftSpeed + rightSpeed) / 2.0;
-        double difference = (leftSpeed - rightSpeed) / 2.0;
-        double scaledDifference = applySquare(difference,0.1);
-        m_leftMotors.set(average + scaledDifference);
-        m_rightMotors.set(average - scaledDifference);
-    }
-    */
 
     // https://www.desmos.com/calculator/ww0xcpzoio
 
     private double snap(double angle) {
-        return Math.sin(4*angle)/4+angle;
+        return Math.sin(4 * angle)/4 + angle;
     }
 
     public void snapToClosestDirection(double leftSpeed, double rightSpeed) {
-        double r = Math.sqrt(Math.pow(leftSpeed, 2)+Math.pow(rightSpeed, 2));
+        double r = Math.sqrt(Math.pow(leftSpeed, 2) + Math.pow(rightSpeed, 2));
         double a = Math.atan2(rightSpeed,leftSpeed);
         a = snap(a);
-        double newLeft = r*Math.cos(a);
-        double newRight = r*Math.sin(a);
+        double newLeft = r * Math.cos(a);
+        double newRight = r * Math.sin(a);
         m_leftMotors.set(newLeft);
         m_rightMotors.set(newRight);
     } 
@@ -125,10 +112,6 @@ public class Drivetrain extends SubsystemBase{
             previousFast = fast;
         }
 
-
-        // leftSpeed and rightSpeed are doubles from -1.0 to 1.0
-        
-        
         // Apply a deadzone to the motor speeds
         leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
         rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
@@ -139,8 +122,7 @@ public class Drivetrain extends SubsystemBase{
             leftSpeed *= OperatorConstants.kSlowModeMultiplier;
             rightSpeed *= OperatorConstants.kSlowModeMultiplier;
         }
-        
-        
+
         if (OperatorConstants.kScaleDifference) {
             snapToClosestDirection(leftSpeed, rightSpeed);
         } else {

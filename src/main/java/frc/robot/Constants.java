@@ -64,6 +64,14 @@ public final class Constants {
     public static final double kElevatorExtendRotations = 10.0;
     public static final double kMaximumElevatorSpeed = 0.1;
     public static final double kElevatorStopThreshold = 0.5;
+
+    public static final double kLowElbowExtendRotations = 10.0;
+    public static final double kLowMaximumElbowSpeed = 0.1;
+    public static final double kLowElbowStopThreshold = 0.5;
+
+    public static final double kHighElbowExtendRotations = 10.0;
+    public static final double kHighMaximumElbowSpeed = 0.1;
+    public static final double kHighElbowStopThreshold = 0.5;
   }
   public final class IntakeConstants {
     public static final int kIntakeMotorTop = 8;
