@@ -29,8 +29,6 @@ public class RobotContainer {
   private final Arm m_arm = new Arm();
   private final Intake m_claw = new Intake();
   private final Lights m_lights = new Lights();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverLeftJoystick =
       new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
   private final CommandJoystick m_driverRightJoystick = 
@@ -58,7 +56,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
 
     m_manipulator.a().onTrue(
@@ -121,9 +118,7 @@ public class RobotContainer {
         m_lights::setYellow, m_lights
       ).andThen(
         new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-        new InstantCommand(
-          m_lights::setChaser, m_lights
-        )
+        new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
     m_manipulator.leftBumper().onTrue(
@@ -131,9 +126,7 @@ public class RobotContainer {
         m_lights::setViolet, m_lights
       ).andThen(
         new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-        new InstantCommand(
-          m_lights::setChaser, m_lights
-        )
+        new InstantCommand(m_lights::setChaser, m_lights)
       )
     );
     
