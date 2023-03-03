@@ -93,12 +93,12 @@ public class RobotContainer {
     );
     m_manipulator.povLeft().onTrue(
       new InstantCommand(
-        () -> m_arm.setSetpoint(0), m_arm
+        () -> m_arm.setElevatorExtended(false), m_arm
       )
     );
     m_manipulator.povRight().onTrue(
       new InstantCommand(
-        () -> m_arm.setSetpoint(ArmConstants.kElevatorExtendRotations), m_arm
+        () -> m_arm.setElevatorExtended(true), m_arm
       )
     );
     m_manipulator.rightTrigger().onTrue(
