@@ -49,6 +49,8 @@ public class Arm extends SubsystemBase{
         m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0.0f);
 
         m_elevatorEncoder.setPosition(0);
+
+        m_piston.set(PneumaticsConstants.kArmRaise);
     }
 
     public boolean getElevatorExtended() {
