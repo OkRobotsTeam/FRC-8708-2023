@@ -27,6 +27,7 @@ public class Arm extends SubsystemBase{
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
 
     private boolean elevatorExtended = false;
+    private boolean pistonIsUp = true;
     
     public Arm() {
 
@@ -54,9 +55,17 @@ public class Arm extends SubsystemBase{
 
     private void updateElevatorSpeed() {
         if (elevatorExtended) {
-            m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
+            if (m_elevatorEncoder.getPosition() > ArmConstants.kElevatorExtendRotations - ArmConstants.kElevatorStopThreshold) {
+                m_elevator.set(0);
+            } else {
+                m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
+            }
         } else {
-            m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
+            if (m_elevatorEncoder.getPosition() < ArmConstants.kElevatorStopThreshold) {
+                m_elevator.set(0);
+            } else {
+                m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
+            }
         }
     }
 
@@ -84,14 +93,14 @@ public class Arm extends SubsystemBase{
         }
     }
 
-    public void setPistonRaised(boolean isDown) {
+    public void setPistonRaised(boolean isUp) {
         if (getElevatorExtended()) {
             setElevatorExtended(false);
         }
-        if (isDown) {
-            m_piston.set(PneumaticsConstants.kArmLower);
-        } else {
+        if (isUp) {
             m_piston.set(PneumaticsConstants.kArmRaise);
+        } else {
+            m_piston.set(PneumaticsConstants.kArmLower);
         }
     }
     
@@ -101,12 +110,6 @@ public class Arm extends SubsystemBase{
 
     }
 
-
-
-    public void setAllMotors(boolean piston, boolean elevator) {
-        setPistonRaised(piston);
-        setElevatorExtended(elevator);
-    }
 
     @Override
     public void periodic() {

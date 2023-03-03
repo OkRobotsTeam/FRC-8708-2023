@@ -37,15 +37,15 @@ public class TurnFor extends CommandBase{
     @Override
     public void initialize() {
         m_drive.resetEncoders();
-        m_drive.tankDrive(0,0,m_fast);
+        m_drive.tankDrive(0, 0, m_fast, false);
     }
 
     @Override
     public void execute() {
         if (m_degrees > 0) {
-            m_drive.tankDrive(m_speed, -m_speed, m_fast);
+            m_drive.tankDrive(m_speed, -m_speed, m_fast, false);
         } else {
-            m_drive.tankDrive(-m_speed, m_speed, m_fast);
+            m_drive.tankDrive(-m_speed, m_speed, m_fast, false);
         }
     }
 
@@ -59,6 +59,6 @@ public class TurnFor extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-        m_drive.tankDrive(0,0,false);
+        m_drive.tankDrive(0,0,false,false);
     }
 }
