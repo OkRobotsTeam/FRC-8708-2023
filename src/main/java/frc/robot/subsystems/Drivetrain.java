@@ -105,7 +105,7 @@ public class Drivetrain extends SubsystemBase{
         m_rightMotors.set(newRight);
     } 
 
-    public void tankDrive(double leftSpeed, double rightSpeed, boolean fast) {
+    public void tankDrive(double leftSpeed, double rightSpeed, boolean fast, boolean slow) {
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast){
             if (fast) {
@@ -135,8 +135,13 @@ public class Drivetrain extends SubsystemBase{
         // Apply a cubic function to the motor speeds
         leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
         rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
-
-        if (OperatorConstants.ScaleDifference) {
+        if (slow) {
+            leftSpeed *= OperatorConstants.kSlowModeMultiplier;
+            rightSpeed *= OperatorConstants.kSlowModeMultiplier;
+        }
+        
+        
+        if (OperatorConstants.kScaleDifference) {
             snapToClosestDirection(leftSpeed, rightSpeed);
         } else {
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);

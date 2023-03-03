@@ -5,21 +5,18 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.LightStripConstants;
+import frc.robot.commands.AutonSimple;
+// import frc.robot.Constants.LightStripConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Lights;
+// import frc.robot.subsystems.Lights;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.XboxController.Button;
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -63,12 +60,48 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
-    m_arm.setDefaultCommand(getArmControlCommand());
-    //m_lights.setDefaultCommand(getLightStripCommand());
+    // m_lights.setDefaultCommand(getLightStripCommand());
 
     m_manipulator.a().onTrue(
-      new InstantCommand
-    )
+      new InstantCommand(
+        () -> m_claw.intakeIn()
+      )
+    );
+    m_manipulator.b().onTrue(
+      new InstantCommand(
+        () -> m_claw.intakeOut()
+      )
+    );
+    m_manipulator.a().onFalse(
+      new InstantCommand(
+        () -> m_claw.intakeStop()
+      )
+    );
+    m_manipulator.b().onFalse(
+      new InstantCommand(
+        () -> m_claw.intakeStop()
+      )
+    );
+    m_manipulator.povUp().onTrue(
+      new InstantCommand(
+        () -> m_arm.setPistonRaised(true)
+      )
+    );
+    m_manipulator.povDown().onTrue(
+      new InstantCommand(
+        () -> m_arm.setPistonRaised(false)
+      )
+    );
+    m_manipulator.povLeft().onTrue(
+      new InstantCommand(
+        () -> m_arm.setElevatorExtended(false)
+      )
+    );
+    m_manipulator.povRight().onTrue(
+      new InstantCommand(
+        () -> m_arm.setElevatorExtended(true)
+      )
+    );
   }
 
   /**
@@ -76,31 +109,20 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  //public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    //return Autos.exampleAuto(m_exampleSubsystem);
-  //}
+  public Command getAutonomousCommand() {
+    return new AutonSimple(m_drivetrain, m_arm, m_claw);
+  }
 
   public Command getTankDriveCommand() {
     return new RunCommand(
       () -> m_drivetrain.tankDrive(
         m_driverLeftJoystick.getY(),
         m_driverRightJoystick.getY(),
-        m_driverRightJoystick.trigger().getAsBoolean()
+        m_driverRightJoystick.trigger().getAsBoolean(),
+        m_driverLeftJoystick.trigger().getAsBoolean()
       ),m_drivetrain
     );
   }
-
-  public Command getArmControlCommand() {
-    return new RunCommand(
-      () ->m_arm.setAllMotors(
-        m_manipulator.leftTrigger().getAsBoolean(),
-        m_manipulator.rightTrigger().getAsBoolean()
-      ),m_arm
-    );
-
-      //() -> m_arm.setElevatorExtended(m_manipulator.rightTrigger().getAsBoolean()),m_arm
-    }
 
   // public Command getLightStripCommand() {
   //   // return new RunCommand(
@@ -110,22 +132,4 @@ public class RobotContainer {
   //   return new RunCommand(() -> m_lights.doNothing(), m_lights);
   // }
 
-  public Command getClawControlCommand() {
-    if (m_manipulator.a().getAsBoolean()) {
-      return new RunCommand(
-        () -> m_claw.setIntakeState(IntakeConstants.kIntakeIn),
-        m_claw
-      );
-    } else if (m_manipulator.b().getAsBoolean()) {
-      return new RunCommand(
-        () -> m_claw.setIntakeState(IntakeConstants.kIntakeIn),
-        m_claw
-      );
-    } else {
-      return new RunCommand(
-        () -> m_claw.setIntakeState(IntakeConstants.kIntakeDisabled),
-        m_claw
-      );
-    }
-  }
 }

@@ -16,7 +16,8 @@ public final class Constants {
     //SOFTWARE CONFIG:
     public static double kInputDeadzone = 0.1f;
     public static double kInputLinearity = 0.0f;
-    public static boolean ScaleDifference = false;
+    public static boolean kScaleDifference = true;
+    public static double kSlowModeMultiplier = 0.3;
   }
   public static final class PneumaticsConstants{
     //HARDWARE CONFIG:
@@ -62,6 +63,7 @@ public final class Constants {
 
     public static final double kElevatorExtendRotations = 10.0;
     public static final double kMaximumElevatorSpeed = 0.1;
+    public static final double kElevatorStopThreshold = 0.5;
   }
   public final class IntakeConstants {
     public static final int kIntakeMotorTop = 8;

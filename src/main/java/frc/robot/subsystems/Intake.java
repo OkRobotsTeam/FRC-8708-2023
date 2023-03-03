@@ -28,4 +28,8 @@ public class Intake extends SubsystemBase {
         m_intake.set(-IntakeConstants.kMaximumIntakeSpeed);
     }
 
+    public void intakeStop() {
+        m_intake.set(0);
+    }
+
 }
