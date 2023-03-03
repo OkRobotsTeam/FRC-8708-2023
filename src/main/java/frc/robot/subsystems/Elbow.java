@@ -7,59 +7,41 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
-public class Elbow extends SubsystemBase {
+public class Elbow extends PIDSubsystem {
 
     private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.kElbowMotorPort, MotorType.kBrushless);
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
-    private boolean elbowExtended = false;
     private Arm m_arm;
 
-    public Elbow(Arm m_arm) {
-        this.m_arm = m_arm;
+    public Elbow(Arm arm) {
+        super(new PIDController(0.1,0,0));
+        m_arm = arm;
         m_elbow.setInverted(true);
         m_elbow.setIdleMode(IdleMode.kBrake);
     }
 
-    private void updateElbowSpeed() {
-        if (m_arm.getPistonRaised()) {
-            if (elbowExtended) {
-                if (m_elbowEncoder.getPosition() > ArmConstants.kHighElbowExtendRotations - ArmConstants.kHighElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(ArmConstants.kHighMaximumElbowSpeed);
-                }
-            } else {
-                if (m_elbowEncoder.getPosition() < ArmConstants.kHighElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(-ArmConstants.kHighMaximumElbowSpeed);
-                }
-            }
-        } else {
-            if (elbowExtended) {
-                if (m_elbowEncoder.getPosition() > ArmConstants.kLowElbowExtendRotations - ArmConstants.kLowElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(ArmConstants.kLowMaximumElbowSpeed);
-                }
-            } else {
-                if (m_elbowEncoder.getPosition() < ArmConstants.kLowElbowStopThreshold) {
-                    m_elbow.set(0);
-                } else {
-                    m_elbow.set(-ArmConstants.kLowMaximumElbowSpeed);
-                }
-            }
-        }
-    }
-
-    public void setElbowExtended(boolean isExtended) {
-        elbowExtended = isExtended;
+    @Override
+    public void useOutput(double output, double setpoint) {
+        m_elbow.set(output);
     }
 
     @Override
-    public void periodic() {
-        updateElbowSpeed();
+    public double getMeasurement() {
+        return m_elbowEncoder.getPosition();
+    }
+
+    public void setElbowExtended(boolean isExtended) {
+        if (isExtended) {
+            if (m_arm.getPistonRaised()) {
+                setSetpoint(ArmConstants.kHighElbowExtendRotations);
+            } else {
+                setSetpoint(ArmConstants.kLowElbowExtendRotations);
+            }
+        } else {
+            setSetpoint(0);
+        }
     }
 }

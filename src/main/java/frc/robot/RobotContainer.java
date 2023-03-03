@@ -110,6 +110,7 @@ public class RobotContainer {
         () -> m_elbow.setElbowExtended(false), m_arm
       )
     );
+
     m_manipulator.leftBumper().onTrue(
       new InstantCommand(
         m_lights::setViolet, m_lights

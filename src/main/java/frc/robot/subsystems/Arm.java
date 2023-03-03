@@ -9,12 +9,13 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-public class Arm extends SubsystemBase{
+public class Arm extends PIDSubsystem{
 
     private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
@@ -23,9 +24,11 @@ public class Arm extends SubsystemBase{
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
     
-    private boolean elevatorExtended = false;
     
     public Arm() {
+        super(new PIDController(0.1,0,0));
+        getController().setTolerance(ArmConstants.kElevatorStopThreshold);
+        
         m_elevator1.setInverted(true);
         m_elevator1.setInverted(true);
 
@@ -45,20 +48,14 @@ public class Arm extends SubsystemBase{
         m_elevatorEncoder.setPosition(0);
     }
 
-    private void updateElevatorSpeed() {
-        if (elevatorExtended) {
-            if (m_elevatorEncoder.getPosition() > ArmConstants.kElevatorExtendRotations - ArmConstants.kElevatorStopThreshold) {
-                m_elevator.set(0);
-            } else {
-                m_elevator.set(ArmConstants.kMaximumElevatorSpeed);
-            }
-        } else {
-            if (m_elevatorEncoder.getPosition() < ArmConstants.kElevatorStopThreshold) {
-                m_elevator.set(0);
-            } else {
-                m_elevator.set(-ArmConstants.kMaximumElevatorSpeed);
-            }
-        }
+    @Override
+    public double getMeasurement() {
+        return m_elevatorEncoder.getPosition();
+    }
+
+    @Override
+    public void useOutput(double output, double setpoint) {
+        m_elevator.set(output);
     }
 
     public boolean getElevatorExtended() {
@@ -67,13 +64,14 @@ public class Arm extends SubsystemBase{
         } else {
             return false;
         }
+
     }
 
     public void setElevatorExtended(boolean isExtended) {
-        if (getPistonRaised()) {
-            elevatorExtended = isExtended;
+        if (getPistonRaised() && isExtended) {
+            setSetpoint(ArmConstants.kElevatorExtendRotations);
         } else {
-            elevatorExtended = false;
+            setSetpoint(0);
         }
     }
 
@@ -86,25 +84,14 @@ public class Arm extends SubsystemBase{
     }
 
     public void setPistonRaised(boolean isUp) {
-        if (getElevatorExtended()) {
-            setElevatorExtended(false);
-        }
+        
         if (isUp) {
+            if (getElevatorExtended()) {
+                setElevatorExtended(false);
+            }
             m_piston.set(PneumaticsConstants.kArmRaise);
         } else {
             m_piston.set(PneumaticsConstants.kArmLower);
         }
-    }
-    
-    public void SetElevatorMotors(double speed) {
-        m_elevator.set(speed);
-        System.out.println("Elevator Encoder: " + m_elevatorEncoder.getPosition());
-
-    }
-
-
-    @Override
-    public void periodic() {
-        updateElevatorSpeed();
     }
 }
