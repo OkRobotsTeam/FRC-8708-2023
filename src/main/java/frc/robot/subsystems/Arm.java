@@ -13,9 +13,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-public class Arm extends PIDSubsystem{
+public class Arm extends SubsystemBase{
 
     private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
@@ -24,10 +25,12 @@ public class Arm extends PIDSubsystem{
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
     
+    private final PIDController pid = new PIDController(0.1,0,0);
     
+    private double desiredPos = 0;
+
     public Arm() {
-        super(new PIDController(0.1,0,0));
-        getController().setTolerance(ArmConstants.kElevatorStopThreshold);
+        //getController().setTolerance(ArmConstants.kElevatorStopThreshold);
         
         m_elevator1.setInverted(true);
         m_elevator1.setInverted(true);
@@ -48,16 +51,6 @@ public class Arm extends PIDSubsystem{
         m_elevatorEncoder.setPosition(0);
     }
 
-    @Override
-    public double getMeasurement() {
-        return m_elevatorEncoder.getPosition();
-    }
-
-    @Override
-    public void useOutput(double output, double setpoint) {
-        m_elevator.set(output);
-    }
-
     public boolean getElevatorExtended() {
         if (m_elevatorEncoder.getPosition() > 1) {
             return true;
@@ -69,9 +62,9 @@ public class Arm extends PIDSubsystem{
 
     public void setElevatorExtended(boolean isExtended) {
         if (getPistonRaised() && isExtended) {
-            setSetpoint(ArmConstants.kElevatorExtendRotations);
+            desiredPos = (ArmConstants.kElevatorExtendRotations);
         } else {
-            setSetpoint(0);
+            desiredPos = (0);
         }
     }
 
@@ -93,5 +86,10 @@ public class Arm extends PIDSubsystem{
         } else {
             m_piston.set(PneumaticsConstants.kArmLower);
         }
+    }
+
+    @Override
+    public void periodic() {
+        m_elevator.set(pid.calculate(m_elevatorEncoder.getPosition(),desiredPos));
     }
 }
