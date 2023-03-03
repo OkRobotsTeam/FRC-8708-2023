@@ -26,7 +26,7 @@ public class Lights extends SubsystemBase {
     }
 
     public void setChaser() {
-        LED.set(redchaser);
+        LED.set(bluechaser);
     }
 
     public void setOff() {

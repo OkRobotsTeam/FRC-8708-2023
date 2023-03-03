@@ -25,12 +25,11 @@ public class Arm extends SubsystemBase{
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
     
-    private final PIDController pid = new PIDController(0.1,0,0);
+    private final PIDController pid = new PIDController(0.1,.001,0);
     
     private double desiredPos = 0;
 
     public Arm() {
-        //getController().setTolerance(ArmConstants.kElevatorStopThreshold);
         
         m_elevator1.setInverted(true);
         m_elevator1.setInverted(true);
@@ -54,6 +53,7 @@ public class Arm extends SubsystemBase{
         m_piston.set(PneumaticsConstants.kArmRaise);
 
         pid.setTolerance(ArmConstants.kElevatorStopThreshold);
+
     }
 
     public boolean getElevatorExtended() {
@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase{
         if (getPistonRaised() && isExtended) {
             desiredPos = (ArmConstants.kElevatorExtendRotations);
         } else {
-            desiredPos = (-1);
+            desiredPos = (-0.5);
         }
     }
 
