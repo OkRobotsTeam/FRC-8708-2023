@@ -16,7 +16,7 @@ public final class Constants {
     //SOFTWARE CONFIG:
     public static double kInputDeadzone = 0.1f;
     public static double kInputLinearity = 0.0f;
-    public static boolean kScaleDifference = true;
+    public static boolean kScaleDifference = false;
     public static double kSlowModeMultiplier = 0.3;
     public static double kLightsTimeoutSeconds = 5;
   }
@@ -66,7 +66,7 @@ public final class Constants {
     public static final double kMaximumElevatorSpeed = 0.1;
     public static final double kElevatorStopThreshold = 0.1;
 
-    public static final double kLowElbowExtendRotations = 12.5;
+    public static final double kLowElbowExtendRotations = 14;
     public static final double kLowMaximumElbowSpeed = 0.1;
     public static final double kLowElbowStopThreshold = 0.5;
 

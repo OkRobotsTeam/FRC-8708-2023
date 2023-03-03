@@ -153,9 +153,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  //public Command getAutonomousCommand() {
-  //  return new AutonSimple(m_drivetrain, m_arm, m_elbow, m_claw);
-  //}
+  public Command getAutonomousCommand() {
+    return new AutonSimple(m_drivetrain, m_arm, m_elbow, m_claw);
+  }
 
   public Command getTankDriveCommand() {
     return new RunCommand(
