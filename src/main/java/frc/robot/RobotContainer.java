@@ -9,8 +9,10 @@ import frc.robot.commands.AutonSimple;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
+import frc.robot.vision.MyVisionThread;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elbow;
+import edu.wpi.first.cscore.CameraServerJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -39,10 +41,27 @@ public class RobotContainer {
   private final CommandXboxController m_manipulator = 
       new CommandXboxController(OperatorConstants.kManipulatorControllerPort);
 
+  private MyVisionThread m_visionThread;
+  
+  private boolean m_webcamPresent;
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    if ( CameraServerJNI.enumerateUsbCameras().length > 0) {
+      System.out.println("Webcam Found.  Firing up vision.");
+      m_visionThread = new MyVisionThread();
+      m_visionThread.setDaemon(true);
+      
+
+      m_visionThread.start();
+      m_visionThread.setPriority(Thread.NORM_PRIORITY-2);
+      m_webcamPresent = true;
+  } else {
+      System.out.println("No webcam. No vision");
+      m_webcamPresent = false;
+  }
 
     // Configure the trigger bindings
     configureBindings();

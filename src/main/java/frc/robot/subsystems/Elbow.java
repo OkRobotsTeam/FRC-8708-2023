@@ -20,7 +20,7 @@ public class Elbow extends SubsystemBase {
     private double target;
 
 
-    private final PIDController pid = new PIDController(0.2,0,0);
+    private final PIDController pid = new PIDController(0.7,0,0);
 
     public Elbow(Arm arm) {
         m_arm = arm;
@@ -43,17 +43,29 @@ public class Elbow extends SubsystemBase {
     }
 
     public void incTarget() {
-        target += 0.5;
+        target ++;
+        if (m_arm.getPistonRaised()) {
+            if (target > ArmConstants.kHighElbowExtendRotations+5) {
+                target = ArmConstants.kHighElbowExtendRotations+5;
+            }
+        } else {
+            if (target > ArmConstants.kLowElbowExtendRotations+5) {
+                target = ArmConstants.kLowElbowExtendRotations+5;
+            }
+        }
     }
 
     public void decTarget() {
-        target -= 0.5;
+        target --;
+        if (target<0) {target = 0;}
     }
 
     @Override
     public void periodic() {
         double output = pid.calculate(m_elbowEncoder.getPosition(),target);
-        m_elbow.set(0.1*output);
+        if (output>1) {output=1;}
+        if (output<-1) {output=-1;}
+        m_elbow.set(0.2*output);
         //System.out.println(output);
     }
 }

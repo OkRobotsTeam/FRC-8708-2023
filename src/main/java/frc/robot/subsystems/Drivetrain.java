@@ -92,6 +92,28 @@ public class Drivetrain extends SubsystemBase{
         m_rightMotors.set(newRight);
     } 
 
+    public void tankDriveRaw(double leftSpeed, double rightSpeed, boolean fast) {
+        if (fast != previousFast){
+            if (fast) {
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
+                m_leftMotor1.setOpenLoopRampRate(0);
+                m_leftMotor2.setOpenLoopRampRate(0);
+                m_rightMotor1.setOpenLoopRampRate(0);
+                m_rightMotor2.setOpenLoopRampRate(0); 
+            } else {
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
+                m_leftMotor1.setOpenLoopRampRate(1);
+                m_leftMotor2.setOpenLoopRampRate(1);
+                m_rightMotor1.setOpenLoopRampRate(1);
+                m_rightMotor2.setOpenLoopRampRate(1);
+
+            }
+            previousFast = fast;
+        }
+        m_leftMotors.set(leftSpeed);
+        m_rightMotors.set(rightSpeed);
+    }
+
     public void tankDrive(double leftSpeed, double rightSpeed, boolean fast, boolean slow) {
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast){

@@ -47,8 +47,8 @@ public final class Constants {
     //SOFTWARE CONFIG:
     public static final double kMaximumDrivetrainSpeed = 1.0;
 
-    public static final double kFastRevPerRot = 55/544; // wheel revolutions per motor rotation
-    public static final double kSlowRevPerRot = 11/288;
+    public static final double kFastRevPerRot = 55d/544d; // wheel revolutions per motor rotation
+    public static final double kSlowRevPerRot = 11d/288d;
     public static final double kWheelCircumference = 6 * Math.PI * 2.54;
     public static final double kTurnCircumference = 20 * Math.PI * 2.54;
   }

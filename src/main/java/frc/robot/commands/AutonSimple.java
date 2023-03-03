@@ -1,12 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elbow;
 import frc.robot.subsystems.Intake;
+import frc.robot.commands.DriveFor;
 
 public class AutonSimple extends SequentialCommandGroup {
 
@@ -19,12 +20,13 @@ public class AutonSimple extends SequentialCommandGroup {
         addCommands(
             // new RunCommand(() -> elbow.setElbowExtended(true),arm),
             // new WaitCommand(3),
-            new RunCommand(intake::intakeOut,intake),
-            new WaitCommand(2),
-            new RunCommand(intake::intakeStop, intake)
+            new InstantCommand(intake::intakeOutFULLSPEED,intake),
+            new WaitCommand(1),
+            new InstantCommand(intake::intakeStop, intake),
             // new RunCommand(() -> elbow.setElbowExtended(false),arm),
             // new TurnFor(180, 0.7, drive),
-            //new DriveFor(-150, -0.3, drive).withTimeout(2)
+            new DriveFor(380, 0.5, drive).withTimeout(2),
+            new InstantCommand(() -> drive.tankDriveRaw(0,0,false),drive)
         );
 
     }

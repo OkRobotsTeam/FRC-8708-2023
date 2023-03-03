@@ -32,4 +32,8 @@ public class Intake extends SubsystemBase {
         m_intake.set(0);
     }
 
+    public void intakeOutFULLSPEED() {
+        m_intake.set(-1);
+    }
+
 }

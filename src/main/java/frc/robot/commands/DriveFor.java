@@ -12,18 +12,20 @@ public class DriveFor extends CommandBase{
     private final boolean m_fast;
     private final double cmPerRot;
 
-    public DriveFor(double distance_cm, double speed, Drivetrain drive){
+    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive){
         m_fast = false;
-        m_speed = speed;
+        if (distance_cm < 0) {m_speed = -unsigned_speed;}
+        else {m_speed = unsigned_speed;}
         m_distance = distance_cm;
         m_drive = drive;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
     
-    public DriveFor(double distance_cm, double speed, Drivetrain drive, boolean fast) {
+    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive, boolean fast) {
         m_distance = distance_cm;
-        m_speed = speed;
+        if (distance_cm < 0) {m_speed = -unsigned_speed;}
+        else {m_speed = unsigned_speed;}
         m_drive = drive;
         m_fast = fast;
         if (fast) {
@@ -37,22 +39,24 @@ public class DriveFor extends CommandBase{
     @Override
     public void initialize() {
         m_drive.resetEncoders();
-        m_drive.tankDrive(0, 0, m_fast, false);
+        m_drive.tankDriveRaw(0, 0, m_fast);
+        System.out.println(m_distance);
     }
 
     @Override
     public void execute() {
-        m_drive.tankDrive(m_speed, m_speed, m_fast, false);
+        m_drive.tankDriveRaw(-m_speed, -m_speed, m_fast);
     }
 
     @Override
     public boolean isFinished() {
         double avgDistance = m_drive.getAvgEncoder() * cmPerRot;
-        return (avgDistance >= m_distance);
+        if (m_distance<0) {return (avgDistance <= m_distance);}
+        else {return (avgDistance >= m_distance);}
     }
 
     @Override
     public void end(boolean interrupted) {
-        m_drive.tankDrive(0, 0, false, false);
+        m_drive.tankDriveRaw(0, 0, false);
     }
 }
