@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elbow extends SubsystemBase {
@@ -19,8 +18,7 @@ public class Elbow extends SubsystemBase {
 
     private double target;
 
-
-    private final PIDController pid = new PIDController(0.7,0,0);
+    private final PIDController pid = new PIDController(0.7, 0, 0);
 
     public Elbow(Arm arm) {
         m_arm = arm;
@@ -43,29 +41,35 @@ public class Elbow extends SubsystemBase {
     }
 
     public void incTarget() {
-        target ++;
+        target++;
         if (m_arm.getPistonRaised()) {
-            if (target > ArmConstants.kHighElbowExtendRotations+5) {
-                target = ArmConstants.kHighElbowExtendRotations+5;
+            if (target > ArmConstants.kHighElbowExtendRotations + 5) {
+                target = ArmConstants.kHighElbowExtendRotations + 5;
             }
         } else {
-            if (target > ArmConstants.kLowElbowExtendRotations+5) {
-                target = ArmConstants.kLowElbowExtendRotations+5;
+            if (target > ArmConstants.kLowElbowExtendRotations + 5) {
+                target = ArmConstants.kLowElbowExtendRotations + 5;
             }
         }
     }
 
     public void decTarget() {
-        target --;
-        if (target<0) {target = 0;}
+        target--;
+        if (target < 0) {
+            target = 0;
+        }
     }
 
     @Override
     public void periodic() {
-        double output = pid.calculate(m_elbowEncoder.getPosition(),target);
-        if (output>1) {output=1;}
-        if (output<-1) {output=-1;}
-        m_elbow.set(0.2*output);
-        //System.out.println(output);
+        double output = pid.calculate(m_elbowEncoder.getPosition(), target);
+        if (output > 1) {
+            output = 1;
+        }
+        if (output < -1) {
+            output = -1;
+        }
+        m_elbow.set(0.2 * output);
+        // System.out.println(output);
     }
 }

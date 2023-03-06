@@ -12,40 +12,39 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-public class Arm extends SubsystemBase{
+public class Arm extends SubsystemBase {
 
-    private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort, PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
+    private final DoubleSolenoid m_piston = new DoubleSolenoid(PneumaticsConstants.kPneumaticsHubPort,
+            PneumaticsModuleType.REVPH, ArmConstants.kArmRaiseChannel, ArmConstants.kArmLowerChannel);
 
     private final CANSparkMax m_elevator1 = new CANSparkMax(ArmConstants.kElevatorMotor1Port, MotorType.kBrushless);
     private final CANSparkMax m_elevator2 = new CANSparkMax(ArmConstants.kElevatorMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
-    
-    private final PIDController pid = new PIDController(0.1,.001,0);
-    
+
+    private final PIDController pid = new PIDController(0.1, .001, 0);
+
     private double desiredPos = 0;
 
     public Arm() {
-        
+
         m_elevator1.setInverted(true);
         m_elevator1.setInverted(true);
 
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
 
-
         m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
         m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
         m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-        m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
         m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, -1f);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)ArmConstants.kElevatorExtendRotations);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
         m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, -1f);
 
         m_elevatorEncoder.setPosition(0);
@@ -82,7 +81,7 @@ public class Arm extends SubsystemBase{
     }
 
     public void setPistonRaised(boolean isUp) {
-        
+
         if (isUp) {
             if (getElevatorExtended()) {
                 setElevatorExtended(false);
@@ -95,6 +94,6 @@ public class Arm extends SubsystemBase{
 
     @Override
     public void periodic() {
-        m_elevator.set(0.25*pid.calculate(m_elevatorEncoder.getPosition(),desiredPos));
+        m_elevator.set(0.25 * pid.calculate(m_elevatorEncoder.getPosition(), desiredPos));
     }
 }

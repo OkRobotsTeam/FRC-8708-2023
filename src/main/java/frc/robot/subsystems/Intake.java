@@ -8,11 +8,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-
 public class Intake extends SubsystemBase {
 
     private final CANSparkMax m_intakeTop = new CANSparkMax(IntakeConstants.kIntakeMotorTop, MotorType.kBrushless);
-    private final CANSparkMax m_intakeBottom = new CANSparkMax(IntakeConstants.kIntakeMotorBottom, MotorType.kBrushless);
+    private final CANSparkMax m_intakeBottom = new CANSparkMax(IntakeConstants.kIntakeMotorBottom,
+            MotorType.kBrushless);
     private final MotorControllerGroup m_intake = new MotorControllerGroup(m_intakeBottom, m_intakeTop);
 
     public Intake() {
@@ -20,12 +20,12 @@ public class Intake extends SubsystemBase {
         m_intakeTop.setInverted(IntakeConstants.kIntakeMotorTopReversed);
     }
 
-    public void intakeIn() {
-        m_intake.set(IntakeConstants.kMaximumIntakeInSpeed);
+    public void intakeIn(double speed) {
+        m_intake.set(speed);
     }
 
-    public void intakeOut() {
-        m_intake.set(-IntakeConstants.kMaximumIntakeOutSpeed);
+    public void intakeOut(double speed) {
+        m_intake.set(-speed);
     }
 
     public void intakeStop() {

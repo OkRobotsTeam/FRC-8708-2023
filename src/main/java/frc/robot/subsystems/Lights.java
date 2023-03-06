@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lights extends SubsystemBase {
-    
+
     public static final double violet = 0.91;
     public static final double yellow = 0.69;
     public static final double off = 0.99;
@@ -32,5 +32,5 @@ public class Lights extends SubsystemBase {
     public void setOff() {
         LED.set(off);
     }
-    
+
 }

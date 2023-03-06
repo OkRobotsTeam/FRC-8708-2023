@@ -4,28 +4,34 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveFor extends CommandBase{
-    
+public class DriveFor extends CommandBase {
+
     private final double m_distance;
     private final double m_speed;
     private final Drivetrain m_drive;
     private final boolean m_fast;
     private final double cmPerRot;
 
-    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive){
+    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive) {
         m_fast = false;
-        if (distance_cm < 0) {m_speed = -unsigned_speed;}
-        else {m_speed = unsigned_speed;}
+        if (distance_cm < 0) {
+            m_speed = -unsigned_speed;
+        } else {
+            m_speed = unsigned_speed;
+        }
         m_distance = distance_cm;
         m_drive = drive;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
-    
+
     public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive, boolean fast) {
         m_distance = distance_cm;
-        if (distance_cm < 0) {m_speed = -unsigned_speed;}
-        else {m_speed = unsigned_speed;}
+        if (distance_cm < 0) {
+            m_speed = -unsigned_speed;
+        } else {
+            m_speed = unsigned_speed;
+        }
         m_drive = drive;
         m_fast = fast;
         if (fast) {
@@ -51,8 +57,11 @@ public class DriveFor extends CommandBase{
     @Override
     public boolean isFinished() {
         double avgDistance = m_drive.getAvgEncoder() * cmPerRot;
-        if (m_distance<0) {return (avgDistance <= m_distance);}
-        else {return (avgDistance >= m_distance);}
+        if (m_distance < 0) {
+            return (avgDistance <= m_distance);
+        } else {
+            return (avgDistance >= m_distance);
+        }
     }
 
     @Override

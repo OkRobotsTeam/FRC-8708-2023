@@ -4,15 +4,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.Constants.DriveConstants;
 
-public class TurnFor extends CommandBase{
-    
+public class TurnFor extends CommandBase {
+
     private final double m_degrees;
     private final double m_speed;
     private final Drivetrain m_drive;
     private final boolean m_fast;
     private final double cmPerRot;
 
-    public TurnFor(double degrees, double speed, Drivetrain drive){
+    public TurnFor(double degrees, double speed, Drivetrain drive) {
         m_fast = false;
         m_speed = speed;
         m_degrees = degrees;
@@ -20,7 +20,7 @@ public class TurnFor extends CommandBase{
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
-    
+
     public TurnFor(double degrees, double speed, Drivetrain drive, boolean fast) {
         m_degrees = degrees;
         m_speed = speed;
@@ -59,6 +59,6 @@ public class TurnFor extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-        m_drive.tankDrive(0,0,false,false);
+        m_drive.tankDrive(0, 0, false, false);
     }
 }
