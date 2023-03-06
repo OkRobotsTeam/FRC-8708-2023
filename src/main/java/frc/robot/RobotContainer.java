@@ -47,9 +47,7 @@ public class RobotContainer {
 
   public boolean m_webcamPresent;
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+   // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
     m_webcamPresent = (CameraServerJNI.enumerateUsbCameras().length > 0);
 
@@ -59,7 +57,6 @@ public class RobotContainer {
       m_visionThread.setDaemon(true);
       m_visionThread.start();
       m_visionThread.setPriority(3);
-      m_webcamPresent = true;
     } else {
       System.out.println("No webcam found, vision inactive");
     }
@@ -83,8 +80,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // A = claw in
-    // RT = claw out fast
+    // A = intake in
+    // RT = intake out fast
     // LT = elbow out/in (hold)
     // LB/RB = adjust elbow
     // Start/Back = colors purple start yellow back
@@ -135,10 +132,12 @@ public class RobotContainer {
                 new InstantCommand(m_lights::setChaser, m_lights)));
     
     m_manipulator.leftBumper().onTrue(
-        new InstantCommand(m_elbow::decTarget, m_elbow));
+        new InstantCommand(
+        () -> m_elbow.tuneTarget(1.0), m_elbow));
     
     m_manipulator.rightBumper().onTrue(
-        new InstantCommand(m_elbow::incTarget, m_elbow));
+        new InstantCommand(
+        () -> m_elbow.tuneTarget(-1.0), m_elbow));
   }
 
   /**

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
-
     private final CANSparkMax m_leftMotor1 = new CANSparkMax(DriveConstants.kLeftMotor1Port, MotorType.kBrushless);
     private final CANSparkMax m_leftMotor2 = new CANSparkMax(DriveConstants.kLeftMotor2Port, MotorType.kBrushless);
     private final MotorControllerGroup m_leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
@@ -33,12 +32,15 @@ public class Drivetrain extends SubsystemBase {
 
     private boolean previousFast;
 
-    private double currentDifference = 0;
-    private double previousDifference = 0;
-
+    private double turnSpeed = 0.0;
+    private double previousTurnSpeed = 0.0;
+    
     private double deltaTime = 0;
     private double currentTime = System.currentTimeMillis();
     private double lastCheckTime = System.currentTimeMillis();
+
+    private double leftSpeed = 0.0;
+    private double rightSpeed = 0.0;
 
     public Drivetrain() {
         // Invert motor groups according to the constants
@@ -108,16 +110,16 @@ public class Drivetrain extends SubsystemBase {
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
-                m_leftMotor1.setOpenLoopRampRate(0);
-                m_leftMotor2.setOpenLoopRampRate(0);
-                m_rightMotor1.setOpenLoopRampRate(0);
-                m_rightMotor2.setOpenLoopRampRate(0);
+                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
-                m_leftMotor1.setOpenLoopRampRate(1);
-                m_leftMotor2.setOpenLoopRampRate(1);
-                m_rightMotor1.setOpenLoopRampRate(1);
-                m_rightMotor2.setOpenLoopRampRate(1);
+                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
 
             }
             previousFast = fast;
@@ -126,55 +128,60 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotors.set(rightSpeed);
     }
 
-    @SuppressWarnings("unused")
-    public void tankDrive(double leftSpeed, double rightSpeed, boolean fast, boolean slow) {
+    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
-                m_leftMotor1.setOpenLoopRampRate(0);
-                m_leftMotor2.setOpenLoopRampRate(0);
-                m_rightMotor1.setOpenLoopRampRate(0);
-                m_rightMotor2.setOpenLoopRampRate(0);
+                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
-                m_leftMotor1.setOpenLoopRampRate(1);
-                m_leftMotor2.setOpenLoopRampRate(1);
-                m_rightMotor1.setOpenLoopRampRate(1);
-                m_rightMotor2.setOpenLoopRampRate(1);
+                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
             }
             previousFast = fast;
         }
 
         // Apply a deadzone to the motor speeds
-        leftSpeed = applyDeadzone(leftSpeed, OperatorConstants.kInputDeadzone);
-        rightSpeed = applyDeadzone(rightSpeed, OperatorConstants.kInputDeadzone);
-        // Apply a cubic function to the motor speeds
-        leftSpeed = applyCubic(leftSpeed, OperatorConstants.kInputLinearity);
-        rightSpeed = applyCubic(rightSpeed, OperatorConstants.kInputLinearity);
-        if (slow) {
-            leftSpeed *= OperatorConstants.kSlowModeMultiplier;
-            rightSpeed *= OperatorConstants.kSlowModeMultiplier;
+        leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
+        leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
+        if (OperatorConstants.kApplyCubic) {
+            // Apply a cubic function to the motor speeds
+            leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
+            leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
         }
-        if (OperatorConstants.kDriveNormalizationType == OperatorConstants.kCubicOnly) {
-            m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
-            m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
-        }
-        if (OperatorConstants.kDriveNormalizationType == OperatorConstants.kSnapToForward) {
-            snapToClosestDirection(leftSpeed, rightSpeed);
-        }
-        if (OperatorConstants.kDriveNormalizationType == OperatorConstants.kTurnRateLimiting) {
-            currentDifference = leftSpeed - rightSpeed;
-            // if (Math.abs(previousDifference - currentDifference) >
-            // (OperatorConstants.kMaximumTurnAccelerationPerSecond)) {
-
-            // }
+        if (OperatorConstants.kLimitTurnAcceleration) {
+            turnSpeed = (leftController - rightController) / 2;
+            if (Math.abs(turnSpeed) > Math.abs(previousTurnSpeed) && (Math.abs(turnSpeed - turnSpeed) > (OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000)))) {
+                leftSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), leftController - rightController);
+                rightSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), leftController - rightController);
+                previousTurnSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), turnSpeed - previousTurnSpeed);
+            } else {
+                previousTurnSpeed = turnSpeed;
+                leftSpeed = leftController;
+                rightSpeed = rightController;
+            }
 
             // Update state/timing
-            previousDifference = currentDifference;
+            previousTurnSpeed = turnSpeed;
             currentTime = System.currentTimeMillis();
             deltaTime = currentTime - lastCheckTime;
             lastCheckTime = currentTime;
+        } else {
+            leftSpeed = leftController;
+            rightSpeed = rightController;
+        }
+        if (slow) {
+            m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
+            m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
+        } else {
+            m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+            m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         }
     }
 }

@@ -31,8 +31,8 @@ public class Arm extends SubsystemBase {
 
     public Arm() {
 
-        m_elevator1.setInverted(true);
-        m_elevator1.setInverted(true);
+        m_elevator1.setInverted(ArmConstants.kElevatorMotor1Inverted);
+        m_elevator1.setInverted(ArmConstants.kElevatorMotor2Inverted);
 
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
@@ -43,32 +43,31 @@ public class Arm extends SubsystemBase {
         m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
         m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
-        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, -1f);
+        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0);
         m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, -1f);
+        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0);
 
         m_elevatorEncoder.setPosition(0);
 
         m_piston.set(PneumaticsConstants.kArmRaise);
 
-        pid.setTolerance(ArmConstants.kElevatorStopThreshold);
+        pid.setTolerance(ArmConstants.kElevatorStopTolerance);
 
     }
 
     public boolean getElevatorExtended() {
-        if (m_elevatorEncoder.getPosition() > 1) {
+        if (m_elevatorEncoder.getPosition() > ArmConstants.kElevatorStopTolerance) {
             return true;
         } else {
             return false;
         }
-
     }
 
     public void setElevatorExtended(boolean isExtended) {
         if (getPistonRaised() && isExtended) {
             desiredPos = (ArmConstants.kElevatorExtendRotations);
         } else {
-            desiredPos = (-0.5);
+            desiredPos = (0);
         }
     }
 
@@ -83,17 +82,23 @@ public class Arm extends SubsystemBase {
     public void setPistonRaised(boolean isUp) {
 
         if (isUp) {
-            if (getElevatorExtended()) {
+            if (!getPistonRaised()) {
                 setElevatorExtended(false);
-            }
-            m_piston.set(PneumaticsConstants.kArmRaise);
-        } else {
+                m_piston.set(PneumaticsConstants.kArmRaise);
+                }
+        } else if (!isUp) {
+            setElevatorExtended(false);
             m_piston.set(PneumaticsConstants.kArmLower);
         }
     }
 
     @Override
     public void periodic() {
-        m_elevator.set(0.25 * pid.calculate(m_elevatorEncoder.getPosition(), desiredPos));
+        double output = pid.calculate(m_elevatorEncoder.getPosition(), desiredPos);
+        // Clamp the pid output between 1 and -1
+        output = Math.min(output, 1);
+        output = Math.max(output, -1);
+
+        m_elevator.set(0.25 * output);
     }
 }

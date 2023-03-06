@@ -40,36 +40,25 @@ public class Elbow extends SubsystemBase {
         }
     }
 
-    public void incTarget() {
-        target++;
-        if (m_arm.getPistonRaised()) {
-            if (target > ArmConstants.kHighElbowExtendRotations + 5) {
-                target = ArmConstants.kHighElbowExtendRotations + 5;
-            }
-        } else {
-            if (target > ArmConstants.kLowElbowExtendRotations + 5) {
-                target = ArmConstants.kLowElbowExtendRotations + 5;
-            }
-        }
-    }
+    public void tuneTarget(double amount) {
+        target += amount;
 
-    public void decTarget() {
-        target--;
-        if (target < 0) {
-            target = 0;
+        // Clamp the target betwwen 0 and the default extended rotations + 5
+        target = Math.max(0, target);
+        if (m_arm.getPistonRaised()) {
+            target = Math.min(target, ArmConstants.kHighElbowExtendRotations + 5);
+        } else {
+            target = Math.min(target, ArmConstants.kLowElbowExtendRotations + 5);
         }
     }
 
     @Override
     public void periodic() {
         double output = pid.calculate(m_elbowEncoder.getPosition(), target);
-        if (output > 1) {
-            output = 1;
-        }
-        if (output < -1) {
-            output = -1;
-        }
-        m_elbow.set(0.2 * output);
-        // System.out.println(output);
+        // Clamp the pid output between 0.2 and -0.2
+        output = Math.min(output, 0.2);
+        output = Math.max(output, -0.2);
+
+        m_elbow.set(output);
     }
 }
