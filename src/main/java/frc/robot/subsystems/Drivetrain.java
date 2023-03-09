@@ -81,16 +81,16 @@ public class Drivetrain extends SubsystemBase {
         return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity); 
     }
 
-    // https://www.desmos.com/calculator/ww0xcpzoio
+    // https://www.desmos.com/calculator/ibahlh6ezh
 
-    private double snap(double angle) {
-        return Math.sin(4 * angle) / 4 + angle;
+    private double snap(double angle, double strength) {
+        return strength * Math.sin(4 * angle) / 4 + angle;
     }
 
     public void snapToClosestDirection(double leftSpeed, double rightSpeed) {
         double r = Math.sqrt(Math.pow(leftSpeed, 2) + Math.pow(rightSpeed, 2));
         double a = Math.atan2(rightSpeed, leftSpeed);
-        a = snap(a);
+        a = snap(a, r/1.4);
         double newLeft = r * Math.cos(a);
         double newRight = r * Math.sin(a);
         m_leftMotors.set(newLeft);
