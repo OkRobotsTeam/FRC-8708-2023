@@ -32,15 +32,6 @@ public class Drivetrain extends SubsystemBase {
 
     private boolean previousFast;
 
-    private double turnSpeed = 0.0;
-    private double previousTurnSpeed = 0.0;
-    
-    private double deltaTime = 0;
-    private double currentTime = System.currentTimeMillis();
-    private double lastCheckTime = System.currentTimeMillis();
-
-    private double leftSpeed = 0.0;
-    private double rightSpeed = 0.0;
 
     public Drivetrain() {
         // Invert motor groups according to the constants
@@ -49,6 +40,10 @@ public class Drivetrain extends SubsystemBase {
         // previousFast is a boolean value holding whether the fast argument was true
         // last time we checked
         previousFast = false;
+        m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+        m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+        m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+        m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
         // Shift to low gear by default
         m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
         // Enable the compressor using a digital sensor to stop it when it gets to
@@ -77,17 +72,13 @@ public class Drivetrain extends SubsystemBase {
         if (Math.abs(speed) < deadzone) {
             return 0;
         } else {
-            return (speed - deadzone) / (1 - deadzone); // Preserve a "live" zone of 0.0-1.0
+            return (speed - Math.copySign(deadzone, speed)) / (1 - deadzone); // Preserve a "live" zone of 0.0-1.0
         }
     }
-
+    
+    // Apply a cubic function to the input with the passed linearity
     public double applyCubic(double speed, double linearity) {
-        return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity); // Apply a cubic function to the input with
-                                                                             // the passed linearity
-    }
-
-    public double applySquare(double speed, double linearity) {
-        return (speed * Math.abs(speed) + (linearity * speed)) / (1 + linearity);
+        return (Math.pow(speed, 3) + (linearity * speed)) / (1 + linearity); 
     }
 
     // https://www.desmos.com/calculator/ww0xcpzoio
@@ -104,6 +95,10 @@ public class Drivetrain extends SubsystemBase {
         double newRight = r * Math.sin(a);
         m_leftMotors.set(newLeft);
         m_rightMotors.set(newRight);
+    }
+
+    public double applySin(double speed) {
+        return speed + (1-OperatorConstants.kSinLinearity)*Math.sin(2*Math.PI*speed)/2/Math.PI;
     }
 
     public void tankDriveRaw(double leftSpeed, double rightSpeed, boolean fast) {
@@ -129,6 +124,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
+        double leftSpeed;
+        double rightSpeed;
         // Only update the pneumatics state if it changed from its last state
         if (fast != previousFast) {
             if (fast) {
@@ -149,29 +146,21 @@ public class Drivetrain extends SubsystemBase {
 
         // Apply a deadzone to the motor speeds
         leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
-        leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
+        rightController = applyDeadzone(rightController, OperatorConstants.kInputDeadzone);
         if (OperatorConstants.kApplyCubic) {
             // Apply a cubic function to the motor speeds
             leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
-            leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
+            rightController = applyCubic(rightController, OperatorConstants.kCubicLinearity);
+        } else if (OperatorConstants.kApplySin) {
+            leftController = applySin(leftController);
+            rightController = applySin(rightController);
         }
-        if (OperatorConstants.kLimitTurnAcceleration) {
-            turnSpeed = (leftController - rightController) / 2;
-            if (Math.abs(turnSpeed) > Math.abs(previousTurnSpeed) && (Math.abs(turnSpeed - turnSpeed) > (OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000)))) {
-                leftSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), leftController - rightController);
-                rightSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), leftController - rightController);
-                previousTurnSpeed += Math.copySign(OperatorConstants.kMaximumTurnAccelerationPerSecond * (deltaTime / 1000), turnSpeed - previousTurnSpeed);
-            } else {
-                previousTurnSpeed = turnSpeed;
-                leftSpeed = leftController;
-                rightSpeed = rightController;
-            }
-
-            // Update state/timing
-            previousTurnSpeed = turnSpeed;
-            currentTime = System.currentTimeMillis();
-            deltaTime = currentTime - lastCheckTime;
-            lastCheckTime = currentTime;
+        if (OperatorConstants.kLimitTurnSpeed) {
+            double forwardSpeed = (leftController + rightController) / 2;
+            double turnSpeed = (leftController - rightController);
+            turnSpeed *= OperatorConstants.turnSpeedMultiplier;
+            leftSpeed = forwardSpeed + turnSpeed;
+            rightSpeed = forwardSpeed - turnSpeed;
         } else {
             leftSpeed = leftController;
             rightSpeed = rightController;

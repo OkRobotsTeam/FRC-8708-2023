@@ -10,14 +10,17 @@ public final class Constants {
 
     public static final double kInputDeadzone = 0.1;
 
-    public static final boolean kApplyCubic = true;
-    public static final double kCubicLinearity = 0.0;
+    public static final boolean kApplyCubic = false;
+    public static final double kCubicLinearity = 0;
 
-    public static final boolean kLimitTurnAcceleration = true;
-    public static final double kMaximumTurnAccelerationPerSecond = 0.5;
+    public static final boolean kApplySin = true;
+    public static final double kSinLinearity = 0;
+
+    public static final boolean kLimitTurnSpeed = false;
+    public static final double turnSpeedMultiplier = 0.5;
 
     // The ramp limits are the amount of seconds it should take to go from 0% to 100% speed while shifted to high or low gear
-    public static final double kRampLimitLowGearSeconds = 1;
+    public static final double kRampLimitLowGearSeconds = 0;
     public static final double kRampLimitHighGearSeconds = 0;
 
     public static final double kSlowModeMultiplier = 0.3;
@@ -65,16 +68,18 @@ public final class Constants {
     public static final int kElevatorMotor2Port = 7;
     public static final boolean kElevatorMotor1Inverted = true;
     public static final boolean kElevatorMotor2Inverted = true;
+    public static final boolean kElbowMotorInverted = true;
 
     public static final double kElevatorExtendRotations = 10.0;
     public static final double kMaximumElevatorSpeed = 0.1;
+
     public static final double kElevatorStopTolerance = 0.1;
+    public static final double kElbowStopThreshold = 0.1;
 
     public static final double kLowElbowExtendRotations = 14;
-    public static final double kLowMaximumElbowSpeed = 0.1;
-    public static final double kLowElbowStopThreshold = 0.5;
-
     public static final double kHighElbowExtendRotations = 18.0;
+
+    public static final double kLowMaximumElbowSpeed = 0.1;
     public static final double kHighMaximumElbowSpeed = 0.1;
   }
 
@@ -87,10 +92,6 @@ public final class Constants {
 
     public static final double kMaximumIntakeInSpeed = 0.5;
     public static final double kMaximumIntakeOutSpeed = 1.0;
-
-    public static final int kIntakeDisabled = 0;
-    public static final int kIntakeIn = 1;
-    public static final int kIntakeOut = 2;
   }
 
   public static final class LightStripConstants {

@@ -25,7 +25,7 @@ public class Arm extends SubsystemBase {
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
 
-    private final PIDController pid = new PIDController(0.1, .001, 0);
+    private final PIDController pid = new PIDController(0.3, .001, 0);
 
     private double desiredPos = 0;
 
@@ -95,10 +95,10 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         double output = pid.calculate(m_elevatorEncoder.getPosition(), desiredPos);
-        // Clamp the pid output between 1 and -1
-        output = Math.min(output, 1);
-        output = Math.max(output, -1);
+        // Clamp the pid output between 0.25 and -0.25
+        output = Math.min(output, 0.25);
+        output = Math.max(output, -0.25);
 
-        m_elevator.set(0.25 * output);
+        m_elevator.set(output);
     }
 }

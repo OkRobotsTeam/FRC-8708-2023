@@ -18,14 +18,14 @@ public class Elbow extends SubsystemBase {
 
     private double target;
 
-    private final PIDController pid = new PIDController(0.7, 0, 0);
+    private final PIDController pid = new PIDController(0.15, 0, 0);
 
     public Elbow(Arm arm) {
         m_arm = arm;
-        m_elbow.setInverted(true);
+        m_elbow.setInverted(ArmConstants.kElbowMotorInverted);
         m_elbow.setIdleMode(IdleMode.kBrake);
-        m_elbowEncoder.setPosition(0);
-        pid.setTolerance(1);
+        m_elbowEncoder.setPosition(0); // Reset relative encoder
+        pid.setTolerance(ArmConstants.kElbowStopThreshold);
     }
 
     public void setElbowExtended(boolean isExtended) {
@@ -36,7 +36,7 @@ public class Elbow extends SubsystemBase {
                 target = (ArmConstants.kLowElbowExtendRotations);
             }
         } else {
-            target = (0);
+            target = 0;
         }
     }
 
