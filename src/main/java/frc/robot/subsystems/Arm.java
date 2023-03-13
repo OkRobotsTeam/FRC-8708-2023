@@ -96,9 +96,16 @@ public class Arm extends SubsystemBase {
             output = output * 0.35;
 
         } else {
-            System.out.println(m_elevatorEncoder.getVelocity());
-            if (System.currentTimeMillis() - armEncoderRestStartTime > 100) {
-                if (Math.abs(m_elevatorEncoder.getVelocity()) < 15) {
+            double elapsed = System.currentTimeMillis() - armEncoderRestStartTime;
+            if (elapsed  > 3000) {
+                System.out.println("Timeout reached");
+                armEncoderResetting=false;
+                m_elevatorEncoder.setPosition(0);
+                output=0;
+            } else if (elapsed > 100) {
+                double speed = Math.abs(m_elevatorEncoder.getVelocity());
+                System.out.printf("Speed: %.2f\n", speed);
+                if (speed < 15) {
                     output = 0;
                     armEncoderResetting = false;
                     m_elevatorEncoder.setPosition(0);
