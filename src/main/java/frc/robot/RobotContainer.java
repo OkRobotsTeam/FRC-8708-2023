@@ -142,6 +142,7 @@ public class RobotContainer {
 
   public void teleopInit() {
      m_arm.teleopInit();
+     m_elbow.teleopInit();
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
