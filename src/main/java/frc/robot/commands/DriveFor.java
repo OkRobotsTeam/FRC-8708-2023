@@ -56,12 +56,8 @@ public class DriveFor extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double avgDistance = m_drive.getAvgEncoder() * cmPerRot;
-        if (m_distance < 0) {
-            return (avgDistance <= m_distance);
-        } else {
-            return (avgDistance >= m_distance);
-        }
+        double avgDistance = Math.abs(m_drive.getAvgEncoder() * cmPerRot);
+        return (avgDistance <= Math.abs(m_distance));
     }
 
     @Override
