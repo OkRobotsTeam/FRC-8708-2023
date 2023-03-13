@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public final class Constants {
+  public static final double kRoot2 = Math.sqrt(2);
+
   public static final class OperatorConstants {
     public static final int kDriverLeftJoystickPort = 0;
     public static final int kDriverRightJoystickPort = 1;
@@ -78,6 +80,7 @@ public final class Constants {
 
     public static final double kLowElbowExtendRotations = 14;
     public static final double kHighElbowExtendRotations = 18.0;
+    public static final double kIdleElbowExtendRotations = 1;
 
     public static final double kLowMaximumElbowSpeed = 0.1;
     public static final double kHighMaximumElbowSpeed = 0.1;

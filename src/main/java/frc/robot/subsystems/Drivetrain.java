@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PneumaticsConstants;
+
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -90,7 +92,7 @@ public class Drivetrain extends SubsystemBase {
     public void snapToClosestDirection(double leftSpeed, double rightSpeed) {
         double r = Math.sqrt(Math.pow(leftSpeed, 2) + Math.pow(rightSpeed, 2));
         double a = Math.atan2(rightSpeed, leftSpeed);
-        a = snap(a, r/1.4);
+        a = snap(a, r / Constants.kRoot2);
         double newLeft = r * Math.cos(a);
         double newRight = r * Math.sin(a);
         m_leftMotors.set(newLeft);
@@ -98,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double applySin(double speed) {
-        return speed + (1-OperatorConstants.kSinLinearity)*Math.sin(2*Math.PI*speed)/2/Math.PI;
+        return speed + (1 - OperatorConstants.kSinLinearity) * Math.sin(2 * Math.PI * speed) / 2 / Math.PI;
     }
 
     public void tankDriveRaw(double leftSpeed, double rightSpeed, boolean fast) {
@@ -130,16 +132,8 @@ public class Drivetrain extends SubsystemBase {
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
-                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
-                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
             }
             previousFast = fast;
         }
@@ -166,9 +160,13 @@ public class Drivetrain extends SubsystemBase {
             rightSpeed = rightController;
         }
         if (slow) {
+            // System.out.println("Slow Mode");
+            // System.out.println("Output: " + (leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed));
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
         } else {
+            // System.out.println("Fast Mode");
+            // System.out.println("Output: " + (leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed));
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         }

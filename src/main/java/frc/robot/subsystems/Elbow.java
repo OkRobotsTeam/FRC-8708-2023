@@ -16,7 +16,7 @@ public class Elbow extends SubsystemBase {
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
     private Arm m_arm;
 
-    private double target;
+    private double target = ArmConstants.kIdleElbowExtendRotations;
 
     private final PIDController pid = new PIDController(0.15, 0, 0);
 
@@ -36,7 +36,7 @@ public class Elbow extends SubsystemBase {
                 target = (ArmConstants.kLowElbowExtendRotations);
             }
         } else {
-            target = 0;
+            target = ArmConstants.kIdleElbowExtendRotations;
         }
     }
 
@@ -55,10 +55,15 @@ public class Elbow extends SubsystemBase {
     @Override
     public void periodic() {
         double output = pid.calculate(m_elbowEncoder.getPosition(), target);
-        // Clamp the pid output between 0.2 and -0.2
-        output = Math.min(output, 0.2);
-        output = Math.max(output, -0.2);
-
+        // Clamp the pid output between 0.4 and -0.4
+        output = Math.min(output, 1);
+        output = Math.max(output, -1);
+        output = output * 0.4;
         m_elbow.set(output);
+    }
+
+    public void teleopInit() {
+        m_elbowEncoder.setPosition(0);
+        target = ArmConstants.kIdleElbowExtendRotations;
     }
 }

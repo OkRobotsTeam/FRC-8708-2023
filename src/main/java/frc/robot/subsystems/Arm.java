@@ -25,9 +25,13 @@ public class Arm extends SubsystemBase {
     private final MotorControllerGroup m_elevator = new MotorControllerGroup(m_elevator1, m_elevator2);
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
 
-    private final PIDController pid = new PIDController(0.3, .001, 0);
+    private final PIDController pid = new PIDController(0.3, 0, 0);
 
     private double desiredPos = 0;
+
+    private double lastPrintTime = 0;
+
+    private boolean armEncoderResetting;
 
     public Arm() {
 
@@ -37,19 +41,7 @@ public class Arm extends SubsystemBase {
         m_elevator1.setIdleMode(IdleMode.kBrake);
         m_elevator2.setIdleMode(IdleMode.kBrake);
 
-        m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
-        m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
-        m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
-
-        m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
-        m_elevator1.setSoftLimit(SoftLimitDirection.kReverse, 0);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float) ArmConstants.kElevatorExtendRotations);
-        m_elevator2.setSoftLimit(SoftLimitDirection.kReverse, 0);
-
         m_elevatorEncoder.setPosition(0);
-
-        m_piston.set(PneumaticsConstants.kArmRaise);
 
         pid.setTolerance(ArmConstants.kElevatorStopTolerance);
 
@@ -95,10 +87,26 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         double output = pid.calculate(m_elevatorEncoder.getPosition(), desiredPos);
-        // Clamp the pid output between 0.25 and -0.25
-        output = Math.min(output, 0.25);
-        output = Math.max(output, -0.25);
+
+        output = Math.min(output, 1);
+        output = Math.max(output, -1);
+        output = output * 0.35;
 
         m_elevator.set(output);
+        if (System.currentTimeMillis() - lastPrintTime > 100) {
+            System.out.println(output);
+            System.out.println(armEncoderResetting);
+            lastPrintTime = System.currentTimeMillis();
+        }
     }
+
+
+    public void teleopInit() {
+        m_elevatorEncoder.setPosition(0);
+        System.out.println("RESET: " + m_piston.get());
+        m_piston.set(m_piston.get());
+
+        armEncoderResetting = true;
+    }
+  
 }
