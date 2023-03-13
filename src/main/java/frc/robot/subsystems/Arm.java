@@ -6,7 +6,6 @@ import frc.robot.Constants.PneumaticsConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -32,6 +31,8 @@ public class Arm extends SubsystemBase {
     private double lastPrintTime = 0;
 
     private boolean armEncoderResetting;
+
+    private double armEncoderRestStartTime;
 
     public Arm() {
 
@@ -86,16 +87,35 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double output = pid.calculate(m_elevatorEncoder.getPosition(), desiredPos);
+        double output;
+        if (!armEncoderResetting) {
+            output = pid.calculate(m_elevatorEncoder.getPosition(), desiredPos);
 
-        output = Math.min(output, 1);
-        output = Math.max(output, -1);
-        output = output * 0.35;
+            output = Math.min(output, 1);
+            output = Math.max(output, -1);
+            output = output * 0.35;
 
+        } else {
+            System.out.println(m_elevatorEncoder.getVelocity());
+            if (System.currentTimeMillis() - armEncoderRestStartTime < -100) {
+                if (m_elevatorEncoder.getVelocity() < 15) {
+                    output = 0;
+                    armEncoderResetting = false;
+                    m_elevatorEncoder.setPosition(0);
+                } else {
+                    output = -0.15;
+                }
+            } else {
+                output = -0.15;
+                System.out.println("waiting for movement");
+            }
+
+        }
         m_elevator.set(output);
+        
         if (System.currentTimeMillis() - lastPrintTime > 100) {
-            System.out.println(output);
-            System.out.println(armEncoderResetting);
+            // System.out.println(output);
+            // System.out.println(armEncoderResetting);
             lastPrintTime = System.currentTimeMillis();
         }
     }
@@ -107,6 +127,6 @@ public class Arm extends SubsystemBase {
         m_piston.set(m_piston.get());
 
         armEncoderResetting = true;
+        armEncoderRestStartTime = System.currentTimeMillis();
     }
-  
 }
