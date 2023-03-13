@@ -140,6 +140,9 @@ public class RobotContainer {
         () -> m_elbow.tuneTarget(-1.0), m_elbow));
   }
 
+  public void teleopInit() {
+     m_arm.teleopInit();
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
