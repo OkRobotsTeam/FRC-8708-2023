@@ -97,8 +97,8 @@ public class Arm extends SubsystemBase {
 
         } else {
             System.out.println(m_elevatorEncoder.getVelocity());
-            if (System.currentTimeMillis() - armEncoderRestStartTime < -100) {
-                if (m_elevatorEncoder.getVelocity() < 15) {
+            if (System.currentTimeMillis() - armEncoderRestStartTime > 100) {
+                if (Math.abs(m_elevatorEncoder.getVelocity()) < 15) {
                     output = 0;
                     armEncoderResetting = false;
                     m_elevatorEncoder.setPosition(0);
