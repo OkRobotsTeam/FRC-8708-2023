@@ -32,7 +32,7 @@ public class Arm extends SubsystemBase {
 
     private boolean armEncoderResetting;
 
-    private double armEncoderRestStartTime;
+    private double armEncoderResetStartTime;
 
     public Arm() {
 
@@ -60,7 +60,7 @@ public class Arm extends SubsystemBase {
         if (getPistonRaised() && isExtended) {
             desiredPos = (ArmConstants.kElevatorExtendRotations);
         } else {
-            desiredPos = (0);
+            desiredPos = (ArmConstants.kElevatorIdleRotations);
         }
     }
 
@@ -74,14 +74,13 @@ public class Arm extends SubsystemBase {
 
     public void setPistonRaised(boolean isUp) {
 
-        if (isUp) {
-            if (!getPistonRaised()) {
+        if (!isUp) {
+            if (getElevatorExtended()) {
                 setElevatorExtended(false);
-                m_piston.set(PneumaticsConstants.kArmRaise);
                 }
-        } else if (!isUp) {
-            setElevatorExtended(false);
             m_piston.set(PneumaticsConstants.kArmLower);
+        } else if (isUp) {
+            m_piston.set(PneumaticsConstants.kArmRaise);
         }
     }
 
@@ -93,12 +92,19 @@ public class Arm extends SubsystemBase {
 
             output = Math.min(output, 1);
             output = Math.max(output, -1);
-            output = output * 0.35;
+            output = output * ArmConstants.kMaximumElevatorSpeed;
 
         } else {
-            System.out.println(m_elevatorEncoder.getVelocity());
-            if (System.currentTimeMillis() - armEncoderRestStartTime > 100) {
-                if (Math.abs(m_elevatorEncoder.getVelocity()) < 15) {
+            double elapsed = System.currentTimeMillis() - armEncoderResetStartTime;
+            if (elapsed  > 3000) {
+                System.out.println("Timeout reached");
+                armEncoderResetting=false;
+                m_elevatorEncoder.setPosition(0);
+                output=0;
+            } else if (elapsed > 100) {
+                double speed = Math.abs(m_elevatorEncoder.getVelocity());
+                System.out.printf("Speed: %.2f\n", speed);
+                if (speed < 15) {
                     output = 0;
                     armEncoderResetting = false;
                     m_elevatorEncoder.setPosition(0);
@@ -122,11 +128,7 @@ public class Arm extends SubsystemBase {
 
 
     public void teleopInit() {
-        m_elevatorEncoder.setPosition(0);
-        System.out.println("RESET: " + m_piston.get());
-        m_piston.set(m_piston.get());
-
         armEncoderResetting = true;
-        armEncoderRestStartTime = System.currentTimeMillis();
+        armEncoderResetStartTime = System.currentTimeMillis();
     }
 }
