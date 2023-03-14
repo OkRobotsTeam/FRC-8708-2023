@@ -18,15 +18,16 @@ public class AutonSimple extends SequentialCommandGroup {
             Elbow elbow,
             Intake intake) {
         addCommands(
-                // new RunCommand(() -> elbow.setElbowExtended(true),arm),
-                // new WaitCommand(3),
-                new InstantCommand(() -> intake.intakeOut(1.0), intake),
-                new WaitCommand(1),
-                new InstantCommand(intake::intakeStop, intake),
-                // new RunCommand(() -> elbow.setElbowExtended(false),arm),
-                // new TurnFor(180, 0.7, drive),
-                new DriveFor(380, 0.5, drive).withTimeout(2),
-                new InstantCommand(() -> drive.tankDriveRaw(0, 0, false), drive));
+            // new RunCommand(() -> elbow.setElbowExtended(true),arm),
+            // new WaitCommand(3),
+            //new InstantCommand(() -> intake.intakeOut(1.0), intake),
+            //new WaitCommand(1),
+            //new InstantCommand(intake::intakeStop, intake),
+            // new RunCommand(() -> elbow.setElbowExtended(false),arm),
+            // new TurnFor(180, 0.7, drive),
+            new DriveFor(380, 0.5, drive)//.withTimeout(2),
+            //new InstantCommand(() -> drive.tankDriveRaw(0, 0, false), drive)
+        );
 
     }
 }
