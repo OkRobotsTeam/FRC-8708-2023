@@ -73,23 +73,27 @@ public final class Constants {
     public static final boolean kElbowMotorInverted = true;
 
     public static final double kElevatorIdleRotations = 1.5;
-    public static final double kElevatorExtendRotations = 10.0;
-    public static final double kMaximumElevatorSpeed = 0.35;
+    public static final double kElevatorExtendRotations = 17.0;
+    public static final double kElevatorMaximumSpeed = 0.35;
 
-    public static final double kElevatorStopTolerance = 0.1;
+    // PID Stop thresholds
+    public static final double kElevatorStopThreshold = 0.1;
     public static final double kElbowStopThreshold = 0.1;
 
-    public static final double kLowElbowExtendRotations = 14;
-    public static final double kHighElbowExtendRotations = 18.0;
-    public static final double kIdleElbowExtendRotations = 1;
+    public static final double kElbowLowExtendRotations = 14;
+    public static final double kElbowMidExtendRotations = 18.0;
+    public static final double kElbowHighExtendRotations = 16.0;
+    public static final double kElbowIdleExtendRotations = 1;
+    public static final double kElbowAllowedTuning = 5;
 
-    public static final double kLowMaximumElbowSpeed = 0.1;
-    public static final double kHighMaximumElbowSpeed = 0.1;
+    // The maximum speed to move to elbow if the elevator is in vs out
+    public static final double kElbowRetractedMaximumSpeed = 0.4;
+    public static final double kElbowExtendedMaximumSpeed = 0.25;
   }
 
   public static final class IntakeConstants {
-    public static final int kIntakeMotorTop = 8;
-    public static final int kIntakeMotorBottom = 9;
+    public static final int kIntakeMotorTopPort = 8;
+    public static final int kIntakeMotorBottomPort = 9;
 
     public static final boolean kIntakeMotorTopReversed = true;
     public static final boolean kIntakeMotorBottomReversed = true;

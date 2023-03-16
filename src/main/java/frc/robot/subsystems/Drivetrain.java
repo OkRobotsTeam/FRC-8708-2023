@@ -8,6 +8,7 @@ import frc.robot.Constants.PneumaticsConstants;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -51,6 +52,20 @@ public class Drivetrain extends SubsystemBase {
         // Enable the compressor using a digital sensor to stop it when it gets to
         // pressure
         m_pneumaticHub.enableCompressorDigital();
+    }
+
+    public void setBrakeMode(boolean brake) {
+        if (brake) {
+            m_leftMotor1.setIdleMode(IdleMode.kBrake);
+            m_leftMotor2.setIdleMode(IdleMode.kBrake);
+            m_rightMotor1.setIdleMode(IdleMode.kBrake);
+            m_rightMotor2.setIdleMode(IdleMode.kBrake);
+        } else {
+            m_leftMotor1.setIdleMode(IdleMode.kCoast);
+            m_leftMotor2.setIdleMode(IdleMode.kCoast);
+            m_rightMotor1.setIdleMode(IdleMode.kCoast);
+            m_rightMotor2.setIdleMode(IdleMode.kCoast);
+        }
     }
 
     public void resetEncoders() {

@@ -10,10 +10,9 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 public class Intake extends SubsystemBase {
 
-    private final CANSparkMax m_intakeTop = new CANSparkMax(IntakeConstants.kIntakeMotorTop, MotorType.kBrushless);
-    private final CANSparkMax m_intakeBottom = new CANSparkMax(IntakeConstants.kIntakeMotorBottom,
-            MotorType.kBrushless);
-    // private final MotorControllerGroup m_intake = new MotorControllerGroup(m_intakeBottom, m_intakeTop);
+    private final CANSparkMax m_intakeTop = new CANSparkMax(IntakeConstants.kIntakeMotorTopPort, MotorType.kBrushless);
+    private final CANSparkMax m_intakeBottom = new CANSparkMax(IntakeConstants.kIntakeMotorBottomPort, MotorType.kBrushless);
+    private final MotorControllerGroup m_intake = new MotorControllerGroup(m_intakeBottom, m_intakeTop);
 
     public Intake() {
         m_intakeBottom.setInverted(IntakeConstants.kIntakeMotorBottomReversed);
@@ -21,23 +20,14 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeIn(double speed) {
-        m_intakeBottom.set(speed);
-        m_intakeTop.set(speed * 2);
+        m_intake.set(speed);
     }
 
     public void intakeOut(double speed) {
-        m_intakeBottom.set(-speed);
-        m_intakeTop.set(-speed * 2);
+        m_intake.set(-speed);
     }
 
     public void intakeStop() {
-        m_intakeBottom.set(0);
-        m_intakeTop.set(0);
+        m_intake.set(0);
     }
-
-    public void intakeOutFULLSPEED() {
-        m_intakeBottom.set(-1);
-        m_intakeTop.set(-1);
-    }
-
 }

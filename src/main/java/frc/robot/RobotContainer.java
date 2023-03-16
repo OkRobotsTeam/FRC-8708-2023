@@ -106,18 +106,20 @@ public class RobotContainer {
     m_manipulator.povDown().onTrue(
         new InstantCommand(
             () -> m_arm.setPistonRaised(false), m_arm));
-    m_manipulator.povLeft().onTrue(
-        new InstantCommand(
-            () -> m_arm.setElevatorExtended(false), m_arm));
-    m_manipulator.povRight().onTrue(
-        new InstantCommand(
-            () -> m_arm.setElevatorExtended(true), m_arm));
+
     m_manipulator.leftTrigger().onTrue(
         new InstantCommand(
             () -> m_elbow.setElbowExtended(true), m_arm));
     m_manipulator.leftTrigger().onFalse(
         new InstantCommand(
             () -> m_elbow.setElbowExtended(false), m_arm));
+
+    m_manipulator.povLeft().onTrue(
+        new InstantCommand(
+            () -> m_arm.setElevatorExtended(false), m_arm));
+    m_manipulator.povRight().onTrue(
+        new InstantCommand(
+            () -> m_arm.setElevatorExtended(true), m_arm));
 
     m_manipulator.start().onTrue(
         new InstantCommand(
@@ -133,17 +135,29 @@ public class RobotContainer {
     
     m_manipulator.leftBumper().onTrue(
         new InstantCommand(
-        () -> m_elbow.tuneTarget(1.0), m_elbow));
+        () -> m_elbow.manualAdjustTarget(1.0), m_elbow));
     
     m_manipulator.rightBumper().onTrue(
         new InstantCommand(
-        () -> m_elbow.tuneTarget(-1.0), m_elbow));
+        () -> m_elbow.manualAdjustTarget(-1.0), m_elbow));
+    
+    m_driverLeftJoystick.top().onTrue(
+        new InstantCommand(
+            () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
+    m_driverLeftJoystick.top().onFalse(
+        new InstantCommand(
+            () -> m_drivetrain.setBrakeMode(false), m_drivetrain));
   }
 
   public void teleopInit() {
-     m_arm.teleopInit();
-     m_elbow.teleopInit();
-  }
+    m_arm.init();
+    m_elbow.init();
+}
+ public void autonomousInit() {
+    m_arm.init();
+    m_elbow.init();
+ }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

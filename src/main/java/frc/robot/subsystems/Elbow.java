@@ -16,54 +16,58 @@ public class Elbow extends SubsystemBase {
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
     private Arm m_arm;
 
-    private double target = ArmConstants.kIdleElbowExtendRotations;
+    private double target = ArmConstants.kElbowIdleExtendRotations;
 
-    private final PIDController pid = new PIDController(0.15, 0, 0);
+    private final PIDController elbowPID = new PIDController(0.15, 0, 0);
 
     public Elbow(Arm arm) {
         m_arm = arm;
         m_elbow.setInverted(ArmConstants.kElbowMotorInverted);
         m_elbow.setIdleMode(IdleMode.kBrake);
-        m_elbowEncoder.setPosition(0); // Reset relative encoder
-        pid.setTolerance(ArmConstants.kElbowStopThreshold);
+        elbowPID.setTolerance(ArmConstants.kElbowStopThreshold);
     }
 
     public void setElbowExtended(boolean isExtended) {
         if (isExtended) {
             if (m_arm.getPistonRaised()) {
-                target = (ArmConstants.kHighElbowExtendRotations);
+                if (m_arm.getElevatorExtended()) {
+                    target = (ArmConstants.kElbowHighExtendRotations);
+                } else {
+                    target = (ArmConstants.kElbowMidExtendRotations);
+                }
             } else {
-                target = (ArmConstants.kLowElbowExtendRotations);
+                target = (ArmConstants.kElbowLowExtendRotations);
             }
         } else {
-            target = ArmConstants.kIdleElbowExtendRotations;
+            target = ArmConstants.kElbowIdleExtendRotations;
         }
     }
 
-    public void tuneTarget(double amount) {
+    public void manualAdjustTarget(double amount) {
         target += amount;
-
-        // Clamp the target betwwen 0 and the default extended rotations + 5
-        target = Math.max(0, target);
+        target = Math.max(ArmConstants.kElbowIdleExtendRotations, target);
         if (m_arm.getPistonRaised()) {
-            target = Math.min(target, ArmConstants.kHighElbowExtendRotations + 5);
+            target = Math.min(target, ArmConstants.kElbowMidExtendRotations + ArmConstants.kElbowAllowedTuning);
         } else {
-            target = Math.min(target, ArmConstants.kLowElbowExtendRotations + 5);
+            target = Math.min(target, ArmConstants.kElbowLowExtendRotations + ArmConstants.kElbowAllowedTuning);
         }
     }
 
     @Override
     public void periodic() {
-        double output = pid.calculate(m_elbowEncoder.getPosition(), target);
-        // Clamp the pid output between 0.4 and -0.4
+        double output = elbowPID.calculate(m_elbowEncoder.getPosition(), target);
         output = Math.min(output, 1);
         output = Math.max(output, -1);
-        output = output * 0.4;
+        if (m_arm.getElevatorExtended()) {
+            output = output * ArmConstants.kElbowExtendedMaximumSpeed;
+        } else {
+            output = output * ArmConstants.kElbowRetractedMaximumSpeed;
+        }
         m_elbow.set(output);
     }
 
-    public void teleopInit() {
+    public void init() {
         m_elbowEncoder.setPosition(0);
-        target = ArmConstants.kIdleElbowExtendRotations;
+        target = ArmConstants.kElbowIdleExtendRotations;
     }
 }
