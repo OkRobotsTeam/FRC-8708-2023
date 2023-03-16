@@ -11,7 +11,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
 import frc.robot.vision.VisionThread;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elbow;
 import edu.wpi.first.cscore.CameraServerJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,7 +33,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
-  private final Elbow m_elbow = new Elbow(m_arm);
   private final Intake m_intake = new Intake();
   private final Lights m_lights = new Lights();
   private final CommandJoystick m_driverLeftJoystick = new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
@@ -109,10 +107,10 @@ public class RobotContainer {
 
     m_manipulator.leftTrigger().onTrue(
         new InstantCommand(
-            () -> m_elbow.setElbowExtended(true), m_arm));
+            () -> m_arm.setElbowExtended(true), m_arm));
     m_manipulator.leftTrigger().onFalse(
         new InstantCommand(
-            () -> m_elbow.setElbowExtended(false), m_arm));
+            () -> m_arm.setElbowExtended(false), m_arm));
 
     m_manipulator.povLeft().onTrue(
         new InstantCommand(
@@ -135,11 +133,11 @@ public class RobotContainer {
     
     m_manipulator.leftBumper().onTrue(
         new InstantCommand(
-        () -> m_elbow.manualAdjustTarget(1.0), m_elbow));
+        () -> m_arm.manualAdjustTarget(1.0), m_arm));
     
     m_manipulator.rightBumper().onTrue(
         new InstantCommand(
-        () -> m_elbow.manualAdjustTarget(-1.0), m_elbow));
+        () -> m_arm.manualAdjustTarget(-1.0), m_arm));
     
     m_driverLeftJoystick.top().onTrue(
         new InstantCommand(
@@ -151,11 +149,9 @@ public class RobotContainer {
 
   public void teleopInit() {
     m_arm.init();
-    m_elbow.init();
 }
  public void autonomousInit() {
     m_arm.init();
-    m_elbow.init();
  }
 
   /**
@@ -164,7 +160,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new AutonSimple(m_drivetrain, m_arm, m_elbow, m_intake);
+    return new AutonSimple(m_drivetrain, m_arm, m_intake);
   }
 
   public Command getTankDriveCommand() {

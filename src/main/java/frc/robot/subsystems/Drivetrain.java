@@ -143,7 +143,7 @@ public class Drivetrain extends SubsystemBase {
     public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
         double leftSpeed;
         double rightSpeed;
-        // Only update the pneumatics state if it changed from its last state
+        // Only update the pneumatics if its state changed from the previous state
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
@@ -156,8 +156,8 @@ public class Drivetrain extends SubsystemBase {
         // Apply a deadzone to the motor speeds
         leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
         rightController = applyDeadzone(rightController, OperatorConstants.kInputDeadzone);
+        
         if (OperatorConstants.kApplyCubic) {
-            // Apply a cubic function to the motor speeds
             leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
             rightController = applyCubic(rightController, OperatorConstants.kCubicLinearity);
         } else if (OperatorConstants.kApplySin) {
@@ -175,13 +175,9 @@ public class Drivetrain extends SubsystemBase {
             rightSpeed = rightController;
         }
         if (slow) {
-            // System.out.println("Slow Mode");
-            // System.out.println("Output: " + (leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed));
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
         } else {
-            // System.out.println("Fast Mode");
-            // System.out.println("Output: " + (leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed));
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         }

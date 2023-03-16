@@ -86,6 +86,8 @@ public final class Constants {
     public static final double kElbowIdleExtendRotations = 1;
     public static final double kElbowAllowedTuning = 5;
 
+    public static enum ScoringPosition {LOW, MID, HIGH};
+
     // The maximum speed to move to elbow if the elevator is in vs out
     public static final double kElbowRetractedMaximumSpeed = 0.4;
     public static final double kElbowExtendedMaximumSpeed = 0.25;
