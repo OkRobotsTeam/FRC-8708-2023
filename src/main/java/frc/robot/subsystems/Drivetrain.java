@@ -40,6 +40,8 @@ public class Drivetrain extends SubsystemBase {
         // Invert motor groups according to the constants
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
+        m_leftEncoder.setInverted(DriveConstants.kLeftMotorsInverted);
+        m_rightEncoder.setInverted(DriveConstants.kRightMotorsInverted);
         // previousFast is a boolean value holding whether the fast argument was true
         // last time we checked
         previousFast = false;
