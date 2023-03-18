@@ -25,7 +25,7 @@ public class Arm extends SubsystemBase {
     private final RelativeEncoder m_elevatorEncoder = m_elevator1.getEncoder();
     private final RelativeEncoder m_elbowEncoder = m_elbow.getEncoder();
 
-    private final PIDController elevatorPID = new PIDController(0.25, 0, 0);
+    private final PIDController elevatorPID = new PIDController(0.3, 0, 0);
     private final PIDController elbowPID = new PIDController(0.15, 0, 0);
 
     private double elevatorDesiredPosition = ArmConstants.kElevatorIdleRotations;
@@ -51,25 +51,33 @@ public class Arm extends SubsystemBase {
         if (isExtended) {
             if (getPistonRaised()) {
                 if (getElevatorExtended()) {
-                    elevatorDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
+                    elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
                 } else {
-                    elevatorDesiredPosition = (ArmConstants.kElbowMidExtendRotations);
+                    elbowDesiredPosition = (ArmConstants.kElbowMidExtendRotations);
                 }
             } else {
-                elevatorDesiredPosition = (ArmConstants.kElbowLowExtendRotations);
+                elbowDesiredPosition = (ArmConstants.kElbowLowExtendRotations);
             }
         } else {
-            elevatorDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
+            elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
+        }
+    }
+
+    public boolean getElbowExtended() {
+        if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold) {
+            return true;
+        } else {
+            return false;
         }
     }
 
     public void manualAdjustTarget(double amount) {
-        elevatorDesiredPosition += amount;
-        elevatorDesiredPosition = Math.max(ArmConstants.kElbowIdleExtendRotations, elevatorDesiredPosition);
+        elbowDesiredPosition += amount;
+        elbowDesiredPosition = Math.max(ArmConstants.kElbowIdleExtendRotations, elbowDesiredPosition);
         if (getPistonRaised()) {
-            elevatorDesiredPosition = Math.min(elevatorDesiredPosition, ArmConstants.kElbowMidExtendRotations + ArmConstants.kElbowAllowedTuning);
+            elbowDesiredPosition = Math.min(elbowDesiredPosition, ArmConstants.kElbowMidExtendRotations + ArmConstants.kElbowAllowedTuning);
         } else {
-            elevatorDesiredPosition = Math.min(elevatorDesiredPosition, ArmConstants.kElbowLowExtendRotations + ArmConstants.kElbowAllowedTuning);
+            elbowDesiredPosition = Math.min(elbowDesiredPosition, ArmConstants.kElbowLowExtendRotations + ArmConstants.kElbowAllowedTuning);
         }
     }
 

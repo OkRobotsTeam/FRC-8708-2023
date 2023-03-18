@@ -33,7 +33,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Arm m_arm = new Arm();
-  private final Intake m_intake = new Intake();
+  private final Intake m_intake = new Intake(m_arm);
   private final Lights m_lights = new Lights();
   private final CommandJoystick m_driverLeftJoystick = new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
   private final CommandJoystick m_driverRightJoystick = new CommandJoystick(OperatorConstants.kDriverRightJoystickPort);
@@ -88,10 +88,10 @@ public class RobotContainer {
 
     m_manipulator.a().onTrue(
         new InstantCommand(
-            () -> m_intake.intakeIn(0.5), m_intake));
+            () -> m_intake.intakeIn(), m_intake));
     m_manipulator.rightTrigger().onTrue(
         new InstantCommand(
-            () -> m_intake.intakeOut(0.5), m_intake));
+            () -> m_intake.intakeOut(), m_intake));
     m_manipulator.a().onFalse(
         new InstantCommand(
             m_intake::intakeStop, m_intake));

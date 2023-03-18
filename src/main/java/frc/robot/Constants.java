@@ -74,7 +74,7 @@ public final class Constants {
 
     public static final double kElevatorIdleRotations = 1.5;
     public static final double kElevatorExtendRotations = 17.0;
-    public static final double kElevatorMaximumSpeed = 0.35;
+    public static final double kElevatorMaximumSpeed = 0.3;
 
     // PID Stop thresholds
     public static final double kElevatorStopThreshold = 0.1;
@@ -100,8 +100,9 @@ public final class Constants {
     public static final boolean kIntakeMotorTopReversed = true;
     public static final boolean kIntakeMotorBottomReversed = true;
 
-    public static final double kMaximumIntakeInSpeed = 0.5;
-    public static final double kMaximumIntakeOutSpeed = 1.0;
+    public static final double kIntakeInSpeed = 0.5;
+    public static final double kIntakeOutSpeedWhenElbowOut = 0.5;
+    public static final double kIntakeOutSpeedWhenElbowIn = 1;
   }
 
   public static final class LightStripConstants {

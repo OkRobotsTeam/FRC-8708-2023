@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeConstants;
 
 import com.revrobotics.CANSparkMax;
@@ -14,17 +15,24 @@ public class Intake extends SubsystemBase {
     private final CANSparkMax m_intakeBottom = new CANSparkMax(IntakeConstants.kIntakeMotorBottomPort, MotorType.kBrushless);
     private final MotorControllerGroup m_intake = new MotorControllerGroup(m_intakeBottom, m_intakeTop);
 
-    public Intake() {
+    private Arm m_arm;
+
+    public Intake(Arm arm) {
+        m_arm = arm;
         m_intakeBottom.setInverted(IntakeConstants.kIntakeMotorBottomReversed);
         m_intakeTop.setInverted(IntakeConstants.kIntakeMotorTopReversed);
     }
 
-    public void intakeIn(double speed) {
-        m_intake.set(speed);
+    public void intakeIn() {
+        m_intake.set(IntakeConstants.kIntakeInSpeed);
     }
 
-    public void intakeOut(double speed) {
-        m_intake.set(-speed);
+    public void intakeOut() {
+        if (m_arm.getElbowExtended()) {
+            m_intake.set(-IntakeConstants.kIntakeOutSpeedWhenElbowOut);
+        } else {
+            m_intake.set(-IntakeConstants.kIntakeOutSpeedWhenElbowIn);
+        }
     }
 
     public void intakeStop() {
