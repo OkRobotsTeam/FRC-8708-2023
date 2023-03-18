@@ -145,6 +145,13 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotors.set(rightSpeed);
     }
 
+    public void setRampRate(double rampRate) {
+        m_leftMotor1.setOpenLoopRampRate(rampRate);
+        m_leftMotor2.setOpenLoopRampRate(rampRate);
+        m_rightMotor1.setOpenLoopRampRate(rampRate);
+        m_rightMotor2.setOpenLoopRampRate(rampRate);
+    }
+
     public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
         double leftSpeed;
         double rightSpeed;

@@ -9,13 +9,12 @@ public class DriveFor extends CommandBase {
     private final double m_distance;
     private final double m_speed;
     private final Drivetrain m_drive;
-    private final boolean m_fast;
     private final double cmPerRot;
+    private final boolean m_brake;
 
     private double start_pos;
 
     public DriveFor(double distance_in, double unsigned_speed, Drivetrain drive) {
-        m_fast = false;
         if (distance_in < 0) {
             m_speed = -unsigned_speed;
         } else {
@@ -24,37 +23,35 @@ public class DriveFor extends CommandBase {
         m_distance = distance_in;
         m_drive = drive;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        m_brake = true;
         addRequirements(drive);
     }
 
-    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive, boolean fast) {
-        m_distance = distance_cm;
-        if (distance_cm < 0) {
+    public DriveFor(double distance_in, double unsigned_speed, Drivetrain drive, boolean brake) {
+        m_distance = distance_in;
+        if (distance_in < 0) {
             m_speed = -unsigned_speed;
         } else {
             m_speed = unsigned_speed;
         }
         m_drive = drive;
-        m_fast = fast;
-        if (fast) {
-            cmPerRot = DriveConstants.kFastRevPerRot * DriveConstants.kWheelCircumference;
-        } else {
-            cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        }
+        m_brake = brake;
+        cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
         start_pos = m_drive.getAvgEncoder();
-        m_drive.tankDriveRaw(0, 0, m_fast);
+        m_drive.tankDriveRaw(0, 0, false);
         System.out.println("DISTANCE TO GO: "+m_distance);
-        m_drive.setBrakeMode(true);
+        m_drive.setBrakeMode(m_brake);
+        m_drive.setRampRate(0.5);
     }
 
     @Override
     public void execute() {
-        m_drive.tankDriveRaw(-m_speed, -m_speed, m_fast);
+        m_drive.tankDriveRaw(-m_speed, -m_speed, false);
         
     }
 
@@ -67,6 +64,7 @@ public class DriveFor extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        m_drive.setRampRate(0);
         m_drive.tankDriveRaw(0, 0, false);
         System.out.println("Done");
     }
