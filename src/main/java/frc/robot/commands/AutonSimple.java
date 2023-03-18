@@ -19,7 +19,7 @@ public class AutonSimple extends SequentialCommandGroup {
             //new InstantCommand(intake::intakeStop, intake),
             // new RunCommand(() -> arm.setElbowExtended(false),arm),
             // new TurnFor(180, 0.7, drive),
-            new DriveFor(380, 0.5, drive)//.withTimeout(2),
+            new DriveFor(10, 0.1, drive)//.withTimeout(2),
             //new InstantCommand(() -> drive.tankDriveRaw(0, 0, false), drive)
         );
 
