@@ -83,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getRightEncoder() {
-        return m_rightEncoder.getPosition();
+        return -m_rightEncoder.getPosition();
     }
 
     public double getAvgEncoder() {

@@ -14,14 +14,14 @@ public class DriveFor extends CommandBase {
 
     private double start_pos;
 
-    public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive) {
+    public DriveFor(double distance_in, double unsigned_speed, Drivetrain drive) {
         m_fast = false;
-        if (distance_cm < 0) {
+        if (distance_in < 0) {
             m_speed = -unsigned_speed;
         } else {
             m_speed = unsigned_speed;
         }
-        m_distance = distance_cm;
+        m_distance = distance_in;
         m_drive = drive;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
@@ -49,6 +49,7 @@ public class DriveFor extends CommandBase {
         start_pos = m_drive.getAvgEncoder();
         m_drive.tankDriveRaw(0, 0, m_fast);
         System.out.println("DISTANCE TO GO: "+m_distance);
+        m_drive.setBrakeMode(true);
     }
 
     @Override

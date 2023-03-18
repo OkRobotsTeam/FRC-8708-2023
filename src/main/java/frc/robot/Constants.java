@@ -55,10 +55,14 @@ public final class Constants {
 
     public static final double kMaximumDrivetrainSpeed = 1.0;
 
-    public static final double kFastRevPerRot = 55d / 544d; // Wheel revolutions per motor rotation
-    public static final double kSlowRevPerRot = 11d / 288d;
-    public static final double kWheelCircumference = 6 * Math.PI * 2.54;
-    public static final double kTurnCircumference = 20 * Math.PI * 2.54;
+    // = measured / input
+    public static final double kDriveError = 52d/48d;
+    public static final double kTurnError = 1.06;
+    public static final double kFastRevPerRot = 55d / 544d * kDriveError; // Wheel revolutions per motor rotation
+    public static final double kSlowRevPerRot = 11d / 288d * kDriveError;
+    
+    public static final double kWheelCircumference = 6 * Math.PI;
+    public static final double kTurnCircumference = 20 * Math.PI;
   }
 
   public static final class ArmConstants {
