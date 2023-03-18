@@ -40,8 +40,11 @@ public class Drivetrain extends SubsystemBase {
         // Invert motor groups according to the constants
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
-        m_leftEncoder.setInverted(DriveConstants.kLeftMotorsInverted);
-        m_rightEncoder.setInverted(DriveConstants.kRightMotorsInverted);
+
+        // DOESN'T WORK
+        //m_leftEncoder.setInverted(DriveConstants.kLeftMotorsInverted);
+        //m_rightEncoder.setInverted(DriveConstants.kRightMotorsInverted);
+
         // previousFast is a boolean value holding whether the fast argument was true
         // last time we checked
         previousFast = false;
@@ -84,7 +87,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getAvgEncoder() {
-        return (m_leftEncoder.getPosition() + m_rightEncoder.getPosition()) / 2;
+        return (m_leftEncoder.getPosition() - m_rightEncoder.getPosition()) / 2;
     }
 
     public double applyDeadzone(double speed, double deadzone) {

@@ -12,6 +12,8 @@ public class DriveFor extends CommandBase {
     private final boolean m_fast;
     private final double cmPerRot;
 
+    private double start_pos;
+
     public DriveFor(double distance_cm, double unsigned_speed, Drivetrain drive) {
         m_fast = false;
         if (distance_cm < 0) {
@@ -44,7 +46,7 @@ public class DriveFor extends CommandBase {
 
     @Override
     public void initialize() {
-        m_drive.resetEncoders();
+        start_pos = m_drive.getAvgEncoder();
         m_drive.tankDriveRaw(0, 0, m_fast);
         System.out.println("DISTANCE TO GO: "+m_distance);
     }
@@ -57,7 +59,7 @@ public class DriveFor extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double avgDistance = Math.abs(m_drive.getAvgEncoder() * cmPerRot);
+        double avgDistance = Math.abs((m_drive.getAvgEncoder()-start_pos) * cmPerRot);
         System.out.println("GONE: "+avgDistance);
         return (avgDistance >= Math.abs(m_distance));
     }
