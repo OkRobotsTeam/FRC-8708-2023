@@ -46,22 +46,25 @@ public class DriveFor extends CommandBase {
     public void initialize() {
         m_drive.resetEncoders();
         m_drive.tankDriveRaw(0, 0, m_fast);
-        System.out.println(m_distance);
+        System.out.println("DISTANCE TO GO: "+m_distance);
     }
 
     @Override
     public void execute() {
         m_drive.tankDriveRaw(-m_speed, -m_speed, m_fast);
+        
     }
 
     @Override
     public boolean isFinished() {
         double avgDistance = Math.abs(m_drive.getAvgEncoder() * cmPerRot);
+        System.out.println("GONE: "+avgDistance);
         return (avgDistance >= Math.abs(m_distance));
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drive.tankDriveRaw(0, 0, false);
+        System.out.println("Done");
     }
 }
