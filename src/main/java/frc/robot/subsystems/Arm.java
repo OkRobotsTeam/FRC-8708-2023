@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
@@ -97,6 +99,10 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    public double getElbowPosition() {
+        return(m_elbowEncoder.getPosition());
+    }
+
     public boolean getPistonRaised() {
         if (m_piston.get() == PneumaticsConstants.kArmRaise) {
             return true;
@@ -109,7 +115,10 @@ public class Arm extends SubsystemBase {
         if (!raised) {
             if (getElevatorExtended()) {
                 setElevatorExtended(false);
-                }
+            }
+            if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold) {
+                setElbowExtended(false);
+            }
             m_piston.set(PneumaticsConstants.kArmLower);
         } else if (raised) {
             m_piston.set(PneumaticsConstants.kArmRaise);
@@ -172,19 +181,25 @@ public class Arm extends SubsystemBase {
         setPistonRaised(true);
     }
 
-    private void moveToScoringPosition(ArmConstants.ScoringPosition position) {
+    public void setElbowSetpoint(double setpoint) {
+        elbowDesiredPosition = setpoint;
+    }
+
+    public void moveToScoringPosition(ArmConstants.ScoringPosition position) {
         if (position == ArmConstants.ScoringPosition.LOW) {
+            setElbowExtended(true);
             setPistonRaised(false);
             setElevatorExtended(false);
-            setElbowExtended(true);
         } else if (position == ArmConstants.ScoringPosition.MID) {
-            setPistonRaised(true);
             setElevatorExtended(false);
-            setElbowExtended(true);
+            elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
         } else if (position == ArmConstants.ScoringPosition.HIGH) {
-            setPistonRaised(true);
             setElevatorExtended(true);
-            setElbowExtended(true);
+            elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
+            // CommandScheduler.getInstance().schedule(null);
+        //     elbowPID.atSetpoint().onTrue(
+        //         new InstantCommand(
+        //         () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
         }
     }
 }

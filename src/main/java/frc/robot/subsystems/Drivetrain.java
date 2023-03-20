@@ -180,9 +180,11 @@ public class Drivetrain extends SubsystemBase {
             rightSpeed = rightController;
         }
         if (slow) {
+            setBrakeMode(true);
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
         } else {
+            setBrakeMode(false);
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         }

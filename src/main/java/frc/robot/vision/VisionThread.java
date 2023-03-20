@@ -19,13 +19,12 @@ public class VisionThread extends Thread {
     public void run() {
         System.out.println("Connecting to camera");
         m_camera = new UsbCamera("Webcam", 0);
-        m_camera.setVideoMode(PixelFormat.kYUYV, 640, 480, 10);
+        m_camera.setVideoMode(PixelFormat.kYUYV, 640, 480, 6);
         System.out.println("Starting frame capture");
         m_server = CameraServer.startAutomaticCapture(m_camera);
 
         // Reduce the impact on bandwidth
-        m_server.setFPS(10);
-        m_server.setCompression(25);
+        m_server.setCompression(50);
 
         // Get a CvSink. This will capture Mats from the camera
         CvSink cvSink = CameraServer.getVideo();

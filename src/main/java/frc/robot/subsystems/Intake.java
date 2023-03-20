@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeConstants;
 
 import com.revrobotics.CANSparkMax;

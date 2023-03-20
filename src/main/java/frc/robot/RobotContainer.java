@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonSimple;
+import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
@@ -131,14 +133,23 @@ public class RobotContainer {
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
                 new InstantCommand(m_lights::setChaser, m_lights)));
     
-    m_manipulator.leftBumper().onTrue(
+    m_manipulator.x().onTrue(
         new InstantCommand(
         () -> m_arm.manualAdjustTarget(1.0), m_arm));
     
-    m_manipulator.rightBumper().onTrue(
+    m_manipulator.b().onTrue(
         new InstantCommand(
         () -> m_arm.manualAdjustTarget(-1.0), m_arm));
     
+    m_manipulator.leftBumper().onTrue(
+        new InstantCommand(
+        () -> m_arm.setPistonRaised(true), m_arm));
+        // () -> m_arm.moveToScoringPosition(ArmConstants.ScoringPosition.MID), m_arm));
+    m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
+    m_manipulator.rightBumper().onFalse(
+        new InstantCommand(
+            () -> m_arm.setElbowExtended(false), m_arm).andThen(
+            () -> m_arm.setElevatorExtended(false), m_arm));
     m_driverLeftJoystick.top().onTrue(
         new InstantCommand(
             () -> m_drivetrain.setBrakeMode(true), m_drivetrain));

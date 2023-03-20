@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.Constants.DriveConstants;
@@ -11,6 +12,12 @@ public class TurnFor extends CommandBase {
     private final Drivetrain m_drive;
     private final boolean m_fast;
     private final double cmPerRot;
+
+    private final PIDController leftPID = new PIDController(0.1, 0, 0);
+    private final PIDController rightPID = new PIDController(0.1, 0, 0);
+
+    private double leftDesiredSpeed;
+    private double rightDesiredSpeed;
 
     public TurnFor(double degrees, double speed, Drivetrain drive) {
         m_fast = false;
@@ -43,7 +50,7 @@ public class TurnFor extends CommandBase {
     @Override
     public void execute() {
         if (m_degrees > 0) {
-            m_drive.tankDrive(m_speed, -m_speed, m_fast, false);
+            m_drive.tankDrive(leftPID.calculate(, m_speed) , -m_speed, m_fast, false);
         } else {
             m_drive.tankDrive(-m_speed, m_speed, m_fast, false);
         }
