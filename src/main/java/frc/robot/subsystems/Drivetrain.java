@@ -11,6 +11,9 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -35,6 +38,12 @@ public class Drivetrain extends SubsystemBase {
 
     private boolean previousFast;
 
+    private double prevLeftPos = 0;
+    private double prevRightPos = 0;
+
+    public ADIS16470_IMU gyro = new ADIS16470_IMU();
+
+    public DifferentialDriveOdometry drivetrain = new DifferentialDriveOdometry(new Rotation2d(gyro.getAngle()), 0,0);
 
     public Drivetrain() {
         // Invert motor groups according to the constants
@@ -57,6 +66,9 @@ public class Drivetrain extends SubsystemBase {
         // Enable the compressor using a digital sensor to stop it when it gets to
         // pressure
         m_pneumaticHub.enableCompressorDigital();
+
+
+
     }
 
     public void setBrakeMode(boolean brake) {
@@ -195,5 +207,24 @@ public class Drivetrain extends SubsystemBase {
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
         }
+    }
+
+    private double revToMeters(double rev){
+        if (previousFast){
+            return rev * DriveConstants.kFastRevPerRot * DriveConstants.kWheelCircumference * 0.0254d;
+        } else {
+            return rev * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference * 0.0254d;
+        }
+    }
+    @Override
+    public void periodic() {
+        double currentLeftPos = m_leftEncoder.getPosition();
+        double currentRightPos = m_leftEncoder.getPosition();
+        drivetrain.update(new Rotation2d(gyro.getAngle()),
+            revToMeters(currentLeftPos - prevLeftPos),
+            revToMeters(currentRightPos - prevRightPos)    
+        );
+        prevLeftPos = currentLeftPos;
+        prevRightPos = currentRightPos;
     }
 }
