@@ -43,29 +43,32 @@ public class TurnFor extends CommandBase {
 
     @Override
     public void initialize() {
-        m_drive.resetEncoders();
+        leftStartPos = m_drive.getLeftEncoder();
+        rightStartPos = m_drive.getRightEncoder();
         m_drive.tankDrive(0, 0, m_fast, false);
+        m_drive.setBrakeMode(true);
     }
 
     @Override
     public void execute() {
         if (m_degrees > 0) {
-            m_drive.tankDrive(leftPID.calculate(, m_speed) , -m_speed, m_fast, false);
+            m_drive.tankDrive(m_speed, -m_speed, m_fast, false);
         } else {
-            m_drive.tankDrive(-m_speed, m_speed, m_fast, false);
+            m_drive.tankDriveRaw(m_speed, -m_speed, m_fast);
         }
     }
 
     @Override
     public boolean isFinished() {
-        double avgWheelRev = (m_drive.getLeftEncoder() - m_drive.getRightEncoder()) / 2;
-        double degreesTurned = avgWheelRev * cmPerRot / DriveConstants.kTurnCircumference * 360;
-
-        return (degreesTurned >= m_degrees);
+        double avgWheelRev = Math.abs(((m_drive.getLeftEncoder() - leftStartPos) - (m_drive.getRightEncoder() - rightStartPos)) / 2);
+        double degreesTurned = avgWheelRev * cmPerRot / DriveConstants.kTurnCircumference * 360 / DriveConstants.kTurnError;
+        System.out.println("GONE: "+degreesTurned);
+        return (degreesTurned >= Math.abs(m_degrees));
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drive.tankDrive(0, 0, false, false);
+        System.out.println("DONE");
     }
 }

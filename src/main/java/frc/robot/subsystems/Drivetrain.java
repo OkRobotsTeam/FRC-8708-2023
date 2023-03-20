@@ -83,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getRightEncoder() {
-        return m_rightEncoder.getPosition();
+        return -m_rightEncoder.getPosition();
     }
 
     public double getAvgEncoder() {
@@ -143,6 +143,13 @@ public class Drivetrain extends SubsystemBase {
         }
         m_leftMotors.set(leftSpeed);
         m_rightMotors.set(rightSpeed);
+    }
+
+    public void setRampRate(double rampRate) {
+        m_leftMotor1.setOpenLoopRampRate(rampRate);
+        m_leftMotor2.setOpenLoopRampRate(rampRate);
+        m_rightMotor1.setOpenLoopRampRate(rampRate);
+        m_rightMotor2.setOpenLoopRampRate(rampRate);
     }
 
     public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
