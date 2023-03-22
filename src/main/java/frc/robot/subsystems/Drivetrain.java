@@ -136,6 +136,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void tankDriveRaw(double leftSpeed, double rightSpeed, boolean fast) {
+        leftSpeed = Math.min(1,Math.max(-1,leftSpeed));
+        rightSpeed = Math.min(1,Math.max(-1,rightSpeed)); 
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
