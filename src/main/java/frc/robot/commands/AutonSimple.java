@@ -14,12 +14,26 @@ public class AutonSimple extends SequentialCommandGroup {
             Arm arm,
             Intake intake) {
         addCommands(
+            new DriveFor(0.0, 188.4954d, 0.5, drive, true),
+            /*WaitCommand(5),
+            new TurnTo(0, 0.2, drive),
+            new WaitCommand(1),
+            new TurnTo(90, 0.2, drive),
+            new WaitCommand(1),*/
+            new WaitCommand(3),
+            new InstantCommand(() -> drive.setBrakeMode(false), drive)
+        );
+
+
+        /*
+        addCommands(
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.5),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setPistonRaised(false), arm),
             new DriveFor(34, 1, drive),
-            new TurnFor(6, 0.5, drive),
+            // TODO: V Replace with TurnTo V
+            // new TurnFor(6, 0.5, drive),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new DriveFor(100, 1, drive, false),
             new InstantCommand(intake::intakeIn, intake),
@@ -34,7 +48,8 @@ public class AutonSimple extends SequentialCommandGroup {
             new WaitCommand(0.5),
             new InstantCommand(intake::intakeStop, intake),
             new DriveFor(100, 1, drive, false),
-            new TurnFor(90, 1, drive, false),
+            // TODO: V Replace with TurnTo V
+            // new TurnFor(90, 1, drive, false),
             new DriveFor(40, 1, drive, false),
             //new TurnFor(90, 0.5, drive, false),
             //new DriveFor(70, 0.7, drive, false),
@@ -42,6 +57,7 @@ public class AutonSimple extends SequentialCommandGroup {
             new WaitCommand(1),
             new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );
+        */
 
     }
 }
