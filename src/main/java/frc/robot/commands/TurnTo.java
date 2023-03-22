@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.Constants.DriveConstants;
@@ -13,8 +12,6 @@ public class TurnTo extends CommandBase {
     private final boolean m_fast;
     private double delta_heading;
 
-    private final PIDController leftPID = new PIDController(0.1, 0, 0);
-    private final PIDController rightPID = new PIDController(0.1, 0, 0);
 
     public TurnTo(double heading, double speed, Drivetrain drive) {
         m_fast = false;
