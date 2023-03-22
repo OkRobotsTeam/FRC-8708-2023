@@ -64,6 +64,7 @@ public class DriveFor extends CommandBase {
     public boolean isFinished() {
         double avgDistance = Math.abs((m_drive.getAvgEncoder()-start_pos) * cmPerRot);
         System.out.println("GONE: " + avgDistance);
+        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
         return (avgDistance >= Math.abs(m_distance));
     }
 

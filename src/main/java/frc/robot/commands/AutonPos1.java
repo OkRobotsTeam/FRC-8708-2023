@@ -7,20 +7,23 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
-public class AutonSimple extends SequentialCommandGroup {
+public class AutonPos1 extends SequentialCommandGroup {
 
-    public AutonSimple(
+    public AutonPos1(
             Drivetrain drive,
             Arm arm,
             Intake intake) {
         addCommands(
+            new InstantCommand(intake::intakeOut, intake),
+            new WaitCommand(0.2),
+            new InstantCommand(intake::intakeStop, intake),
+            new DriveFor(0, 5, 0.7, drive, true),
+            new TurnTo(5, 0.4, drive),
+            new DriveFor(5, 36, 0.7, drive, true),
+            new TurnTo(0, 0.4, drive),
+            new DriveFor(0, 36, 0.7, drive, true),
             new DriveFor(0.0, 188.4954d, 0.5, drive, true),
-            /*WaitCommand(5),
-            new TurnTo(0, 0.2, drive),
             new WaitCommand(1),
-            new TurnTo(90, 0.2, drive),
-            new WaitCommand(1),*/
-            new WaitCommand(3),
             new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );
 
