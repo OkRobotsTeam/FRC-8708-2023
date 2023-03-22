@@ -6,7 +6,8 @@ package frc.robot;
 
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AutonSimple;
+import frc.robot.commands.AutonPos1;
+import frc.robot.commands.AutonPos3;
 import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -14,6 +15,7 @@ import frc.robot.subsystems.Lights;
 import frc.robot.vision.VisionThread;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.cscore.CameraServerJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,6 +49,8 @@ public class RobotContainer {
 
   public boolean m_webcamPresent;
 
+  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
     m_webcamPresent = (CameraServerJNI.enumerateUsbCameras().length > 0);
@@ -61,6 +65,8 @@ public class RobotContainer {
       System.out.println("No webcam found, vision inactive");
     }
 
+    m_chooser.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
+    m_chooser.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
     // Configure the trigger bindings
     configureBindings();
   }
@@ -171,7 +177,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new AutonSimple(m_drivetrain, m_arm, m_intake);
+    return m_chooser.getSelected();
   }
 
   public Command getTankDriveCommand() {
