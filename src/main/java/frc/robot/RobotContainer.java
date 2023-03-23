@@ -16,6 +16,7 @@ import frc.robot.vision.VisionThread;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.cscore.CameraServerJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -67,6 +68,8 @@ public class RobotContainer {
 
     m_chooser.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_chooser.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
+
+    SmartDashboard.putData(m_chooser);
     // Configure the trigger bindings
     configureBindings();
   }

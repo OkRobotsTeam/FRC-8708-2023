@@ -11,6 +11,7 @@ public class TurnTo extends CommandBase {
     private final Drivetrain m_drive;
     private final boolean m_fast;
     private double delta_heading;
+    private double startTime = -1;
 
 
     public TurnTo(double heading, double speed, Drivetrain drive) {
@@ -33,6 +34,7 @@ public class TurnTo extends CommandBase {
     public void initialize() {
         m_drive.tankDriveRaw(0, 0, m_fast);
         m_drive.setBrakeMode(true);
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -57,6 +59,10 @@ public class TurnTo extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        if (startTime > 0 && System.currentTimeMillis() - startTime > 3000) {
+            System.out.println("TurnTo terminated by timeout");
+            return true;
+        }
         System.out.println("TO GO: " + delta_heading);
         return Math.abs(delta_heading) <= Math.abs(DriveConstants.kAllowableHeadingOffset);
     }

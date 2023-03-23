@@ -35,7 +35,7 @@ public class AutonPos1 extends SequentialCommandGroup {
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new WaitCommand(1),
-            new InstantCommand(() -> drive.setBrakeMode(false), drive), 
+            new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );
 
 
