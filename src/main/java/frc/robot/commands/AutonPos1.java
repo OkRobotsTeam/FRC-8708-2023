@@ -13,7 +13,7 @@ public class AutonPos1 extends SequentialCommandGroup {
             Drivetrain drive,
             Arm arm,
             Intake intake) {
-        addCommands(
+                addCommands(
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
@@ -25,12 +25,14 @@ public class AutonPos1 extends SequentialCommandGroup {
             new DriveFor(0, 150, 0.7, drive, false),
             new InstantCommand(intake::intakeIn, intake),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
+            new DriveFor(0, 20, 0.7, drive, false),
             new DriveFor(0, -10, 0.7, drive, false),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
             new DriveFor(0, -180, 0.7, drive, false),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
             new DriveFor(0, -30, 0.7, drive, true),
+            new WaitCommand(0.75),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
