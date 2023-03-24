@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonPos1;
 import frc.robot.commands.AutonPos3;
