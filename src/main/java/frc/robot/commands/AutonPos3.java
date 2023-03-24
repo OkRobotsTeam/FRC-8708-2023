@@ -13,29 +13,27 @@ public class AutonPos3 extends SequentialCommandGroup {
             Arm arm,
             Intake intake) {
         addCommands(
+            new InstantCommand(() -> drive.gyro.reset(), drive),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setPistonRaised(false), arm),
             new DriveFor(0, 5, 0.7, drive, true),
-            new TurnTo(-5, 0.4, drive),
-            new DriveFor(-5, 36, 0.7, drive, true),
+            new TurnTo(-10, 0.4, drive),
+            new DriveFor(-10, 36, 0.7, drive, true),
             new TurnTo(0, 0.4, drive),
-            /*new DriveFor(0, 150, 0.7, drive, false),
+            new DriveFor(0, 90, 0.7, drive, false),
             new InstantCommand(intake::intakeIn, intake),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
-            new DriveFor(0, 20, 0.7, drive, false),
-            new DriveFor(0, -10, 0.7, drive, false),
+            new DriveFor(0, 40, 0.7, drive, false),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
-            new DriveFor(0, -180, 0.7, drive, false),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveFor(0, -30, 0.7, drive, true),
-            new WaitCommand(0.75),
+            new DriveFor(0, -125, 0.7, drive, false),
+            new WaitCommand(1),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),*/
-            new WaitCommand(1),
+            new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );
     }

@@ -27,16 +27,13 @@ public class AutonPos1 extends SequentialCommandGroup {
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new DriveFor(0, 40, 0.7, drive, false),
             new InstantCommand(intake::intakeStop, intake),
-            new DriveFor(0, -10, 0.7, drive, false),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
-            new DriveFor(0, -50, 0.7, drive, false),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveFor(0, -50, 0.7, drive, false),
+            new DriveFor(0, -120, 0.7, drive, false),
             new WaitCommand(0.75),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
-            new WaitCommand(1),
             new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );
     }

@@ -34,7 +34,7 @@ public class DriveFor extends CommandBase {
     public void initialize() {
         start_pos = m_drive.getAvgEncoder();
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("DISTANCE TO GO: " + m_distance);
+        // System.out.println("DISTANCE TO GO: " + m_distance);
         m_drive.setBrakeMode(m_brake);
         m_drive.setRampRate(0.5);
     }
@@ -63,8 +63,8 @@ public class DriveFor extends CommandBase {
     @Override
     public boolean isFinished() {
         double avgDistance = Math.abs((m_drive.getAvgEncoder()-start_pos) * cmPerRot);
-        System.out.println("GONE: " + avgDistance);
-        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
+        // System.out.println("GONE: " + avgDistance);
+        // System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
         return (avgDistance >= Math.abs(m_distance));
     }
 
@@ -72,6 +72,6 @@ public class DriveFor extends CommandBase {
     public void end(boolean interrupted) {
         m_drive.setRampRate(0);
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("Done");
+        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
     }
 }

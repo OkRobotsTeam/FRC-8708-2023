@@ -11,6 +11,7 @@ public class TurnTo extends CommandBase {
     private final Drivetrain m_drive;
     private final boolean m_fast;
     private double delta_heading;
+    private boolean turnComplete = false;
     private double startTime = -1;
 
 
@@ -55,8 +56,10 @@ public class TurnTo extends CommandBase {
         } else {
             delta_heading = right_turn_difference;
         }
-
-        double speed = Math.min(m_speed, (m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)) + 0.2);
+        turnComplete = (Math.abs(delta_heading) <= Math.abs(DriveConstants.kAllowableHeadingOffset));
+        System.out.println("TURN COMPLETE?: " + turnComplete);
+        System.out.println("DEGREES REMAINING: " + (current_heading - m_targetHeading));
+        double speed = Math.min(m_speed, (m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)) + 0.05d);
 
         if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
             m_drive.tankDriveRaw(-speed, speed,m_fast);
@@ -72,13 +75,13 @@ public class TurnTo extends CommandBase {
             System.out.println("TurnTo terminated by timeout");
             return true;
         }
-        System.out.println("TO GO: " + delta_heading);
-        return Math.abs(delta_heading) <= Math.abs(DriveConstants.kAllowableHeadingOffset);
+        return turnComplete;
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drive.tankDrive(0, 0, false, false);
-        System.out.println("DONE");
+        System.out.println("DONE, CURRENT_HEADING: " + (m_drive.gyro.getAngle()));
+        System.out.println("DONE, OFF COURSE BY: " + (delta_heading - m_targetHeading));
     }
 }
