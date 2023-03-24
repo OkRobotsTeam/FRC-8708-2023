@@ -21,7 +21,7 @@ public class AutonPos3 extends SequentialCommandGroup {
             new TurnTo(-5, 0.4, drive),
             new DriveFor(-5, 36, 0.7, drive, true),
             new TurnTo(0, 0.4, drive),
-            new DriveFor(0, 150, 0.7, drive, false),
+            /*new DriveFor(0, 150, 0.7, drive, false),
             new InstantCommand(intake::intakeIn, intake),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new DriveFor(0, 20, 0.7, drive, false),
@@ -34,7 +34,7 @@ public class AutonPos3 extends SequentialCommandGroup {
             new WaitCommand(0.75),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
+            new InstantCommand(intake::intakeStop, intake),*/
             new WaitCommand(1),
             new InstantCommand(() -> drive.setBrakeMode(false), drive)
         );

@@ -65,8 +65,9 @@ public final class Constants {
     public static final double kTurnCircumference = 20 * Math.PI;
 
     public static final double kTurnAggression = 0.025;
-    public static final double kCorrectionAggression = 0.1;
-    public static final double kAllowableHeadingOffset = 1.0;
+    public static final double kCorrectionAggression = 0.015;
+    public static final double kAllowableHeadingOffset = 2;
+    public static final double kMinimumTurnSpeed = 0.2;
   }
 
   public static final class ArmConstants {

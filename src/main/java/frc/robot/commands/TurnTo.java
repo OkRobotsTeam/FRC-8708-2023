@@ -48,6 +48,7 @@ public class TurnTo extends CommandBase {
         if (right_turn_difference < 0) {
             right_turn_difference += 360;
         }
+        
         if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
             delta_heading = left_turn_difference;
             m_drive.tankDriveRaw(Math.max(-m_speed, -m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), Math.min(m_speed, m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), m_fast);
