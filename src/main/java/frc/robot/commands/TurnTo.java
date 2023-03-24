@@ -51,11 +51,19 @@ public class TurnTo extends CommandBase {
         
         if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
             delta_heading = left_turn_difference;
-            m_drive.tankDriveRaw(Math.max(-m_speed, -m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), Math.min(m_speed, m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), m_fast);
+
         } else {
             delta_heading = right_turn_difference;
-            m_drive.tankDriveRaw(Math.min(m_speed, m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), Math.max(-m_speed, -m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)), m_fast);
         }
+
+        double speed = Math.min(m_speed, (m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)) + 0.2);
+
+        if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
+            m_drive.tankDriveRaw(-speed, speed,m_fast);
+        } else {
+            m_drive.tankDriveRaw(speed,-speed,m_fast);
+        }
+
     }
 
     @Override
