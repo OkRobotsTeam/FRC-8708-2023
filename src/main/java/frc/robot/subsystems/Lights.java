@@ -20,12 +20,7 @@ public class Lights extends SubsystemBase {
     public final PWMSparkMax LED = new PWMSparkMax(0);
 
     public Lights() {
-        LED.set(off);
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) { // Might always return false (DriverStation.Alliance.Invalid) if robot is not plugged in to field on initialization?
-            teamcolor = redchaser;
-        } else {
-            teamcolor = bluechaser;
-        }
+        teamChaser();
     }
 
     public void setViolet() {
@@ -49,6 +44,11 @@ public class Lights extends SubsystemBase {
     }
 
     public void teamChaser() {
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) { // Might always return false (DriverStation.Alliance.Invalid) if robot is not plugged in to field on initialization?
+            teamcolor = redchaser;
+        } else {
+            teamcolor = bluechaser;
+        }
         LED.set(teamcolor);
     }
 }

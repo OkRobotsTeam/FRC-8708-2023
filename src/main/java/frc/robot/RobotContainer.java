@@ -66,8 +66,10 @@ public class RobotContainer {
       System.out.println("No webcam found, vision inactive");
     }
 
-    m_autonomous_selecter.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
-    m_autonomous_selecter.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.setDefaultOption("Red cable ramp", new AutonPos1(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Blue cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Red no cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Blue no cable ramp", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
 
 
