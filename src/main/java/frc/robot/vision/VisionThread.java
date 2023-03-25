@@ -19,7 +19,7 @@ public class VisionThread extends Thread {
     public void run() {
         System.out.println("Connecting to camera");
         m_camera = new UsbCamera("Webcam", 0);
-        m_camera.setVideoMode(PixelFormat.kYUYV, 640, 480, 6);
+        m_camera.setVideoMode(PixelFormat.kYUYV, 320, 240, 6);
         System.out.println("Starting frame capture");
         m_server = CameraServer.startAutomaticCapture(m_camera);
 
@@ -30,7 +30,7 @@ public class VisionThread extends Thread {
         CvSink cvSink = CameraServer.getVideo();
 
         // Setup a CvSource. This will send images back to the Dashboard
-        CvSource outputStream = CameraServer.putVideo("Camera", 160, 120);
+        CvSource outputStream = CameraServer.putVideo("Camera", 320, 240);
 
         outputStream.setPixelFormat(PixelFormat.kMJPEG);
         Shuffleboard.getTab("Driving").add(outputStream).withPosition(5, 0).withSize(4, 4);

@@ -14,6 +14,7 @@ import frc.robot.subsystems.Lights;
 import frc.robot.vision.VisionThread;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.cscore.CameraServerJNI;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,8 +73,13 @@ public class RobotContainer {
     m_team_is_red.addOption("Blue Team", false);
 
 
-    SmartDashboard.putData(m_autonomous_selecter);
-    SmartDashboard.putData(m_team_is_red);
+    //SmartDashboard.putData(m_autonomous_selecter);
+    //SmartDashboard.putData(m_team_is_red);
+
+    Shuffleboard.getTab("Driving").add(m_autonomous_selecter).withPosition(3, 0).withSize(2, 1);
+    Shuffleboard.getTab("Driving").add(m_team_is_red).withPosition(3, 1).withSize(2, 1);
+    Shuffleboard.selectTab("Driving");
+    Shuffleboard.update();
     // Configure the trigger bindings
     configureBindings();
   }
@@ -165,12 +171,6 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_arm.setElbowExtended(false), m_arm).andThen(
             () -> m_arm.setElevatorExtended(false), m_arm));
-    m_driverLeftJoystick.top().onTrue(
-        new InstantCommand(
-            () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
-    m_driverLeftJoystick.top().onFalse(
-        new InstantCommand(
-            () -> m_drivetrain.setBrakeMode(false), m_drivetrain));
   }
 
   public void teleopInit() {
@@ -197,7 +197,9 @@ public class RobotContainer {
             m_driverLeftJoystick.getY(),
             m_driverRightJoystick.getY(),
             m_driverRightJoystick.trigger().getAsBoolean(),
-            m_driverLeftJoystick.trigger().getAsBoolean()),
+            m_driverLeftJoystick.trigger().getAsBoolean(),
+            m_driverLeftJoystick.top().getAsBoolean()),
+
         m_drivetrain);
   }
 }

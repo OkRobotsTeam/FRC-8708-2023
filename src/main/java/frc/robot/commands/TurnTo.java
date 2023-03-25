@@ -81,7 +81,7 @@ public class TurnTo extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_drive.tankDrive(0, 0, false, false);
+        m_drive.tankDriveRaw(0, 0, false);
         System.out.println("DONE, CURRENT_HEADING: " + (m_drive.gyro.getAngle()));
         System.out.println("DONE, OFF COURSE BY: " + (delta_heading - m_targetHeading));
     }

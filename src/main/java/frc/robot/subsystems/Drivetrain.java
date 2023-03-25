@@ -166,7 +166,7 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotor2.setOpenLoopRampRate(rampRate);
     }
 
-    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow) {
+    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow_brake, boolean slow) {
         double leftSpeed;
         double rightSpeed;
         // Only update the pneumatics if its state changed from the previous state
@@ -200,11 +200,16 @@ public class Drivetrain extends SubsystemBase {
             leftSpeed = leftController;
             rightSpeed = rightController;
         }
-        if (slow) {
+        if (slow_brake) {
             setBrakeMode(true);
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
-        } else {
+        } else if (slow) {
+            setBrakeMode(false);
+            m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
+            m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
+        }
+        else {
             setBrakeMode(false);
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
