@@ -41,6 +41,10 @@ public class Vector {
         return n;
     }
 
+    public double angleDegrees() {
+        return Math.atan2(data[1],data[0]);
+    }
+
     // return the inner product of this Vector a and b
     public double dot(Vector that) {
         if (this.length() != that.length())
