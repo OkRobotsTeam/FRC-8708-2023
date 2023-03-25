@@ -77,8 +77,8 @@ public class RobotContainer {
     //SmartDashboard.putData(m_autonomous_selecter);
     //SmartDashboard.putData(m_team_is_red);
 
-    Shuffleboard.getTab("Driving").add(m_autonomous_selecter).withPosition(3, 0).withSize(2, 1);
-    Shuffleboard.getTab("Driving").add(m_team_is_red).withPosition(3, 1).withSize(2, 1);
+    Shuffleboard.getTab("Driving").add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
+    Shuffleboard.getTab("Driving").add(m_team_is_red).withPosition(4, 1).withSize(2, 1);
     Shuffleboard.selectTab("Driving");
     Shuffleboard.update();
     // Configure the trigger bindings
