@@ -5,6 +5,7 @@ import org.opencv.core.Mat;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
@@ -33,7 +34,9 @@ public class VisionThread extends Thread {
         CvSource outputStream = CameraServer.putVideo("Camera", 320, 240);
 
         outputStream.setPixelFormat(PixelFormat.kMJPEG);
-        Shuffleboard.getTab("Driving").add(outputStream).withPosition(5, 0).withSize(4, 4);
+        Shuffleboard.getTab("Driving").add(outputStream).withPosition(6, 0).withSize(4, 4);
+        HttpCamera httpCamera = new HttpCamera("Limelight", "http://limelight.local:5800");
+        Shuffleboard.getTab("Driving").add(httpCamera).withPosition(0,0).withSize(4,4);
         Shuffleboard.update();
 
         Mat mat = new Mat();
