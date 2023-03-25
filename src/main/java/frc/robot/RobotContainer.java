@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutonNothing;
 import frc.robot.commands.AutonPos1;
 import frc.robot.commands.AutonPos3;
 import frc.robot.commands.MoveToHigh;
@@ -68,6 +69,7 @@ public class RobotContainer {
 
     m_autonomous_selecter.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Nothing", new AutonNothing());
     m_team_is_red.setDefaultOption("Red Team", true);
     m_team_is_red.addOption("Blue Team", false);
 
