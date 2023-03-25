@@ -34,7 +34,9 @@ public class AutonPos3 extends SequentialCommandGroup {
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> drive.setBrakeMode(false), drive)
+            new InstantCommand(() -> drive.setBrakeMode(false), drive),
+            new WaitCommand(1),
+            new DriveFor(0, -18, 0.2, drive, false)
         );
     }
 }
