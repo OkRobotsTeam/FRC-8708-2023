@@ -51,4 +51,8 @@ public class Lights extends SubsystemBase {
         }
         LED.set(teamcolor);
     }
+
+    public void init() {
+        teamChaser();
+    }
 }

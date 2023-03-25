@@ -174,9 +174,11 @@ public class RobotContainer {
 
     public void teleopInit() {
         m_arm.init();
+        m_lights.init();
     }
     public void autonomousInit() {
         m_arm.init();
+        m_lights.init();
     }
 
   /**
