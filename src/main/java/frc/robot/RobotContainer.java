@@ -51,7 +51,6 @@ public class RobotContainer {
   public boolean m_webcamPresent;
 
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
-  private final SendableChooser<Boolean> m_team_is_red = new SendableChooser<>();
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
@@ -70,15 +69,12 @@ public class RobotContainer {
     m_autonomous_selecter.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
-    m_team_is_red.setDefaultOption("Red Team", true);
-    m_team_is_red.addOption("Blue Team", false);
 
 
     //SmartDashboard.putData(m_autonomous_selecter);
     //SmartDashboard.putData(m_team_is_red);
 
     Shuffleboard.getTab("Driving").add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
-    Shuffleboard.getTab("Driving").add(m_team_is_red).withPosition(4, 1).withSize(2, 1);
     Shuffleboard.selectTab("Driving");
     Shuffleboard.update();
     // Configure the trigger bindings
@@ -145,13 +141,13 @@ public class RobotContainer {
         new InstantCommand(
             m_lights::setViolet, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(() -> m_lights.sendTeamColorToLights(m_team_is_red.getSelected()),m_lights)));
+                new InstantCommand(m_lights::teamChaser,m_lights)));
     
     m_manipulator.back().onTrue(
         new InstantCommand(
             m_lights::setYellow, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(() -> m_lights.sendTeamColorToLights(m_team_is_red.getSelected()),m_lights)));
+                new InstantCommand(m_lights::teamChaser,m_lights)));
     
     m_manipulator.x().onTrue(
         new InstantCommand(
@@ -172,16 +168,14 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_arm.setElbowExtended(false), m_arm).andThen(
             () -> m_arm.setElevatorExtended(false), m_arm));
-  }
+    }
 
-  public void teleopInit() {
-    m_arm.init();
-    m_lights.sendTeamColorToLights(m_team_is_red.getSelected());
-}
- public void autonomousInit() {
-    m_arm.init();
-    m_lights.sendTeamColorToLights(m_team_is_red.getSelected());
- }
+    public void teleopInit() {
+        m_arm.init();
+    }
+    public void autonomousInit() {
+        m_arm.init();
+    }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

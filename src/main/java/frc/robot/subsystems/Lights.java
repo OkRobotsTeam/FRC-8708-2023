@@ -13,6 +13,7 @@ public class Lights extends SubsystemBase {
     public static final double off = 0.99;
     public static final double redchaser = -0.31;
     public static final double bluechaser = -0.29;
+    public static double teamcolor;
 
     public static boolean isRed;
 
@@ -20,7 +21,11 @@ public class Lights extends SubsystemBase {
 
     public Lights() {
         LED.set(off);
-        isRed = (DriverStation.getAlliance() == DriverStation.Alliance.Red); // Might always return false (DriverStation.Alliance.Invalid) if robot is not plugged in to field on initialization?
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) { // Might always return false (DriverStation.Alliance.Invalid) if robot is not plugged in to field on initialization?
+            teamcolor = redchaser;
+        } else {
+            teamcolor = bluechaser;
+        }
     }
 
     public void setViolet() {
@@ -43,7 +48,7 @@ public class Lights extends SubsystemBase {
         LED.set(off);
     }
 
-    public void sendTeamColorToLights(boolean isRedTeam) {
-        if (isRedTeam) {LED.set(redchaser);} else {LED.set(bluechaser);}
+    public void teamChaser() {
+        LED.set(teamcolor);
     }
 }
