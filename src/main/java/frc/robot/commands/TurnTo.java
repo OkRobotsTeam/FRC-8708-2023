@@ -40,7 +40,8 @@ public class TurnTo extends CommandBase {
 
     @Override
     public void execute() {
-        double current_heading = m_drive.gyro.getAngle() % 360;
+        double current_heading = m_drive.gyro.getAngle() % 360;m_drive.tankDriveRaw(0, 0, false);
+        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
         double left_turn_difference = (current_heading - m_targetHeading);
         double right_turn_difference = (m_targetHeading - current_heading);
         if (left_turn_difference < 0) {

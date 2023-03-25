@@ -200,4 +200,8 @@ public class Arm extends SubsystemBase {
         //         () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
         }
     }
+
+    public void pickupFromHumanPlayerStation() {
+        elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
+    }
 }

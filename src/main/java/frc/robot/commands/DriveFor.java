@@ -72,6 +72,6 @@ public class DriveFor extends CommandBase {
     public void end(boolean interrupted) {
         m_drive.setRampRate(0);
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
+        System.out.println("DONE, DEGREES OFF COURSE: " + Math.abs(delta_heading));
     }
 }
