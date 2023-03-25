@@ -10,12 +10,11 @@ public class Lights extends SubsystemBase {
     public static final double off = 0.99;
     public static final double redchaser = -0.31;
     public static final double bluechaser = -0.29;
-    public boolean redTeam;
 
     public final PWMSparkMax LED = new PWMSparkMax(0);
 
     public Lights() {
-        LED.set(redchaser);
+        LED.set(off);
     }
 
     public void setViolet() {
@@ -24,14 +23,6 @@ public class Lights extends SubsystemBase {
 
     public void setYellow() {
         LED.set(yellow);
-    }
-
-    public void activateChaser() {
-        if (redTeam) {
-            redChaser();
-        } else {
-            blueChaser();
-        }
     }
 
     public void blueChaser() {
@@ -46,8 +37,7 @@ public class Lights extends SubsystemBase {
         LED.set(off);
     }
 
-    public void init() {
-        activateChaser();
+    public void sendTeamColorToLights(boolean isRedTeam) {
+        if (isRedTeam) {LED.set(redchaser);} else {LED.set(bluechaser);}
     }
-
 }

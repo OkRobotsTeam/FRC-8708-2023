@@ -50,7 +50,7 @@ public class RobotContainer {
   public boolean m_webcamPresent;
 
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
-  private final SendableChooser<Command> m_team_selecter = new SendableChooser<>();
+  private final SendableChooser<Boolean> m_team_is_red = new SendableChooser<>();
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
@@ -68,11 +68,12 @@ public class RobotContainer {
 
     m_autonomous_selecter.setDefaultOption("Position 1", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Position 3", new AutonPos3(m_drivetrain, m_arm, m_intake));
-    m_team_selecter.setDefaultOption("Red Team", new InstantCommand(() -> m_lights.redTeam = true, m_lights));
-    m_team_selecter.addOption("Blue Team", new InstantCommand(() -> m_lights.redTeam = false, m_lights));
+    m_team_is_red.setDefaultOption("Red Team", true);
+    m_team_is_red.addOption("Blue Team", false);
 
 
     SmartDashboard.putData(m_autonomous_selecter);
+    SmartDashboard.putData(m_team_is_red);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -137,13 +138,13 @@ public class RobotContainer {
         new InstantCommand(
             m_lights::setViolet, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(m_lights::activateChaser, m_lights)));
+                new InstantCommand(() -> m_lights.sendTeamColorToLights(m_team_is_red.getSelected()),m_lights)));
     
     m_manipulator.back().onTrue(
         new InstantCommand(
             m_lights::setYellow, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(m_lights::activateChaser, m_lights)));
+                new InstantCommand(() -> m_lights.sendTeamColorToLights(m_team_is_red.getSelected()),m_lights)));
     
     m_manipulator.x().onTrue(
         new InstantCommand(
@@ -156,10 +157,14 @@ public class RobotContainer {
     m_manipulator.leftBumper().onTrue(
         new InstantCommand(
         () -> m_arm.pickupFromHumanPlayerStation(), m_arm));
+    m_manipulator.leftBumper().onFalse(
+        new InstantCommand(
+        () -> m_arm.setElbowExtended(false), m_arm));
     m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
     m_manipulator.rightBumper().onFalse(
         new InstantCommand(
-            () -> m_arm.setElbowExtended(false), m_arm));
+            () -> m_arm.setElbowExtended(false), m_arm).andThen(
+            () -> m_arm.setElevatorExtended(false), m_arm));
     m_driverLeftJoystick.top().onTrue(
         new InstantCommand(
             () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
@@ -170,11 +175,11 @@ public class RobotContainer {
 
   public void teleopInit() {
     m_arm.init();
-    m_lights.init();
+    m_lights.sendTeamColorToLights(m_team_is_red.getSelected());
 }
  public void autonomousInit() {
     m_arm.init();
-    m_lights.init();
+    m_lights.sendTeamColorToLights(m_team_is_red.getSelected());
  }
 
   /**
