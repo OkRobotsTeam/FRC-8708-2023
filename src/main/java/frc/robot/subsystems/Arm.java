@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -118,9 +119,13 @@ public class Arm extends SubsystemBase {
                 setElbowExtended(false);
             }
             m_piston.set(PneumaticsConstants.kArmLower);
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(3);
+            
         } else if (raised) {
             m_piston.set(PneumaticsConstants.kArmRaise);
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(1);
         }
+        
     }
 
     @Override
