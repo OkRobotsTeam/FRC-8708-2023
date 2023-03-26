@@ -119,11 +119,11 @@ public class Arm extends SubsystemBase {
                 setElbowExtended(false);
             }
             m_piston.set(PneumaticsConstants.kArmLower);
-            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(3);
+            //NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(3);
             
         } else if (raised) {
             m_piston.set(PneumaticsConstants.kArmRaise);
-            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(1);
+            //NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setInteger(1);
         }
         
     }
