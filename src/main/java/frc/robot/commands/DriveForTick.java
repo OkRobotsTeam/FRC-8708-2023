@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveFor extends CommandBase {
+public class DriveForTick extends CommandBase {
 
     private final double m_distance;
     private final double m_targetHeading;
@@ -14,12 +14,14 @@ public class DriveFor extends CommandBase {
     private final boolean m_brake;
     private double delta_heading;
     private final double kDecelrationRate = 1.0; //motor power per second 
-    private double m_rampUpDistance;
-    private double m_rampDownDistance;
-
+    private int m_rampUpTicks;
+    private int m_rampDownTicks;
+    private int m_tickNumber;
+    private double m_distanceTraveled;
     private double start_pos;
+    private int m_decelerationStartTick;
 
-    public DriveFor(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, double rampUpDistance, double rampDownDistance) {
+    public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, int rampUpTicks, int rampDownTicks) {
         m_targetHeading = heading;
         m_distance = distance_in;
         if (distance_in < 0) {
@@ -29,8 +31,11 @@ public class DriveFor extends CommandBase {
         }
         m_drive = drive;
         m_brake = brake;
-        m_rampUpDistance = rampUpDistance;
-        m_rampDownDistance = rampDownDistance;
+        m_rampUpTicks = rampUpTicks;
+        m_rampDownTicks = rampDownTicks;
+        m_tickNumber = 0;
+        m_distanceTraveled = 0;
+        m_decelerationStartTick = 0;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
@@ -58,8 +63,11 @@ public class DriveFor extends CommandBase {
        
         double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-start_pos) * cmPerRot;
         double distanceRemaining = Math.abs(m_distance) - distanceTraveled;
-
-        double targetSpeed = accelerationCurve(m_speed, distanceTraveled, distanceRemaining );
+        m_tickNumber++;
+        double distancePerTick = distanceTraveled - m_distanceTraveled;
+        m_distanceTraveled=distanceTraveled;
+        
+        double targetSpeed = accelerationCurve(m_speed, distanceTraveled, distanceRemaining, m_tickNumber, distancePerTick );
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
             delta_heading = leftTurnDifference;
             m_drive.tankDriveRaw((delta_heading * -DriveConstants.kCorrectionAggression) - m_speed, (delta_heading * DriveConstants.kCorrectionAggression) - m_speed, false);
@@ -71,17 +79,27 @@ public class DriveFor extends CommandBase {
     }
 
     
-    private double accelerationCurve(double speed, double distance_traveled, double distance_remaining) {
+    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, int tickNumber, double distancePerTick) {
+        if (m_decelerationStartTick > 0) {
+            double percentSpeed =  ( 1-  (( tickNumber - m_decelerationStartTick) / m_rampDownTicks));
+            int ticksLeft = m_rampDownTicks - (tickNumber - m_decelerationStartTick);
+            double distanceToEnd = distancePerTick * ticksLeft /2;
+            return m_speed * percentSpeed;
+        } else if (tickNumber < m_rampUpTicks) {
+            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick=tickNumber;
+            }
 
-        if (distance_remaining < m_rampDownDistance) {
-            return(m_speed * distance_remaining / m_rampDownDistance);
-        } else if (distance_traveled < m_rampUpDistance) {
-            double speedToScale = Math.abs(m_speed) - DriveConstants.kMotorStallSpeed;
-            double targetSpeed = (speedToScale * (distance_traveled / m_rampUpDistance) ) + DriveConstants.kMotorStallSpeed;
-            return(Math.copySign(targetSpeed, m_speed));
+            return (m_speed *( tickNumber / m_rampUpTicks));
         } else {
+            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick=tickNumber;
+            }
             return m_speed;
         }
+        }
+
+        return (0.0);
     }
 
     @Override
