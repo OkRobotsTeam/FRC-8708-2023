@@ -13,13 +13,10 @@ public class DriveFor extends CommandBase {
     private final double cmPerRot;
     private final boolean m_brake;
     private double delta_heading;
-    private final double kDecelrationRate = 1.0; //motor power per second 
-    private double m_rampUpDistance;
-    private double m_rampDownDistance;
 
     private double start_pos;
 
-    public DriveFor(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, double rampUpDistance, double rampDownDistance) {
+    public DriveFor(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake) {
         m_targetHeading = heading;
         m_distance = distance_in;
         if (distance_in < 0) {
@@ -29,8 +26,6 @@ public class DriveFor extends CommandBase {
         }
         m_drive = drive;
         m_brake = brake;
-        m_rampUpDistance = rampUpDistance;
-        m_rampDownDistance = rampDownDistance;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         addRequirements(drive);
     }
@@ -46,42 +41,23 @@ public class DriveFor extends CommandBase {
 
     @Override
     public void execute() {
-        double currentHeading = m_drive.gyro.getAngle() % 360;
-        double leftTurnDifference = (currentHeading - m_targetHeading);
-        double rightTurnDifference = (m_targetHeading - currentHeading);
-        if (leftTurnDifference < 0) {
-            leftTurnDifference += 360;
+        double current_heading = m_drive.gyro.getAngle() % 360;
+        double left_turn_difference = (current_heading - m_targetHeading);
+        double right_turn_difference = (m_targetHeading - current_heading);
+        if (left_turn_difference < 0) {
+            left_turn_difference += 360;
         }
-        if (rightTurnDifference < 0) {
-            rightTurnDifference += 360;
+        if (right_turn_difference < 0) {
+            right_turn_difference += 360;
         }
-       
-        double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-start_pos) * cmPerRot;
-        double distanceRemaining = Math.abs(m_distance) - distanceTraveled;
-
-        double targetSpeed = accelerationCurve(m_speed, distanceTraveled, distanceRemaining );
-        if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
-            delta_heading = leftTurnDifference;
+        if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
+            delta_heading = left_turn_difference;
             m_drive.tankDriveRaw((delta_heading * -DriveConstants.kCorrectionAggression) - m_speed, (delta_heading * DriveConstants.kCorrectionAggression) - m_speed, false);
         } else {
-            delta_heading = rightTurnDifference;
+            delta_heading = right_turn_difference;
             m_drive.tankDriveRaw((delta_heading * DriveConstants.kCorrectionAggression) - m_speed, (delta_heading * -DriveConstants.kCorrectionAggression) - m_speed, false);
         }
         
-    }
-
-    
-    private double accelerationCurve(double speed, double distance_traveled, double distance_remaining) {
-
-        if (distance_remaining < m_rampDownDistance) {
-            return(m_speed * distance_remaining / m_rampDownDistance);
-        } else if (distance_traveled < m_rampUpDistance) {
-            double speedToScale = Math.abs(m_speed) - DriveConstants.kMotorStallSpeed;
-            double targetSpeed = (speedToScale * (distance_traveled / m_rampUpDistance) ) + DriveConstants.kMotorStallSpeed;
-            return(Math.copySign(targetSpeed, m_speed));
-        } else {
-            return m_speed;
-        }
     }
 
     @Override

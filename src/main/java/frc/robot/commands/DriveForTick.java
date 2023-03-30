@@ -20,6 +20,9 @@ public class DriveForTick extends CommandBase {
     private double m_distanceTraveled;
     private double start_pos;
     private int m_decelerationStartTick;
+    private double m_maxDistancePerTick;
+    private double m_calculatedSpeedPerTickPerUnitPower;
+    private double m_calibrationTotalPower;
 
     public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, int rampUpTicks, int rampDownTicks) {
         m_targetHeading = heading;
@@ -37,6 +40,8 @@ public class DriveForTick extends CommandBase {
         m_distanceTraveled = 0;
         m_decelerationStartTick = 0;
         cmPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        m_calibrationTotalPower = 0;
+
         addRequirements(drive);
     }
 
@@ -64,10 +69,12 @@ public class DriveForTick extends CommandBase {
         double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-start_pos) * cmPerRot;
         double distanceRemaining = Math.abs(m_distance) - distanceTraveled;
         m_tickNumber++;
-        double distancePerTick = distanceTraveled - m_distanceTraveled;
+        double distanceLastTick = distanceTraveled - m_distanceTraveled;
         m_distanceTraveled=distanceTraveled;
         
-        double targetSpeed = accelerationCurve(m_speed, distanceTraveled, distanceRemaining, m_tickNumber, distancePerTick );
+        
+        double targetSpeed = accelerationCurve(m_speed, distanceTraveled, distanceRemaining, m_tickNumber, distanceLastTick );
+        m_calibrationTotalPower += targetSpeed;
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
             delta_heading = leftTurnDifference;
             m_drive.tankDriveRaw((delta_heading * -DriveConstants.kCorrectionAggression) - m_speed, (delta_heading * DriveConstants.kCorrectionAggression) - m_speed, false);
@@ -81,25 +88,33 @@ public class DriveForTick extends CommandBase {
     
     private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, int tickNumber, double distancePerTick) {
         if (m_decelerationStartTick > 0) {
-            double percentSpeed =  ( 1-  (( tickNumber - m_decelerationStartTick) / m_rampDownTicks));
-            int ticksLeft = m_rampDownTicks - (tickNumber - m_decelerationStartTick);
-            double distanceToEnd = distancePerTick * ticksLeft /2;
-            return m_speed * percentSpeed;
+            //slowing
+            int ticksRampedDown = tickNumber - m_decelerationStartTick;
+            int ticksRemaining = m_rampDownTicks - ticksRampedDown;
+            double desiredSpeedPerTick = 0;
+            if (ticksRemaining == 0) {
+                return(0.0);
+            } else if (ticksRemaining == 1) {
+                desiredSpeedPerTick = distanceRemaining;
+            } else {
+                desiredSpeedPerTick = distanceRemaining/ (ticksRemaining) * 2.3;
+            }
+            double distancePerPower = m_distanceTraveled / m_calibrationTotalPower;
+            return (desiredSpeedPerTick / distancePerPower);
         } else if (tickNumber < m_rampUpTicks) {
+            //accelerating
             if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
                 m_decelerationStartTick=tickNumber;
             }
 
             return (m_speed *( tickNumber / m_rampUpTicks));
         } else {
+            //at_speed
             if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
                 m_decelerationStartTick=tickNumber;
             }
             return m_speed;
-        }
-        }
-
-        return (0.0);
+        }    
     }
 
     @Override
