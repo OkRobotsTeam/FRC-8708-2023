@@ -82,8 +82,8 @@ public final class Constants {
     public static final boolean kElbowMotorInverted = true;
 
     public static final double kElevatorIdleRotations = 1.5;
-    public static final double kElevatorExtendRotations = 17.0;
-    public static final double kElevatorMaximumSpeed = 0.3;
+    public static final double kElevatorExtendRotations = 18.0;
+    public static final double kElevatorMaximumSpeed = 0.25;
 
     // PID Stop thresholds
     public static final double kElevatorStopThreshold = 0.1;
@@ -91,7 +91,7 @@ public final class Constants {
 
     public static final double kElbowLowExtendRotations = 14;
     public static final double kElbowMidExtendRotations = 18.0;
-    public static final double kElbowHighExtendRotations = 15.0;
+    public static final double kElbowHighExtendRotations = 15.0 - 1;
     public static final double kElbowIdleExtendRotations = 1;
     public static final double kElbowHighHumanPlayerStationRotations = 10;
     public static final double kElbowAllowedTuning = 5;
@@ -113,6 +113,9 @@ public final class Constants {
     public static final boolean kIntakeMotorBottomReversed = true;
 
     public static final double kIntakeInSpeed = 0.5;
+    public static final double kHoldingObjectCurrent = 25;
+    public static final double kIntakeMotorStartupTimeMSEC = 500;
+
     public static final double kIntakeOutSpeedWhenElbowOut = 0.5;
     public static final double kIntakeOutSpeedWhenElbowIn = 1;
   }
