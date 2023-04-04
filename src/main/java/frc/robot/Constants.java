@@ -68,6 +68,10 @@ public final class Constants {
     public static final double kCorrectionAggression = 0.0075;
     public static final double kAllowableHeadingOffset = 0.5d;
     public static final double kMinimumTurnSpeed = 0.2;
+
+    public static final double kLimelightOffsetXInches = 7.5;
+    public static final double kLimelightOffsetYInches = 6.5;
+
   }
 
   public static final class ArmConstants {

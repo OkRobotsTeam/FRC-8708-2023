@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class Drivetrain extends SubsystemBase {
     private final CANSparkMax m_leftMotor1 = new CANSparkMax(DriveConstants.kLeftMotor1Port, MotorType.kBrushless);
@@ -40,6 +42,9 @@ public class Drivetrain extends SubsystemBase {
 
     private double prevLeftPos = 0;
     private double prevRightPos = 0;
+
+    private NetworkTableEntry txEntry;
+    private NetworkTableEntry tyEntry;
 
     public ADIS16470_IMU gyro = new ADIS16470_IMU();
 
@@ -67,7 +72,8 @@ public class Drivetrain extends SubsystemBase {
         // pressure
         m_pneumaticHub.enableCompressorDigital();
 
-
+        txEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx");
+        tyEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty");
 
     }
 
@@ -166,7 +172,7 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotor2.setOpenLoopRampRate(rampRate);
     }
 
-    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow_brake, boolean slow) {
+    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow_brake, boolean slow, boolean auto_correct) {
         double leftSpeed;
         double rightSpeed;
         // Only update the pneumatics if its state changed from the previous state
@@ -200,6 +206,13 @@ public class Drivetrain extends SubsystemBase {
             leftSpeed = leftController;
             rightSpeed = rightController;
         }
+
+        double tx = txEntry.getDouble(0);
+        double ty = tyEntry.getDouble(0);
+        double z = DriveConstants.kLimelightOffsetYInches / Math.tan(Math.toRadians(ty));
+        double targetTx = Math.atan(z / DriveConstants.kLimelightOffsetXInches);
+
+        
         if (slow_brake) {
             setBrakeMode(true);
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);

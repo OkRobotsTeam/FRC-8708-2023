@@ -14,7 +14,7 @@
     "**/.factorypath": true,
     "**/*~": true
   },
-  "files.autoSave": "onFocusChange",
+  "files.autoSave": "off",
 
   "java.test.config": [
     {
