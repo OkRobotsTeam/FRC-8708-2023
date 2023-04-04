@@ -4,18 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AutonNothing;
-import frc.robot.commands.AutonPos1;
-import frc.robot.commands.AutonPos3;
-import frc.robot.commands.MoveToHigh;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Lights;
-import frc.robot.vision.VisionThread;
-import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.cscore.CameraServerJNI;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,6 +16,17 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutonNothing;
+import frc.robot.commands.AutonPos1;
+import frc.robot.commands.AutonPos3;
+import frc.robot.commands.MoveToHigh;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
+import frc.robot.vision.VisionThread;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -37,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private GenericEntry m_objectInIntake = null;
   private final Arm m_arm = new Arm();
   private final Intake m_intake = new Intake(m_arm);
   private final Lights m_lights = new Lights();
@@ -50,7 +54,9 @@ public class RobotContainer {
 
   public boolean m_webcamPresent;
 
+  private ShuffleboardTab m_driving_tab = Shuffleboard.getTab("Driving");
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
+
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
@@ -66,6 +72,7 @@ public class RobotContainer {
       System.out.println("No webcam found, vision inactive");
     }
 
+
     m_autonomous_selecter.setDefaultOption("Red cable ramp", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Blue cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Red no cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
@@ -73,15 +80,17 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
 
 
-    //SmartDashboard.putData(m_autonomous_selecter);
-    //SmartDashboard.putData(m_team_is_red);
 
-    Shuffleboard.getTab("Driving").add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
+    
+    m_driving_tab.add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
+    m_objectInIntake = m_driving_tab.add("ObjectInIntake", false).withPosition(4, 1).withSize(2, 2).getEntry();
+
     Shuffleboard.selectTab("Driving");
     Shuffleboard.update();
     // Configure the trigger bindings
     configureBindings();
   }
+
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
@@ -105,6 +114,7 @@ public class RobotContainer {
     // Start/Back = colors purple start yellow back
 
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
+    m_intake.setDefaultCommand(getIntakeCommand());
 
     m_manipulator.a().onTrue(
         new InstantCommand(
@@ -198,7 +208,13 @@ public class RobotContainer {
             m_driverRightJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.top().getAsBoolean()),
+            true
 
         m_drivetrain);
+  }
+
+  public Command getIntakeCommand() {
+    return new RunCommand(
+        () -> m_intake.checkPickedUp(m_objectInIntake), m_intake);
   }
 }

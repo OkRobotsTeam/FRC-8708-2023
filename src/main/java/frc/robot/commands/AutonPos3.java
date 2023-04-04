@@ -7,6 +7,8 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
+// blue cable ramp
+
 public class AutonPos3 extends SequentialCommandGroup {
     public AutonPos3(
             Drivetrain drive,
@@ -26,6 +28,7 @@ public class AutonPos3 extends SequentialCommandGroup {
             new InstantCommand(intake::intakeIn, intake),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new DriveFor(0, 40, 0.7, drive, false),
+            new WaitCommand(0.5), // Added this line
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),

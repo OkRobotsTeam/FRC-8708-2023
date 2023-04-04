@@ -35,7 +35,7 @@ public class VisionThread extends Thread {
 
         outputStream.setPixelFormat(PixelFormat.kMJPEG);
         Shuffleboard.getTab("Driving").add(outputStream).withPosition(6, 0).withSize(4, 4);
-        HttpCamera httpCamera = new HttpCamera("Limelight", "http://limelight.local:5800");
+        HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.87.8.19:5800");
         Shuffleboard.getTab("Driving").add(httpCamera).withPosition(0,0).withSize(4,4);
         Shuffleboard.update();
 
