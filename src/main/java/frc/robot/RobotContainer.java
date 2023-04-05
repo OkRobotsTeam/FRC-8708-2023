@@ -20,6 +20,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonNothing;
 import frc.robot.commands.AutonPos1;
 import frc.robot.commands.AutonPos3;
+import frc.robot.commands.AutonTest;
 import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -207,8 +208,8 @@ public class RobotContainer {
             m_driverRightJoystick.getY(),
             m_driverRightJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
-            m_driverLeftJoystick.top().getAsBoolean()),
-            true
+            m_driverLeftJoystick.top().getAsBoolean(),
+            true),
 
         m_drivetrain);
   }
