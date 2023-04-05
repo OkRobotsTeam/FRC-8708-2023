@@ -217,4 +217,15 @@ public class RobotContainer {
     return new RunCommand(
         () -> m_intake.checkPickedUp(m_objectInIntake), m_intake);
   }
+
+
+  public Command getTestCommand() {
+    return new AutonTest(m_drivetrain,m_arm,m_intake);
+  }
+
+  public void testInit() {
+        m_arm.init();
+        m_lights.init();
+    }
+  
 }
