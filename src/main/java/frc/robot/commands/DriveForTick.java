@@ -33,15 +33,20 @@ public class DriveForTick extends CommandBase {
         m_brake = brake;
         m_rampUpTicks = rampUpTicks;
         m_rampDownTicks = rampDownTicks;
+        inPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        
+        addRequirements(drive);
+    }
+
+    @Override 
+    public void initialize() {
+        m_calibrationTotalPower = 0;
+        m_avgEncoderStartPosition = m_drive.getAvgEncoder();
         m_tickNumber = 0;
         m_distanceTraveled = 0;
         m_decelerationStartTick = 0;
-        inPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        m_calibrationTotalPower = 0;
-        m_avgEncoderStartPosition = m_drive.getAvgEncoder();
-        
         m_drive.setBrakeMode(m_brake);
-        addRequirements(drive);
+        System.out.println("Start Position" + m_avgEncoderStartPosition);
     }
 
 
@@ -56,14 +61,14 @@ public class DriveForTick extends CommandBase {
         if (rightTurnDifference < 0) {
             rightTurnDifference += 360;
         }
-       
+       System.out.println("AE:" + m_drive.getAvgEncoder()+ "AESP:" + m_avgEncoderStartPosition);
         double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-m_avgEncoderStartPosition) * inPerRot;
         double distanceRemaining = Math.abs(m_targetDistance_in) - distanceTraveled;
         m_tickNumber++;
         double distanceLastTick = distanceTraveled - m_distanceTraveled;
         m_distanceTraveled=distanceTraveled;
         
-        
+        System.out.println("DT:" + distanceTraveled + "DR:" + distanceRemaining);
         double targetSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, distanceLastTick);
         m_calibrationTotalPower += targetSpeed;
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
@@ -88,7 +93,7 @@ public class DriveForTick extends CommandBase {
             } else if (ticksRemaining == 1) {
                 desiredSpeedPerTick = distanceRemaining;
             } else {
-                desiredSpeedPerTick = distanceRemaining/ (ticksRemaining) * 2.3;
+                desiredSpeedPerTick =( distanceRemaining/ ticksRemaining) * 2.3;
             }
             double distancePerPower = m_distanceTraveled / m_calibrationTotalPower;
             return (desiredSpeedPerTick / distancePerPower);
