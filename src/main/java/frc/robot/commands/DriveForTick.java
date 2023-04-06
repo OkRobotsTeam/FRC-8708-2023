@@ -107,7 +107,7 @@ public class DriveForTick extends CommandBase {
                 m_decelerationStartTick=tickNumber;
             }
 
-            return (m_speed *( tickNumber / m_rampUpTicks));
+            return (m_speed * (m_rampUpTicks!=0 ? tickNumber / m_rampUpTicks : 1) );
         } else {
             //at_speed
             if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
@@ -120,7 +120,8 @@ public class DriveForTick extends CommandBase {
     @Override
     public boolean isFinished() {
         System.out.println("Drive For Tick finished in " + m_tickNumber + " ticks Deceleration Start Tick " + m_decelerationStartTick + " Ramp Down Ticks " + m_rampDownTicks + " Distance traveled " + m_distanceTraveled);
-        return (m_rampDownTicks - m_tickNumber - m_decelerationStartTick < 0);
+        double avgDistance = Math.abs((m_drive.getAvgEncoder()-start_pos) * cmPerRot);
+        return (avgDistance >= Math.abs(m_distance));
     }
 
     @Override

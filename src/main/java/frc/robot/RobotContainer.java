@@ -55,7 +55,6 @@ public class RobotContainer {
       OperatorConstants.kManipulatorControllerPort);
 
     private VisionThread1 m_visionThread1;
-    private VisionThread2 m_visionThread2;
 
   public int m_webcamAmount;
 
@@ -65,7 +64,7 @@ public class RobotContainer {
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
-    m_webcamAmount = CameraServerJNI.enumerateUsbCameras().length;
+    m_webcamAmount = 1;//CameraServerJNI.enumerateUsbCameras().length;
 
     if (m_webcamAmount > 0) {
       System.out.println("Camera 1 active");
@@ -73,13 +72,6 @@ public class RobotContainer {
       m_visionThread1.setDaemon(true);
       m_visionThread1.start();
       m_visionThread1.setPriority(3);
-      if (m_webcamAmount > 1) {
-        System.out.println("Camera 2 active");
-        m_visionThread2 = new VisionThread2();
-        m_visionThread2.setDaemon(true);
-        m_visionThread2.start();
-        m_visionThread2.setPriority(3);
-      }
     } else {
       System.out.println("No webcam found, vision inactive");
     }
@@ -94,6 +86,7 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Red no cable ramp3", new AutonPos3_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Blue no cable ramp3", new AutonPos1_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
+    m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP", new AutonTest(m_drivetrain, m_arm, m_intake));
 
 
 
