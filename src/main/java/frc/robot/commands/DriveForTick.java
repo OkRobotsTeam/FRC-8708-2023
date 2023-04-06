@@ -119,10 +119,8 @@ public class DriveForTick extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double avgDistance = Math.abs((m_drive.getAvgEncoder()-start_pos) * cmPerRot);
-        // System.out.println("GONE: " + avgDistance);
-        // System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
-        return (avgDistance >= Math.abs(m_distance));
+        System.out.println("Drive For Tick finished in " + m_tickNumber + " ticks Deceleration Start Tick " + m_decelerationStartTick + " Ramp Down Ticks " + m_rampDownTicks + " Distance traveled " + m_distanceTraveled);
+        return (m_rampDownTicks - m_tickNumber - m_decelerationStartTick < 0);
     }
 
     @Override
