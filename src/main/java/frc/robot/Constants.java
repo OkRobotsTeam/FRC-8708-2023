@@ -18,8 +18,9 @@ public final class Constants {
     public static final boolean kApplySin = true;
     public static final double kSinLinearity = 0;
 
-    public static final boolean kLimitTurnSpeed = false;
-    public static final double turnSpeedMultiplier = 0.5;
+    public static final boolean kLimitTurnSpeed = true;
+    public static final double kLimitTurnSpeedThreshhold = 0.5;
+    public static final double turnSpeedMultiplier = 0.25;
 
     // The ramp limits are the amount of seconds it should take to go from 0% to 100% speed while shifted to high or low gear
     public static final double kRampLimitLowGearSeconds = 0;
@@ -86,7 +87,7 @@ public final class Constants {
     public static final boolean kElbowMotorInverted = true;
 
     public static final double kElevatorIdleRotations = 1.5;
-    public static final double kElevatorExtendRotations = 18.0;
+    public static final double kElevatorExtendRotations = 18.0 * 1.1d;
     public static final double kElevatorMaximumSpeed = 0.25;
 
     // PID Stop thresholds
@@ -95,7 +96,7 @@ public final class Constants {
 
     public static final double kElbowLowExtendRotations = 14;
     public static final double kElbowMidExtendRotations = 18.0;
-    public static final double kElbowHighExtendRotations = 15.0 - 1;
+    public static final double kElbowHighExtendRotations = 15.0 - 2;
     public static final double kElbowIdleExtendRotations = 1;
     public static final double kElbowHighHumanPlayerStationRotations = 10;
     public static final double kElbowAllowedTuning = 5;

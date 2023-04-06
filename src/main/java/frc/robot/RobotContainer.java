@@ -19,13 +19,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonNothing;
 import frc.robot.commands.AutonPos1;
+import frc.robot.commands.AutonPos1_3piece;
 import frc.robot.commands.AutonPos3;
+import frc.robot.commands.AutonPos3_3piece;
 import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
-import frc.robot.vision.VisionThread;
+import frc.robot.vision.VisionThread1;
+import frc.robot.vision.VisionThread2;
 
 
 /**
@@ -50,9 +53,10 @@ public class RobotContainer {
   private final CommandXboxController m_manipulator = new CommandXboxController(
       OperatorConstants.kManipulatorControllerPort);
 
-  private VisionThread m_visionThread;
+    private VisionThread1 m_visionThread1;
+    private VisionThread2 m_visionThread2;
 
-  public boolean m_webcamPresent;
+  public int m_webcamAmount;
 
   private ShuffleboardTab m_driving_tab = Shuffleboard.getTab("Driving");
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
@@ -60,14 +64,21 @@ public class RobotContainer {
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
-    m_webcamPresent = (CameraServerJNI.enumerateUsbCameras().length > 0);
+    m_webcamAmount = CameraServerJNI.enumerateUsbCameras().length;
 
-    if (m_webcamPresent) {
-      System.out.println("Vision active");
-      m_visionThread = new VisionThread();
-      m_visionThread.setDaemon(true);
-      m_visionThread.start();
-      m_visionThread.setPriority(3);
+    if (m_webcamAmount > 0) {
+      System.out.println("Camera 1 active");
+      m_visionThread1 = new VisionThread1();
+      m_visionThread1.setDaemon(true);
+      m_visionThread1.start();
+      m_visionThread1.setPriority(3);
+      if (m_webcamAmount > 1) {
+        System.out.println("Camera 2 active");
+        m_visionThread2 = new VisionThread2();
+        m_visionThread2.setDaemon(true);
+        m_visionThread2.start();
+        m_visionThread2.setPriority(3);
+      }
     } else {
       System.out.println("No webcam found, vision inactive");
     }
@@ -77,6 +88,10 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Blue cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Red no cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Blue no cable ramp", new AutonPos1(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.setDefaultOption("Red cable ramp3", new AutonPos1_3piece(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Blue cable ramp3", new AutonPos3_3piece(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Red no cable ramp3", new AutonPos3_3piece(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Blue no cable ramp3", new AutonPos1_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
 
 
@@ -207,8 +222,8 @@ public class RobotContainer {
             m_driverRightJoystick.getY(),
             m_driverRightJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
-            m_driverLeftJoystick.top().getAsBoolean()),
-            true
+            m_driverLeftJoystick.top().getAsBoolean(),
+            m_driverRightJoystick.top().getAsBoolean()),
 
         m_drivetrain);
   }

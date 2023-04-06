@@ -189,6 +189,9 @@ public class Drivetrain extends SubsystemBase {
         leftController = applyDeadzone(leftController, OperatorConstants.kInputDeadzone);
         rightController = applyDeadzone(rightController, OperatorConstants.kInputDeadzone);
         
+        leftSpeed = leftController;
+        rightSpeed = rightController;
+
         if (OperatorConstants.kApplyCubic) {
             leftController = applyCubic(leftController, OperatorConstants.kCubicLinearity);
             rightController = applyCubic(rightController, OperatorConstants.kCubicLinearity);
@@ -198,34 +201,42 @@ public class Drivetrain extends SubsystemBase {
         }
         if (OperatorConstants.kLimitTurnSpeed) {
             double forwardSpeed = (leftController + rightController) / 2;
+            if (forwardSpeed > OperatorConstants.kLimitTurnSpeedThreshhold) {
             double turnSpeed = (leftController - rightController);
-            turnSpeed *= OperatorConstants.turnSpeedMultiplier;
-            leftSpeed = forwardSpeed + turnSpeed;
-            rightSpeed = forwardSpeed - turnSpeed;
-        } else {
-            leftSpeed = leftController;
-            rightSpeed = rightController;
+                turnSpeed *= OperatorConstants.turnSpeedMultiplier;
+                leftSpeed = forwardSpeed + turnSpeed;
+                rightSpeed = forwardSpeed - turnSpeed;
+            }
         }
 
-        double tx = txEntry.getDouble(0);
-        double ty = tyEntry.getDouble(0);
-        double z = DriveConstants.kLimelightOffsetYInches / Math.tan(Math.toRadians(ty));
-        double targetTx = Math.atan(z / DriveConstants.kLimelightOffsetXInches);
+        if (auto_correct) {
+            double tx = txEntry.getDouble(0);
+            double ty = tyEntry.getDouble(0);
+            double z = DriveConstants.kLimelightOffsetYInches / Math.tan(Math.toRadians(ty));
+            double targetTx = Math.atan(z / DriveConstants.kLimelightOffsetXInches);
+            double deltaHeading = (tx - targetTx) + 4;
+            System.out.println("Distance ahead: " + z + ", Cube angle: " + tx + ", Cube degrees off: " + deltaHeading);
+            leftSpeed += (-deltaHeading * 0.015);
+            rightSpeed += (deltaHeading * 0.015);
+        }
 
         
         if (slow_brake) {
-            setBrakeMode(true);
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
         } else if (slow) {
-            setBrakeMode(false);
             m_leftMotors.set(leftSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * OperatorConstants.kSlowModeMultiplier * DriveConstants.kMaximumDrivetrainSpeed);
         }
         else {
-            setBrakeMode(false);
             m_leftMotors.set(leftSpeed * DriveConstants.kMaximumDrivetrainSpeed);
             m_rightMotors.set(rightSpeed * DriveConstants.kMaximumDrivetrainSpeed);
+        }
+
+        if (auto_correct || slow_brake) {
+            setBrakeMode(true);
+        } else {
+            setBrakeMode(false);
         }
     }
 

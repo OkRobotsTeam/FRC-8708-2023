@@ -51,7 +51,6 @@ public class Intake extends SubsystemBase {
     }
 
     public void checkPickedUp(GenericEntry objedtInIntake) {
-        System.out.println(m_intakeTop.getOutputCurrent());
         // Don't take reading until 200 milliseconds after the motors start
         if (System.currentTimeMillis() - intakeInStartTime > IntakeConstants.kIntakeMotorStartupTimeMSEC) {
             if (m_intakeTop.getOutputCurrent() > IntakeConstants.kHoldingObjectCurrent) {
