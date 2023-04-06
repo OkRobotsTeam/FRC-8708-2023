@@ -40,7 +40,7 @@ public class AutonPos3_3piece extends SequentialCommandGroup {
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setPistonRaised(false), arm),
-            new DriveForTick(0, 78, 1, drive, false,20,20),
+            new DriveForTick(0, 78, 1, drive, false,20,1),
             // new TurnTo(28, 0.6, drive),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new InstantCommand(intake::intakeIn, intake),
