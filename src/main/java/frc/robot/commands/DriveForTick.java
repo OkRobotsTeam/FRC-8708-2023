@@ -12,7 +12,7 @@ public class DriveForTick extends CommandBase {
     private final Drivetrain m_drive;
     private final double inPerRot;
     private final boolean m_brake;
-    private double delta_heading;
+    private double delta_heading_deg;
     private int m_rampUpTicks;
     private int m_rampDownTicks;
     private int m_tickNumber = 0;
@@ -39,6 +39,7 @@ public class DriveForTick extends CommandBase {
         inPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         m_calibrationTotalPower = 0;
         m_avgEncoderStartPosition = m_drive.getAvgEncoder();
+        
         m_drive.setBrakeMode(m_brake);
         addRequirements(drive);
     }
@@ -66,11 +67,11 @@ public class DriveForTick extends CommandBase {
         double targetSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, distanceLastTick);
         m_calibrationTotalPower += targetSpeed;
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
-            delta_heading = leftTurnDifference;
-            m_drive.tankDriveRaw((delta_heading * -DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading * DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
+            delta_heading_deg = leftTurnDifference;
+            m_drive.tankDriveRaw((delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
         } else {
-            delta_heading = rightTurnDifference;
-            m_drive.tankDriveRaw((delta_heading * DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading * -DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
+            delta_heading_deg = rightTurnDifference;
+            m_drive.tankDriveRaw((delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
         }
         
     }
@@ -122,6 +123,6 @@ public class DriveForTick extends CommandBase {
     public void end(boolean interrupted) {
         m_drive.setRampRate(0);
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("DONE, DEGREES OFF COURSE: " + Math.abs(delta_heading));
+        System.out.println("DONE, DEGREES OFF COURSE: " + Math.abs(delta_heading_deg));
     }
 }
