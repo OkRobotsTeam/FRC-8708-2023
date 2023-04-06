@@ -107,7 +107,7 @@ public class DriveForTick extends CommandBase {
                 m_decelerationStartTick=tickNumber;
             }
 
-            return (m_speed *( tickNumber / m_rampUpTicks));
+            return (m_speed * (m_rampUpTicks!=0 ? tickNumber / m_rampUpTicks : 1) );
         } else {
             //at_speed
             if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
