@@ -34,6 +34,8 @@ public class Arm extends SubsystemBase {
     private boolean elevatorEncoderResetting;
     private double elevatorEncoderResetStartTime;
 
+    private boolean calibrated = false;
+
     public Arm() {
         m_elevator1.setInverted(ArmConstants.kElevatorMotor1Inverted);
         m_elevator1.setInverted(ArmConstants.kElevatorMotor2Inverted);
@@ -176,11 +178,14 @@ public class Arm extends SubsystemBase {
 
 
     public void init() {
-        elevatorEncoderResetting = true;
-        elevatorEncoderResetStartTime = System.currentTimeMillis();
-        m_elbowEncoder.setPosition(0);
-        elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
-        setPistonRaised(true);
+        if (!calibrated) {
+            elevatorEncoderResetting = true;
+            elevatorEncoderResetStartTime = System.currentTimeMillis();
+            m_elbowEncoder.setPosition(0);
+            elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
+            setPistonRaised(true);
+            calibrated = true;
+        }
     }
 
     public void setElbowSetpoint(double setpoint) {
