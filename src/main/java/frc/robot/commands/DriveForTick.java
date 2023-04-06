@@ -13,15 +13,12 @@ public class DriveForTick extends CommandBase {
     private final double inPerRot;
     private final boolean m_brake;
     private double delta_heading;
-    private final double kDecelrationRate = 1.0; //motor power per second 
     private int m_rampUpTicks;
     private int m_rampDownTicks;
-    private int m_tickNumber;
+    private int m_tickNumber = 0;
     private double m_distanceTraveled;
-    private double start_pos;
+    private double m_avgEncoderStartPosition;
     private int m_decelerationStartTick;
-    private double m_maxDistancePerTick;
-    private double m_calculatedSpeedPerTickPerUnitPower;
     private double m_calibrationTotalPower;
 
     public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, int rampUpTicks, int rampDownTicks) {
@@ -41,24 +38,17 @@ public class DriveForTick extends CommandBase {
         m_decelerationStartTick = 0;
         inPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         m_calibrationTotalPower = 0;
-
+        m_avgEncoderStartPosition = m_drive.getAvgEncoder();
+        m_drive.setBrakeMode(m_brake);
         addRequirements(drive);
     }
 
-    @Override
-    public void initialize() {
-        start_pos = m_drive.getAvgEncoder();
-        m_drive.tankDriveRaw(0, 0, false);
-        // System.out.println("DISTANCE TO GO: " + m_distance);
-        m_drive.setBrakeMode(m_brake);
-        m_drive.setRampRate(0.5);
-    }
 
     @Override
     public void execute() {
-        double currentHeading = m_drive.gyro.getAngle() % 360;
-        double leftTurnDifference = (currentHeading - m_targetHeading_deg);
-        double rightTurnDifference = (m_targetHeading_deg - currentHeading);
+        double currentHeading_deg = m_drive.gyro.getAngle() % 360;
+        double leftTurnDifference = (currentHeading_deg - m_targetHeading_deg);
+        double rightTurnDifference = (m_targetHeading_deg - currentHeading_deg);
         if (leftTurnDifference < 0) {
             leftTurnDifference += 360;
         }
@@ -66,14 +56,14 @@ public class DriveForTick extends CommandBase {
             rightTurnDifference += 360;
         }
        
-        double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-start_pos) * inPerRot;
+        double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-m_avgEncoderStartPosition) * inPerRot;
         double distanceRemaining = Math.abs(m_targetDistance_in) - distanceTraveled;
         m_tickNumber++;
         double distanceLastTick = distanceTraveled - m_distanceTraveled;
         m_distanceTraveled=distanceTraveled;
         
         
-        double targetSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, m_tickNumber, distanceLastTick );
+        double targetSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, distanceLastTick);
         m_calibrationTotalPower += targetSpeed;
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
             delta_heading = leftTurnDifference;
@@ -86,7 +76,7 @@ public class DriveForTick extends CommandBase {
     }
 
     
-    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, int m_tickNumber, double distancePerTick) {
+    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, double distancePerTick) {
         if (m_decelerationStartTick > 0) {
             //slowing
             int ticksRampedDown = m_tickNumber - m_decelerationStartTick;
