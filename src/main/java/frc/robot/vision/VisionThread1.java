@@ -42,7 +42,7 @@ public class VisionThread1 extends Thread {
         outputStream1.setPixelFormat(PixelFormat.kMJPEG);
         outputStream2.setPixelFormat(PixelFormat.kMJPEG);
         Shuffleboard.getTab("Driving").add(outputStream1).withPosition(0, 0).withSize(4, 4);
-        Shuffleboard.getTab("Driving").add(outputStream1).withPosition(6, 0).withSize(4, 4);
+        Shuffleboard.getTab("Driving").add(outputStream2).withPosition(6, 0).withSize(4, 4);
         Shuffleboard.update();
 
         Mat mat1 = new Mat();

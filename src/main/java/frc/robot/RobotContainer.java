@@ -55,7 +55,6 @@ public class RobotContainer {
       OperatorConstants.kManipulatorControllerPort);
 
     private VisionThread1 m_visionThread1;
-    private VisionThread2 m_visionThread2;
 
   public int m_webcamAmount;
 

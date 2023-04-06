@@ -17,11 +17,12 @@ public class AutonTest extends SequentialCommandGroup {
         addCommands(
             
             new InstantCommand(() -> drive.gyro.reset(), drive),
-            new TurnTo(90, 0.6, drive),
-            new WaitCommand(2),
-            new TurnTo(60, 0.6, drive),
-            new WaitCommand(2),
-            new TurnTo(70, 0.6, drive),
+            // new TurnTo(90, 0.6, drive),
+            // new TurnTo(60, 0.6, drive),
+            // new WaitCommand(2),
+            // new TurnTo(70, 0.6, drive),
+            new DriveForTick(0, 20, 0.7, drive, false, 20, 1),
+            new DriveForTick(90, 40, 0.7, drive, false, 1, 20),
             new WaitCommand(2),
             new InstantCommand(()->drive.setBrakeMode(false),drive)
   
