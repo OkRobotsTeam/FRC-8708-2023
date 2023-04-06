@@ -73,13 +73,6 @@ public class RobotContainer {
       m_visionThread1.setDaemon(true);
       m_visionThread1.start();
       m_visionThread1.setPriority(3);
-      if (m_webcamAmount > 1) {
-        System.out.println("Camera 2 active");
-        m_visionThread2 = new VisionThread2();
-        m_visionThread2.setDaemon(true);
-        m_visionThread2.start();
-        m_visionThread2.setPriority(3);
-      }
     } else {
       System.out.println("No webcam found, vision inactive");
     }

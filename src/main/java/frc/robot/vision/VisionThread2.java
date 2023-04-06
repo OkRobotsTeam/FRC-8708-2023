@@ -14,8 +14,6 @@ public class VisionThread2 extends Thread {
     UsbCamera m_camera2;
     private MjpegServer m_server2;
 
-    public boolean m_webcamPresent;
-
     public void run() {
         System.out.println("Connecting to camera 2");
         m_camera2 = new UsbCamera("Webcam2", 1);
@@ -33,7 +31,7 @@ public class VisionThread2 extends Thread {
         CvSource outputStream2 = CameraServer.putVideo("Camera2", 320, 240);
 
         outputStream2.setPixelFormat(PixelFormat.kMJPEG);
-        Shuffleboard.getTab("Driving").add(outputStream2).withPosition(6, 0).withSize(4, 4);
+        Shuffleboard.getTab("Driving").add(outputStream2).withPosition(0, 0).withSize(4, 4);
         Shuffleboard.update();
 
         Mat mat = new Mat();
