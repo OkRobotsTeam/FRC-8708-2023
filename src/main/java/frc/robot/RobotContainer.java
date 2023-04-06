@@ -22,6 +22,7 @@ import frc.robot.commands.AutonPos1;
 import frc.robot.commands.AutonPos1_3piece;
 import frc.robot.commands.AutonPos3;
 import frc.robot.commands.AutonPos3_3piece;
+import frc.robot.commands.AutonTest;
 import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -232,4 +233,15 @@ public class RobotContainer {
     return new RunCommand(
         () -> m_intake.checkPickedUp(m_objectInIntake), m_intake);
   }
+
+
+  public Command getTestCommand() {
+    return new AutonTest(m_drivetrain,m_arm,m_intake);
+  }
+
+  public void testInit() {
+        m_arm.init();
+        m_lights.init();
+    }
+  
 }
