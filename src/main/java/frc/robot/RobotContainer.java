@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.cscore.CameraServerJNI;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -29,7 +28,6 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Lights;
 import frc.robot.vision.VisionThread1;
-import frc.robot.vision.VisionThread2;
 
 
 /**
