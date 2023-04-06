@@ -17,18 +17,30 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Driving/SendableChooser[0]": "String Chooser"
+    },
+    "windows": {
+      "/Shuffleboard/Driving/SendableChooser[0]": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "Transitory Values": {
+      "open": false
+    },
     "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
-      "LiveWindow": {
-        "open": true
-      },
       "Shuffleboard": {
-        "open": true
+        "Driving": {
+          "SendableChooser[0]": {
+            "open": true
+          },
+          "open": true
+        }
       }
     }
   }
