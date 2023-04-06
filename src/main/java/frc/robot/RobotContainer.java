@@ -65,7 +65,7 @@ public class RobotContainer {
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
   public RobotContainer() {
-    m_webcamAmount = CameraServerJNI.enumerateUsbCameras().length;
+    m_webcamAmount = 1;//CameraServerJNI.enumerateUsbCameras().length;
 
     if (m_webcamAmount > 0) {
       System.out.println("Camera 1 active");
@@ -94,6 +94,7 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Red no cable ramp3", new AutonPos3_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Blue no cable ramp3", new AutonPos1_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
+    m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP", new AutonTest(m_drivetrain, m_arm, m_intake));
 
 
 
