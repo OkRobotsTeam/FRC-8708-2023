@@ -41,7 +41,6 @@ public class TurnTo extends CommandBase {
     @Override
     public void execute() {
         double current_heading = m_drive.gyro.getAngle() % 360;
-        System.out.println("DEGREES OFF COURSE: " + Math.abs(delta_heading));
         double left_turn_difference = (current_heading - m_targetHeading);
         double right_turn_difference = (m_targetHeading - current_heading);
         if (left_turn_difference < 0) {
@@ -58,8 +57,6 @@ public class TurnTo extends CommandBase {
             delta_heading = right_turn_difference;
         }
         turnComplete = (Math.abs(delta_heading) <= Math.abs(DriveConstants.kAllowableHeadingOffset));
-        System.out.println("TURN COMPLETE?: " + turnComplete);
-        System.out.println("DEGREES REMAINING: " + (current_heading - m_targetHeading));
         double speed = Math.min(m_speed, (m_speed * (Math.abs(delta_heading) * DriveConstants.kTurnAggression)) + 0.05d);
 
         if (Math.abs(left_turn_difference) < Math.abs(right_turn_difference)) {
@@ -73,7 +70,7 @@ public class TurnTo extends CommandBase {
     @Override
     public boolean isFinished() {
         if (startTime > 0 && System.currentTimeMillis() - startTime > 3000) {
-            System.out.println("TurnTo terminated by timeout");
+            System.out.println("WARNING: TurnTo exceeded timeout limit of 3000 ms");
             return true;
         }
         return turnComplete;
@@ -82,7 +79,6 @@ public class TurnTo extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("DONE, CURRENT_HEADING: " + (m_drive.gyro.getAngle()));
-        System.out.println("DONE, OFF COURSE BY: " + (delta_heading - m_targetHeading));
+        System.out.println("DONE, CURRENT_HEADING: " + (m_drive.gyro.getAngle()) + "OFF COURSE BY: " + (delta_heading - m_targetHeading));
     }
 }
