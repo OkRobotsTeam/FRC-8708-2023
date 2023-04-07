@@ -92,7 +92,9 @@ public class DriveForTrap extends CommandBase {
     @Override
     public void execute() {
         double distanceTraveled = (m_drivetrain.getAvgEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        double error = m_distance - distanceTraveled;
+        double error = -(m_distance - distanceTraveled); 
+
+        System.out.println(error);
         
         double velocity = m_maxSpeed;
 
@@ -111,7 +113,7 @@ public class DriveForTrap extends CommandBase {
         leftPower = clamp(leftPower);
         rightPower = clamp(rightPower);
 
-        System.out.println(leftPower);
+        System.out.println(error);
 
         leftPower *= velocity;
         rightPower *= velocity;

@@ -103,7 +103,7 @@ public class DriveForTick extends CommandBase {
         
         if (accelerationState == AccelerationState.ACCELERATING) {
             //accelerating
-            System.out.println("accellerating " + m_tickNumber * m_rampUpTicks);
+            System.out.println("accelerating " + m_tickNumber * m_rampUpTicks);
 
             if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
                 m_decelerationStartTick=m_tickNumber;

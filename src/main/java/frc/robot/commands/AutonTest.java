@@ -26,9 +26,14 @@ public class AutonTest extends SequentialCommandGroup {
             // new DriveForTick(90, 40, 0.7, drive, false, 1, 20),
 
             new DriveForTrap(20, 1, drive, true),
-            new TurnTo(90,0.7,drive),
-            new DriveForTrap(20,1,drive,true),
-            new TurnTo(180,0.7,drive),
+            // new TurnTo(90,0.7,drive),
+            // new DriveForTrap(20,1,drive,true),
+            // new TurnTo(180,0.7,drive),
+            // new DriveForTrap(10, 1, drive, false),
+            // new DriveForTrap(10,1,drive,true),
+            // new TurnTo(270,0.7,drive),
+            // new DriveForTrap(20,1,drive,true),
+            // new TurnTo(360,0.7,drive),
 
             new WaitCommand(2),
             new InstantCommand(()->drive.setBrakeMode(false),drive)
