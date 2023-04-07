@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -20,7 +21,8 @@ public class DriveForTick extends CommandBase {
     private double m_avgEncoderStartPosition;
     private int m_decelerationStartTick;
     private double m_calibrationTotalPower;
-
+    private enum AccelerationState {ACCELERATING, AT_SPEED, SLOWING, DONE};
+    private AccelerationState accelerationState;
     public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, int rampUpTicks, int rampDownTicks) {
         m_targetHeading_deg = heading;
         m_targetDistance_in = distance_in;
@@ -47,6 +49,11 @@ public class DriveForTick extends CommandBase {
         m_decelerationStartTick = 0;
         m_drive.setBrakeMode(m_brake);
         System.out.println("Start Position" + m_avgEncoderStartPosition);
+        if (m_rampUpTicks > 0 ) {
+            accelerationState = AccelerationState.AT_SPEED;
+        } else {
+            accelerationState = AccelerationState.ACCELERATING;
+        }
     }
 
 
@@ -93,7 +100,17 @@ public class DriveForTick extends CommandBase {
     }
 
     private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, double distancePerTick) {
-        if (m_decelerationStartTick > 0) {
+        
+        if (accelerationState == AccelerationState.ACCELERATING) {
+            //accelerating
+            System.out.println("accellerating " + m_tickNumber * m_rampUpTicks);
+
+            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick=m_tickNumber;
+            }
+
+            return (m_targetSpeed * ( m_tickNumber / (double) m_rampUpTicks ) );
+        } else if (accelerationState == AccelerationState.SLOWING) {
             //slowing
             System.out.println("Slowing "+(m_tickNumber-m_decelerationStartTick) + "of" + m_rampDownTicks);
             int ticksRampedDown = m_tickNumber - m_decelerationStartTick;
@@ -111,16 +128,8 @@ public class DriveForTick extends CommandBase {
             }
             double distancePerPower = m_distanceTraveled / m_calibrationTotalPower;
             return (desiredSpeedPerTick / distancePerPower);
-        } else if (m_tickNumber < m_rampUpTicks) {
-            //accelerating
-            System.out.println("accellerating " + m_tickNumber * m_rampUpTicks);
 
-            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
-                m_decelerationStartTick=m_tickNumber;
-            }
-
-            return (m_targetSpeed * ( m_tickNumber / (double) m_rampUpTicks ) );
-        } else {
+        } else if (accelerationState == AccelerationState.AT_SPEED) {
             //at_speed
             System.out.println("at speed");
 
@@ -128,7 +137,9 @@ public class DriveForTick extends CommandBase {
                 m_decelerationStartTick=m_tickNumber;
             }
             return m_targetSpeed;
-        }    
+        }    else {
+            return (0.0);
+        }
     }
 
     @Override
