@@ -91,7 +91,7 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public void execute() {
-        double distanceTraveled = -(m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        double distanceTraveled = (m_drivetrain.getAvgEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         double error = m_distance - distanceTraveled;
         
         double velocity = m_maxSpeed;
@@ -126,7 +126,7 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceTraveled = Math.abs(m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        double distanceTraveled = Math.abs(m_drivetrain.getAvgEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         return Math.abs(Math.abs(m_distance) - distanceTraveled) < DriveConstants.kDriveDistanceTolerance;
     }
 
