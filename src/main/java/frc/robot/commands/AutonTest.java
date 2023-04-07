@@ -25,7 +25,9 @@ public class AutonTest extends SequentialCommandGroup {
             // new DriveForTick(0, 20, 0.7, drive, false, 20, 1),
             // new DriveForTick(90, 40, 0.7, drive, false, 1, 20),
 
-            new DriveForTrap(20, 1, drive, true),
+            new InstantCommand(() -> drive.tankDriveRaw(0.1,0.1,false), drive),
+
+            // new DriveForTrap(20, 1, drive, true),
             // new TurnTo(90,0.7,drive),
             // new DriveForTrap(20,1,drive,true),
             // new TurnTo(180,0.7,drive),

@@ -32,7 +32,7 @@ public class AutonPos1 extends SequentialCommandGroup {
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveFor(0, -120, 0.7, drive, false),
+            new DriveFor(0, -125, 0.7, drive, false),
             new WaitCommand(0.75),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
