@@ -52,6 +52,28 @@ public class DriveForTick extends CommandBase {
 
     @Override
     public void execute() {
+
+       System.out.println("averageEncoder: " + m_drive.getAvgEncoder()+ "aeStartPosition: " + m_avgEncoderStartPosition);
+        double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-m_avgEncoderStartPosition) * inPerRot;
+        double distanceRemaining = Math.abs(m_targetDistance_in) - distanceTraveled;
+        m_tickNumber++;
+        double distanceLastTick = distanceTraveled - m_distanceTraveled;
+        m_distanceTraveled=distanceTraveled;
+        
+        System.out.println("distanceTraveled: " + distanceTraveled + "distanceRemaining:" + distanceRemaining);
+
+        double calculatedSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, distanceLastTick);
+        System.out.println("acceleration curve output: "+calculatedSpeed);
+
+        m_calibrationTotalPower += calculatedSpeed;
+        double turnFactor = getTurnFactor();
+
+        System.out.println("TargetSpeed: " + calculatedSpeed + " turnFactor: " + turnFactor);
+        m_drive.tankDriveRaw(calculatedSpeed - turnFactor, calculatedSpeed + turnFactor,false);
+        
+    }
+
+    private double getTurnFactor() {
         double currentHeading_deg = m_drive.gyro.getAngle() % 360;
         double leftTurnDifference = (currentHeading_deg - m_targetHeading_deg);
         double rightTurnDifference = (m_targetHeading_deg - currentHeading_deg);
@@ -61,6 +83,7 @@ public class DriveForTick extends CommandBase {
         if (rightTurnDifference < 0) {
             rightTurnDifference += 360;
         }
+<<<<<<< Updated upstream
         if (m_tickNumber % 5 == 0) {
             System.out.println("Encoder:" + m_drive.getAvgEncoder() + "Encoder Start:" + m_avgEncoderStartPosition);
         }
@@ -95,6 +118,29 @@ public class DriveForTick extends CommandBase {
             double desiredSpeedPerTick = 0;
             if (ticksRemaining == 0) {
                 return (0.0);
+=======
+        if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
+            delta_heading_deg = leftTurnDifference;
+            return (delta_heading_deg * -DriveConstants.kCorrectionAggression);
+        } else {
+            delta_heading_deg = rightTurnDifference;
+            return (delta_heading_deg * DriveConstants.kCorrectionAggression);
+        }
+    }
+
+    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, double distancePerTick) {
+        if (m_decelerationStartTick > 0) {
+            //slowing
+            System.out.println("Slowing "+(m_tickNumber-m_decelerationStartTick) + "of" + m_rampDownTicks);
+            int ticksRampedDown = m_tickNumber - m_decelerationStartTick;
+            int ticksRemaining = m_rampDownTicks - ticksRampedDown;
+            double desiredSpeedPerTick = 0;
+            if (distanceRemaining < 0) {
+                return(0.0);
+            }
+            if (ticksRemaining <= 0) {
+                return(0.0);
+>>>>>>> Stashed changes
             } else if (ticksRemaining == 1) {
                 desiredSpeedPerTick = distanceRemaining;
             } else {
@@ -103,6 +149,7 @@ public class DriveForTick extends CommandBase {
             double distancePerPower = m_distanceTraveled / m_calibrationTotalPower;
             return (desiredSpeedPerTick / distancePerPower);
         } else if (m_tickNumber < m_rampUpTicks) {
+<<<<<<< Updated upstream
             // accelerating
             if ((distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
                 m_decelerationStartTick = m_tickNumber;
@@ -113,6 +160,22 @@ public class DriveForTick extends CommandBase {
             // at_speed
             if ((distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
                 m_decelerationStartTick = m_tickNumber;
+=======
+            //accelerating
+            System.out.println("accellerating " + m_tickNumber * m_rampUpTicks);
+
+            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick=m_tickNumber;
+            }
+
+            return (m_targetSpeed * ( m_tickNumber / (double) m_rampUpTicks ) );
+        } else {
+            //at_speed
+            System.out.println("at speed");
+
+            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick=m_tickNumber;
+>>>>>>> Stashed changes
             }
             return m_targetSpeed;
         }
