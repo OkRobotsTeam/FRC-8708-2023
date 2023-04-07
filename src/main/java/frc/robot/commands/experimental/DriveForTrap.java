@@ -12,6 +12,7 @@ public class DriveForTrap extends CommandBase {
     private final double m_maxSpeed;
     private final Drivetrain m_drivetrain;
     private final ADIS16470_IMU m_gyro;
+    private final boolean m_brake;
 
     private double m_startingPosition;
     private double m_heading;
@@ -30,11 +31,20 @@ public class DriveForTrap extends CommandBase {
 
     private final PIDController m_anglePID = new PIDController(kPA, kI, kD);
 
-    public DriveForTrap(double distance_in, double maxSpeed, Drivetrain drivetrain) {
+    public DriveForTrap(double distance_in, double maxSpeed, Drivetrain drivetrain, boolean brake) {
+        /**
+        * Uses ramp-up and ramp-down
+        * If brake then ramp down
+        * else coast (don't ramp down)
+        * 
+        * 
+        */
+        
         m_distance = distance_in;
         m_maxSpeed = maxSpeed;
         m_drivetrain = drivetrain;
         m_gyro = drivetrain.gyro;
+        m_brake = brake;
 
         addRequirements(drivetrain);
     }
@@ -82,9 +92,12 @@ public class DriveForTrap extends CommandBase {
         leftPower *= velocity;
         rightPower *= velocity;
 
-
-        m_drivetrain.tankDriveRaw(leftPower, rightPower, false);
-        System.out.println(error);
+        if (!m_brake) {
+            m_drivetrain.tankDriveRaw(m_maxSpeed, m_maxSpeed, false);
+        } else {
+            m_drivetrain.tankDriveRaw(leftPower, rightPower, false);
+        }
+        //System.out.println(error);
     }
 
     @Override
@@ -95,6 +108,7 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        m_drivetrain.setBrakeMode(m_brake);
         m_drivetrain.tankDriveRaw(0,0,false);
     }
 }
