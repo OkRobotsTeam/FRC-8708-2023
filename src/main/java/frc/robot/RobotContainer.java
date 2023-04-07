@@ -208,7 +208,7 @@ public class RobotContainer {
   }
 
   public Command getTankDriveCommand() {
-    return new RunCommand(
+    return new InstantCommand(
         () -> m_drivetrain.tankDrive(
             m_driverLeftJoystick.getY(),
             m_driverRightJoystick.getY(),
@@ -221,7 +221,7 @@ public class RobotContainer {
   }
 
   public Command getIntakeCommand() {
-    return new RunCommand(
+    return new InstantCommand(
         () -> m_intake.checkPickedUp(m_objectInIntake), m_intake);
   }
 

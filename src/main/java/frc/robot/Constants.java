@@ -56,6 +56,8 @@ public final class Constants {
 
     public static final double kMaximumDrivetrainSpeed = 1.0;
 
+    public static final double kDriveDistanceTolerance = 1.0;
+
     // = measured / input
     public static final double kDriveError = 1.110586;
     public static final double kTurnError = 1.06;
