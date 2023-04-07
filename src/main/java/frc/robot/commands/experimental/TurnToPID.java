@@ -12,13 +12,11 @@ public class TurnToPID extends CommandBase{
     private final Drivetrain m_drivetrain;
     private final ADIS16470_IMU m_gyro;
 
-    private boolean isLeft;
-
     private double startingHeading;
 
     private double error;
 
-    private final double kP = 0.1;
+    private final double kP = 0.02;
 
     public TurnToPID(double heading, double maxSpeed, Drivetrain drivetrain) {
         m_heading = heading % 360;
@@ -31,12 +29,14 @@ public class TurnToPID extends CommandBase{
 
     @Override
     public void initialize() {
+        m_drivetrain.setRampRate(0.4);
+
         startingHeading = m_gyro.getAngle() % 360;
 
         double turnRight = (m_heading - startingHeading)%360;
+        if (turnRight<0) {turnRight+=360;}
         double turnLeft = (startingHeading - m_heading)%360;
-
-        isLeft = (turnLeft < turnRight);
+        if (turnLeft<0) {turnLeft+=360;}
 
         m_drivetrain.setBrakeMode(true);
 
@@ -52,36 +52,30 @@ public class TurnToPID extends CommandBase{
     public void execute() {
         double currHeading = m_gyro.getAngle();
         double dRight = (m_heading - currHeading)%360;
+        while (dRight<0) {dRight += 360;}
         double dLeft = (currHeading - m_heading)%360;
+        while (dLeft<0) {dLeft += 360;}
         error = Math.min(dRight,dLeft);
 
-        double velocity = clamp(error * kP, m_speed);
+        System.out.println(error);
+
+        double velocity = -clamp(error * kP, m_speed);
 
         // STUPID SIGNS WILL BE THE END OF ME I SWEAR
-        if (isLeft) {
-            // we are turning left
-            if (dLeft < dRight) {
-                // turn left because still on track
-                m_drivetrain.tankDriveRawCorrectDirection(-velocity, velocity, false);
-            } else {
-                // turn right because overshot
-                m_drivetrain.tankDriveRawCorrectDirection(velocity, -velocity, false);
-            }
+        if (dLeft < dRight) {
+            // turn left because still on track
+            m_drivetrain.tankDriveRawCorrectDirection(-velocity, velocity, false);
+            System.out.println("LEFT");
         } else {
-            // we are turning right
-            if (dRight < dLeft) {
-                // turn right because still on track
-                m_drivetrain.tankDriveRawCorrectDirection(velocity, -velocity, false);
-            } else {
-                // turn left because overshot
-                m_drivetrain.tankDriveRawCorrectDirection(-velocity, velocity, false);
-            }
+            // turn right because overshot
+            m_drivetrain.tankDriveRawCorrectDirection(velocity, -velocity, false);
+            System.out.println("RIGHT");
         }
     }
 
     @Override
     public boolean isFinished() {
-        return (error<=DriveConstants.kAllowableHeadingOffset);
+        return (Math.abs(error)<=DriveConstants.kAllowableHeadingOffset);
     }
 
     @Override
