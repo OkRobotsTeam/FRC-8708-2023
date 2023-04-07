@@ -164,6 +164,26 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotors.set(rightSpeed);
     }
 
+    public void tankDriveRawCorrectDirection(double leftSpeed, double rightSpeed, boolean fast) {
+        leftSpeed = Math.min(1,Math.max(-1,leftSpeed));
+        rightSpeed = Math.min(1,Math.max(-1,rightSpeed)); 
+        if (fast != previousFast) {
+            System.out.println("SHIFTING");
+            if (fast) {
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
+                setRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+            } else {
+                m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
+                setRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+
+            }
+            previousFast = fast;
+        }
+        m_leftMotors.set(-leftSpeed);
+        m_rightMotors.set(-rightSpeed);
+    }
+
+
     public void setRampRate(double rampRate) {
         m_leftMotor1.setOpenLoopRampRate(rampRate);
         m_leftMotor2.setOpenLoopRampRate(rampRate);

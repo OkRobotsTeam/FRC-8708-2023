@@ -103,7 +103,7 @@ public class DriveForTrap extends CommandBase {
         double headingError = m_gyro.getAngle() - m_heading;
         //m_integral += headingError;
 
-        double forwardPower = -kPL*error;//m_drivePID.calculate(error,0);
+        double forwardPower = kPL*error;//m_drivePID.calculate(error,0);
         double turnPower = m_anglePID.calculate(headingError, 0) * DriveConstants.kTurnAggression;
         //turnPower += m_pidController.calculate(m_integral, 0) * DriveConstants.kTurnIntegral; // what is this
 
@@ -121,9 +121,9 @@ public class DriveForTrap extends CommandBase {
         //rightPower *= velocity;
 
         if (!m_brake) {
-            m_drivetrain.tankDriveRaw(Math.copySign(m_maxSpeed,-m_distance), Math.copySign(m_maxSpeed,-m_distance), false);
+            m_drivetrain.tankDriveRawCorrectDirection(Math.copySign(m_maxSpeed,m_distance), Math.copySign(m_maxSpeed,m_distance), false);
         } else {
-            m_drivetrain.tankDriveRaw(leftPower, rightPower, false);
+            m_drivetrain.tankDriveRawCorrectDirection(leftPower, rightPower, false);
         }
         //System.out.println(error);
     }
