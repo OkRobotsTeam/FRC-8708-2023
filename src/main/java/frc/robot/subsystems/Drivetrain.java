@@ -40,6 +40,7 @@ public class Drivetrain extends SubsystemBase {
             DriveConstants.kShifterLowSpeedChannel);
 
     private boolean previousFast;
+    private boolean previousBrake;
 
     private double prevLeftPos = 0;
     private double prevRightPos = 0;
@@ -56,13 +57,10 @@ public class Drivetrain extends SubsystemBase {
         m_leftMotors.setInverted(DriveConstants.kLeftMotorsInverted);
         m_rightMotors.setInverted(DriveConstants.kRightMotorsInverted);
 
-        // DOESN'T WORK
-        //m_leftEncoder.setInverted(DriveConstants.kLeftMotorsInverted);
-        //m_rightEncoder.setInverted(DriveConstants.kRightMotorsInverted);
-
         // previousFast is a boolean value holding whether the fast argument was true
         // last time we checked
         previousFast = false;
+        previousBrake = false;
         m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
         m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
         m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
@@ -79,16 +77,19 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setBrakeMode(boolean brake) {
-        if (brake) {
-            m_leftMotor1.setIdleMode(IdleMode.kBrake);
-            m_leftMotor2.setIdleMode(IdleMode.kBrake);
-            m_rightMotor1.setIdleMode(IdleMode.kBrake);
-            m_rightMotor2.setIdleMode(IdleMode.kBrake);
-        } else {
-            m_leftMotor1.setIdleMode(IdleMode.kCoast);
-            m_leftMotor2.setIdleMode(IdleMode.kCoast);
-            m_rightMotor1.setIdleMode(IdleMode.kCoast);
-            m_rightMotor2.setIdleMode(IdleMode.kCoast);
+        if (brake != previousBrake) {
+            previousBrake = brake;
+            if (brake) {
+                m_leftMotor1.setIdleMode(IdleMode.kBrake);
+                m_leftMotor2.setIdleMode(IdleMode.kBrake);
+                m_rightMotor1.setIdleMode(IdleMode.kBrake);
+                m_rightMotor2.setIdleMode(IdleMode.kBrake);
+            } else {
+                m_leftMotor1.setIdleMode(IdleMode.kCoast);
+                m_leftMotor2.setIdleMode(IdleMode.kCoast);
+                m_rightMotor1.setIdleMode(IdleMode.kCoast);
+                m_rightMotor2.setIdleMode(IdleMode.kCoast);
+            }
         }
     }
 
@@ -149,16 +150,10 @@ public class Drivetrain extends SubsystemBase {
             System.out.println("SHIFTING");
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
-                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
-                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitHighGearSeconds);
+                setRampRate(OperatorConstants.kRampLimitHighGearSeconds);
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
-                m_leftMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_leftMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_rightMotor1.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
-                m_rightMotor2.setOpenLoopRampRate(OperatorConstants.kRampLimitLowGearSeconds);
+                setRampRate(OperatorConstants.kRampLimitLowGearSeconds);
 
             }
             previousFast = fast;
@@ -181,8 +176,10 @@ public class Drivetrain extends SubsystemBase {
         if (fast != previousFast) {
             if (fast) {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterHighSpeed);
+                setRampRate(OperatorConstants.kRampLimitHighGearSeconds);
             } else {
                 m_shifter_solenoid.set(PneumaticsConstants.kShifterLowSpeed);
+                setRampRate(OperatorConstants.kRampLimitLowGearSeconds);
             }
             previousFast = fast;
         }
@@ -217,7 +214,7 @@ public class Drivetrain extends SubsystemBase {
             double z = DriveConstants.kLimelightOffsetYInches / Math.tan(Math.toRadians(ty));
             double targetTx = Math.atan(z / DriveConstants.kLimelightOffsetXInches);
             double deltaHeading = (tx - targetTx) + 4;
-            System.out.println("Distance ahead: " + z + ", Cube angle: " + tx + ", Cube degrees off: " + deltaHeading);
+            // System.out.println("Distance ahead: " + z + ", Cube angle: " + tx + ", Cube degrees off: " + deltaHeading);
             leftSpeed += (-deltaHeading * 0.015);
             rightSpeed += (deltaHeading * 0.015);
         }

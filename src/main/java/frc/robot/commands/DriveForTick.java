@@ -21,7 +21,8 @@ public class DriveForTick extends CommandBase {
     private int m_decelerationStartTick;
     private double m_calibrationTotalPower;
 
-    public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake, int rampUpTicks, int rampDownTicks) {
+    public DriveForTick(double heading, double distance_in, double unsigned_speed, Drivetrain drive, boolean brake,
+            int rampUpTicks, int rampDownTicks) {
         m_targetHeading_deg = heading;
         m_targetDistance_in = distance_in;
         if (distance_in < 0) {
@@ -34,11 +35,11 @@ public class DriveForTick extends CommandBase {
         m_rampUpTicks = rampUpTicks;
         m_rampDownTicks = rampDownTicks;
         inPerRot = DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        
+
         addRequirements(drive);
     }
 
-    @Override 
+    @Override
     public void initialize() {
         m_calibrationTotalPower = 0;
         m_avgEncoderStartPosition = m_drive.getAvgEncoder();
@@ -46,9 +47,8 @@ public class DriveForTick extends CommandBase {
         m_distanceTraveled = 0;
         m_decelerationStartTick = 0;
         m_drive.setBrakeMode(m_brake);
-        System.out.println("Start Position" + m_avgEncoderStartPosition);
+        System.out.println("Encoder Start Position" + m_avgEncoderStartPosition);
     }
-
 
     @Override
     public void execute() {
@@ -61,64 +61,68 @@ public class DriveForTick extends CommandBase {
         if (rightTurnDifference < 0) {
             rightTurnDifference += 360;
         }
-       System.out.println("AE:" + m_drive.getAvgEncoder()+ "AESP:" + m_avgEncoderStartPosition);
-        double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-m_avgEncoderStartPosition) * inPerRot;
+        if (m_tickNumber % 5 == 0) {
+            System.out.println("Encoder:" + m_drive.getAvgEncoder() + "Encoder Start:" + m_avgEncoderStartPosition);
+        }
+        double distanceTraveled = Math.abs(m_drive.getAvgEncoder() - m_avgEncoderStartPosition) * inPerRot;
         double distanceRemaining = Math.abs(m_targetDistance_in) - distanceTraveled;
         m_tickNumber++;
         double distanceLastTick = distanceTraveled - m_distanceTraveled;
-        m_distanceTraveled=distanceTraveled;
-        
-        System.out.println("DT:" + distanceTraveled + "DR:" + distanceRemaining);
+        m_distanceTraveled = distanceTraveled;
+        if (m_tickNumber % 5 == 0) {
+            System.out.println("Traveled:" + distanceTraveled + "remaining:" + distanceRemaining);
+        }
         double targetSpeed = accelerationCurve(m_targetSpeed, distanceTraveled, distanceRemaining, distanceLastTick);
         m_calibrationTotalPower += targetSpeed;
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
             delta_heading_deg = leftTurnDifference;
-            m_drive.tankDriveRaw((delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
+            m_drive.tankDriveRaw((delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed,
+                    (delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
         } else {
             delta_heading_deg = rightTurnDifference;
-            m_drive.tankDriveRaw((delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed, (delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
+            m_drive.tankDriveRaw((delta_heading_deg * DriveConstants.kCorrectionAggression) - m_targetSpeed,
+                    (delta_heading_deg * -DriveConstants.kCorrectionAggression) - m_targetSpeed, false);
         }
-        
+
     }
 
-    
-    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining, double distancePerTick) {
+    private double accelerationCurve(double speed, double distanceTraveled, double distanceRemaining,
+            double distancePerTick) {
         if (m_decelerationStartTick > 0) {
-            //slowing
+            // slowing
             int ticksRampedDown = m_tickNumber - m_decelerationStartTick;
             int ticksRemaining = m_rampDownTicks - ticksRampedDown;
             double desiredSpeedPerTick = 0;
             if (ticksRemaining == 0) {
-                return(0.0);
+                return (0.0);
             } else if (ticksRemaining == 1) {
                 desiredSpeedPerTick = distanceRemaining;
             } else {
-                desiredSpeedPerTick =( distanceRemaining/ ticksRemaining) * 2.3;
+                desiredSpeedPerTick = (distanceRemaining / ticksRemaining) * 2.3;
             }
             double distancePerPower = m_distanceTraveled / m_calibrationTotalPower;
             return (desiredSpeedPerTick / distancePerPower);
         } else if (m_tickNumber < m_rampUpTicks) {
-            //accelerating
-            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
-                m_decelerationStartTick=m_tickNumber;
+            // accelerating
+            if ((distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick = m_tickNumber;
             }
 
-            return (m_targetSpeed * (m_rampUpTicks!=0 ? m_tickNumber / m_rampUpTicks : 1) );
+            return (m_targetSpeed * (m_rampUpTicks != 0 ? m_tickNumber / m_rampUpTicks : 1));
         } else {
-            //at_speed
-            if ( (distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
-                m_decelerationStartTick=m_tickNumber;
+            // at_speed
+            if ((distancePerTick * m_rampDownTicks / 2) > distanceRemaining) {
+                m_decelerationStartTick = m_tickNumber;
             }
             return m_targetSpeed;
-        }    
+        }
     }
 
     @Override
     public boolean isFinished() {
         if (m_decelerationStartTick > 0) {
-            if (m_tickNumber >= m_decelerationStartTick+m_rampDownTicks) {
-                System.out.println("Drive For Tick finished in " + m_tickNumber + " ticks Deceleration Start Tick " + m_decelerationStartTick + " Ramp Down Ticks " + m_rampDownTicks + " Distance traveled " + m_targetDistance_in);
-                return(true);
+            if (m_tickNumber >= m_decelerationStartTick + m_rampDownTicks) {
+                return (true);
             }
         }
         return false;
@@ -128,6 +132,11 @@ public class DriveForTick extends CommandBase {
     public void end(boolean interrupted) {
         m_drive.setRampRate(0);
         m_drive.tankDriveRaw(0, 0, false);
-        System.out.println("DONE, DEGREES OFF COURSE: " + Math.abs(delta_heading_deg));
+        System.out.println("Drive For Tick Done, took "
+                        + m_tickNumber + " ticks, Deceleration Start Tick "
+                        + m_decelerationStartTick + ", Ramp Down Ticks "
+                        + m_rampDownTicks + ", Distance traveled "
+                        + m_targetDistance_in + ", Degrees off course "
+                        + Math.abs(delta_heading_deg));
     }
 }
