@@ -18,8 +18,8 @@ public class DriveForTrap extends CommandBase {
     //private double m_lastError;
     //private double m_integral;
 
-    private static final double kPL = 0.02;
-    private static final double kPA = 0.02;
+    private static final double kPL = 0.04;
+    private static final double kPA = 0.1;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
 
@@ -45,7 +45,7 @@ public class DriveForTrap extends CommandBase {
         m_heading = m_gyro.getAngle();
         //m_lastError = 0;
         //m_integral = 0;
-        m_drivetrain.setRampRate(0.7);
+        m_drivetrain.setRampRate(0.4);
 
         m_anglePID.setTolerance(DriveConstants.kAllowableHeadingOffset);
         m_drivePID.setTolerance(DriveConstants.kDriveDistanceTolerance);
@@ -57,7 +57,7 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public void execute() {
-        double distanceTraveled = (m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        double distanceTraveled = -(m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
         double error = m_distance - distanceTraveled;
         
         double velocity = m_maxSpeed;
@@ -84,12 +84,13 @@ public class DriveForTrap extends CommandBase {
 
 
         m_drivetrain.tankDriveRaw(leftPower, rightPower, false);
+        System.out.println(error);
     }
 
     @Override
     public boolean isFinished() {
-        double distanceTraveled = (m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        return Math.abs(m_distance - distanceTraveled) < DriveConstants.kDriveDistanceTolerance;
+        double distanceTraveled = Math.abs(m_drivetrain.getRightEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        return Math.abs(Math.abs(m_distance) - distanceTraveled) < DriveConstants.kDriveDistanceTolerance;
     }
 
     @Override

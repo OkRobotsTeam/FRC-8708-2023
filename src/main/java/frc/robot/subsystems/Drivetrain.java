@@ -259,6 +259,6 @@ public class Drivetrain extends SubsystemBase {
         );
         prevLeftPos = currentLeftPos;
         prevRightPos = currentRightPos;
-        System.out.println(m_shifter_solenoid.get()==Value.kOff);
+        //System.out.println(m_shifter_solenoid.get()==Value.kOff);
     }
 }
