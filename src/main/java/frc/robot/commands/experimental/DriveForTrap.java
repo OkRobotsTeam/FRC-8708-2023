@@ -72,10 +72,11 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public void initialize() {
-        m_startingPosition = m_drivetrain.getRightEncoder();
+        m_startingPosition = m_drivetrain.getAvgEncoder();
         if (!headingIsSpecified) {
             m_heading = m_drivetrain.targetHeading;
         }
+        System.out.println("Starting" + m_distance);
         
         //m_lastError = 0;
         //m_integral = 0;
@@ -83,43 +84,46 @@ public class DriveForTrap extends CommandBase {
 
         m_anglePID.setTolerance(DriveConstants.kAllowableHeadingOffset);
         m_drivePID.setTolerance(DriveConstants.kDriveDistanceTolerance);
+        m_drivetrain.setBrakeMode(m_brake);
     }
 
-    public double clamp(double in) {
-        return (in>1?1:(in<-1?-1:in));
+    public double clamp(double in, double m) {
+        return (in>m?m:(in<-m?-m:in));
     }
 
     @Override
     public void execute() {
-        double distanceTraveled = (m_drivetrain.getAvgEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
-        double error = m_distance - distanceTraveled;
+        double distanceTraveled = -(m_drivetrain.getAvgEncoder() - m_startingPosition) * DriveConstants.kSlowRevPerRot * DriveConstants.kWheelCircumference;
+        double error = m_distance - distanceTraveled; 
+
+        //System.out.println(error);
         
-        double velocity = m_maxSpeed;
+        //double velocity = m_maxSpeed;
 
         double headingError = m_gyro.getAngle() - m_heading;
         //m_integral += headingError;
 
-        double forwardPower = m_drivePID.calculate(error,0);
+        double forwardPower = kPL*error;//m_drivePID.calculate(error,0);
         double turnPower = m_anglePID.calculate(headingError, 0) * DriveConstants.kTurnAggression;
         //turnPower += m_pidController.calculate(m_integral, 0) * DriveConstants.kTurnIntegral; // what is this
 
         double leftPower = forwardPower - turnPower;
         double rightPower = forwardPower + turnPower;
 
-        velocity *= Math.min(Math.abs(error) / DriveConstants.kDriveDistanceTolerance, 1);
+        //velocity *= Math.min(Math.abs(error) / DriveConstants.kDriveDistanceTolerance, 1);
 
-        leftPower = clamp(leftPower);
-        rightPower = clamp(rightPower);
+        leftPower = clamp(leftPower, m_maxSpeed);
+        rightPower = clamp(rightPower, m_maxSpeed);
 
-        System.out.println(leftPower);
+        System.out.println("DIST: "+distanceTraveled+" -> E: "+error);
 
-        leftPower *= velocity;
-        rightPower *= velocity;
+        //leftPower *= velocity;
+        //rightPower *= velocity;
 
         if (!m_brake) {
-            m_drivetrain.tankDriveRaw(m_maxSpeed, m_maxSpeed, false);
+            m_drivetrain.tankDriveRawCorrectDirection(Math.copySign(m_maxSpeed,m_distance), Math.copySign(m_maxSpeed,m_distance), false);
         } else {
-            m_drivetrain.tankDriveRaw(leftPower, rightPower, false);
+            m_drivetrain.tankDriveRawCorrectDirection(leftPower, rightPower, false);
         }
         //System.out.println(error);
     }
@@ -132,7 +136,8 @@ public class DriveForTrap extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_drivetrain.setBrakeMode(m_brake);
+        
         m_drivetrain.tankDriveRaw(0,0,false);
+        System.out.println("done");
     }
 }
