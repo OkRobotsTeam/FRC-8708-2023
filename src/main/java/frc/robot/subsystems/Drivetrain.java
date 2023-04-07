@@ -50,6 +50,8 @@ public class Drivetrain extends SubsystemBase {
 
     public double targetHeading = 0;
 
+
+
     public ADIS16470_IMU gyro = new ADIS16470_IMU();
 
     public DifferentialDriveOdometry drivetrain = new DifferentialDriveOdometry(new Rotation2d(gyro.getAngle()), 0,0);
@@ -95,6 +97,10 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public double getAngle() {
+        return gyro.getAngle();
+    }
+    
     public void resetEncoders() {
         m_leftEncoder.setPosition(0);
         m_rightEncoder.setPosition(0);

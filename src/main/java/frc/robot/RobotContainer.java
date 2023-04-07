@@ -22,6 +22,7 @@ import frc.robot.commands.AutonPos1_3piece;
 import frc.robot.commands.AutonPos3;
 import frc.robot.commands.AutonPos3_3piece;
 import frc.robot.commands.AutonTest;
+import frc.robot.commands.AutonTestTick;
 import frc.robot.commands.MoveToHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
@@ -85,6 +86,7 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Blue no cable ramp3", new AutonPos1_3piece(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP", new AutonTest(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP TICK", new AutonTestTick(m_drivetrain, m_arm, m_intake));
 
 
 

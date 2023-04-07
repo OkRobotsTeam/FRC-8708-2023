@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -50,7 +51,7 @@ public class DriveForTick extends CommandBase {
         m_slowingTick = 0;
         m_drive.setBrakeMode(m_brake);
         System.out.println("Start Position" + m_avgEncoderStartPosition);
-        if (m_rampUpTicks > 0 ) {
+        if (m_rampUpTicks == 0 ) {
             m_accelerationState = AccelerationState.AT_SPEED;
         } else {
             m_accelerationState = AccelerationState.ACCELERATING;
@@ -76,6 +77,8 @@ public class DriveForTick extends CommandBase {
 
         m_calibrationTotalPower += calculatedSpeed;
         double turnFactor = getTurnFactor();
+        turnFactor=MathUtil.clamp(turnFactor,-1,1);
+        turnFactor = turnFactor/4;
 
         System.out.println("TargetSpeed: " + calculatedSpeed + " turnFactor: " + turnFactor);
         m_drive.tankDriveRaw(calculatedSpeed - turnFactor, calculatedSpeed + turnFactor,false);
@@ -83,7 +86,7 @@ public class DriveForTick extends CommandBase {
     }
 
     private double getTurnFactor() {
-        double currentHeading_deg = m_drive.gyro.getAngle() % 360;
+        double currentHeading_deg = m_drive.getAngle() % 360;
         double leftTurnDifference = (currentHeading_deg - m_targetHeading_deg);
         double rightTurnDifference = (m_targetHeading_deg - currentHeading_deg);
         if (leftTurnDifference < 0) {
@@ -94,10 +97,10 @@ public class DriveForTick extends CommandBase {
         }
         if (Math.abs(leftTurnDifference) < Math.abs(rightTurnDifference)) {
             delta_heading_deg = leftTurnDifference;
-            return (delta_heading_deg * -DriveConstants.kCorrectionAggression);
+            return (delta_heading_deg * DriveConstants.kCorrectionAggression);
         } else {
             delta_heading_deg = rightTurnDifference;
-            return (delta_heading_deg * DriveConstants.kCorrectionAggression);
+            return (delta_heading_deg * -DriveConstants.kCorrectionAggression);
         }
     }
 
@@ -116,7 +119,9 @@ public class DriveForTick extends CommandBase {
         if (m_accelerationState == AccelerationState.ACCELERATING) {
             //accelerating
             System.out.println("accelerating " + m_tickNumber * m_rampUpTicks);
-
+            if (m_tickNumber > m_rampUpTicks) {
+                m_accelerationState = AccelerationState.AT_SPEED;
+            }
             return (m_targetSpeed * ( m_tickNumber / (double) m_rampUpTicks ) );
         } else if (m_accelerationState == AccelerationState.AT_SPEED) {
             //at_speed
@@ -132,6 +137,7 @@ public class DriveForTick extends CommandBase {
             double desiredSpeedPerTick = 0;
 
             if (ticksRemaining <= 0) {
+                m_accelerationState = AccelerationState.DONE;
                 return(0.0);
             } else if (ticksRemaining == 1) {
                 desiredSpeedPerTick = distanceRemaining;
