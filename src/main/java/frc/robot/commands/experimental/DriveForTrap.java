@@ -5,7 +5,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class DriveForTrap extends CommandBase {
     private final double m_distance;
@@ -16,6 +15,7 @@ public class DriveForTrap extends CommandBase {
 
     private double m_startingPosition;
     private double m_heading;
+    private boolean headingIsSpecified = false;
     //private double m_lastError;
     //private double m_integral;
 
@@ -49,10 +49,34 @@ public class DriveForTrap extends CommandBase {
         addRequirements(drivetrain);
     }
 
+    public DriveForTrap(double targetHeading, double distance_in, double maxSpeed, Drivetrain drivetrain, boolean brake) {
+        /**
+        * Uses ramp-up and ramp-down
+        * If brake then ramp down
+        * else coast (don't ramp down)
+        * 
+        * 
+        */
+        
+        m_distance = distance_in;
+        m_maxSpeed = maxSpeed;
+        m_drivetrain = drivetrain;
+        m_gyro = drivetrain.gyro;
+        m_brake = brake;
+
+        m_heading = targetHeading;
+        headingIsSpecified = true;
+
+        addRequirements(drivetrain);
+    }
+
     @Override
     public void initialize() {
         m_startingPosition = m_drivetrain.getRightEncoder();
-        m_heading = m_gyro.getAngle();
+        if (!headingIsSpecified) {
+            m_heading = m_drivetrain.targetHeading;
+        }
+        
         //m_lastError = 0;
         //m_integral = 0;
         m_drivetrain.setRampRate(0.4);

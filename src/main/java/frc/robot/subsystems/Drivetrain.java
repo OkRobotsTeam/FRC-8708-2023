@@ -48,6 +48,8 @@ public class Drivetrain extends SubsystemBase {
     private NetworkTableEntry txEntry;
     private NetworkTableEntry tyEntry;
 
+    public double targetHeading = 0;
+
     public ADIS16470_IMU gyro = new ADIS16470_IMU();
 
     public DifferentialDriveOdometry drivetrain = new DifferentialDriveOdometry(new Rotation2d(gyro.getAngle()), 0,0);
