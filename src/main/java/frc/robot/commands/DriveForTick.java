@@ -56,7 +56,7 @@ public class DriveForTick extends CommandBase {
         if (rightTurnDifference < 0) {
             rightTurnDifference += 360;
         }
-       
+        
         double distanceTraveled = Math.abs(m_drive.getAvgEncoder()-m_avgEncoderStartPosition) * inPerRot;
         double distanceRemaining = Math.abs(m_targetDistance_in) - distanceTraveled;
         m_tickNumber++;
