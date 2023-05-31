@@ -65,6 +65,22 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    public void toggleElbowExtended() {
+        if (getElbowExtended()) {
+            elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
+        } else {
+            if (getPistonRaised()) {
+                if (getElevatorExtended()) {
+                    elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
+                } else {
+                    elbowDesiredPosition = (ArmConstants.kElbowMidExtendRotations);
+                }
+            } else {
+                elbowDesiredPosition = (ArmConstants.kElbowLowExtendRotations);
+            }
+        }
+    }
+
     public boolean getElbowExtended() {
         if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold) {
             return true;
@@ -208,9 +224,5 @@ public class Arm extends SubsystemBase {
         //         new InstantCommand(
         //         () -> m_drivetrain.setBrakeMode(true), m_drivetrain));
         }
-    }
-
-    public void pickupFromHumanPlayerStation() {
-        elbowDesiredPosition = (ArmConstants.kElbowHighExtendRotations);
     }
 }

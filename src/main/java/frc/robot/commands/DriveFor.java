@@ -20,9 +20,9 @@ public class DriveFor extends CommandBase {
         m_targetHeading = heading;
         m_distance = distance_in;
         if (distance_in < 0) {
-            m_speed = unsigned_speed;
-        } else {
             m_speed = -unsigned_speed;
+        } else {
+            m_speed = unsigned_speed;
         }
         m_drive = drive;
         m_brake = brake;

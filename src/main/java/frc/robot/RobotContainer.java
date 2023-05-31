@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutonChargeStation;
 import frc.robot.commands.AutonNothing;
 import frc.robot.commands.AutonPos1;
 import frc.robot.commands.AutonPos1_3piece;
@@ -24,6 +25,7 @@ import frc.robot.commands.AutonPos3_3piece;
 import frc.robot.commands.AutonTest;
 import frc.robot.commands.AutonTestTick;
 import frc.robot.commands.MoveToHigh;
+import frc.robot.commands.ToggleHigh;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -88,6 +90,7 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("Nothing", new AutonNothing());
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP", new AutonTest(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP TICK", new AutonTestTick(m_drivetrain, m_arm, m_intake));
+    m_autonomous_selecter.addOption("Charge Station", new AutonChargeStation(m_drivetrain, m_arm, m_intake));
 
     m_safety_mode.setDefaultOption("Competition Mode", false);
     m_safety_mode.setDefaultOption("Demonstration Mode", true);
@@ -127,18 +130,104 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(getTankDriveCommand());
     m_intake.setDefaultCommand(getIntakeCommand());
 
+    // TEDY'S CONTROLS
+
+    // m_manipulator.a().onTrue(
+    //     new InstantCommand(
+    //         () -> m_intake.intakeIn(), m_intake));
+    // m_manipulator.rightTrigger().onTrue(
+    //     new InstantCommand(
+    //         () -> m_intake.intakeOut(), m_intake));
+    // m_manipulator.a().onFalse(
+    //     new InstantCommand(
+    //         m_intake::intakeStop, m_intake));
+    // m_manipulator.rightTrigger().onFalse(
+    //     new InstantCommand(
+    //         m_intake::intakeStop, m_intake));
+    // m_manipulator.povUp().onTrue(
+    //     new InstantCommand(
+    //         () -> m_arm.setPistonRaised(true), m_arm));
+    // m_manipulator.povDown().onTrue(
+    //     new InstantCommand(
+    //         () -> m_arm.setPistonRaised(false), m_arm));
+
+    // m_manipulator.leftTrigger().onTrue(
+    //     new InstantCommand(
+    //         () -> m_arm.setElbowExtended(true), m_arm));
+    // m_manipulator.leftTrigger().onFalse(
+    //     new InstantCommand(
+    //         () -> m_arm.setElbowExtended(false), m_arm));
+
+    // m_manipulator.povLeft().onTrue(
+    //     new InstantCommand(
+    //         () -> m_arm.setElevatorExtended(false), m_arm));
+    // m_manipulator.povRight().onTrue(
+    //     new InstantCommand(
+    //         () -> m_arm.setElevatorExtended(true), m_arm));
+
+    // m_manipulator.start().onTrue(
+    //     new InstantCommand(
+    //         m_lights::setViolet, m_lights).andThen(
+    //             new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+    //             new InstantCommand(m_lights::teamChaser,m_lights)));
+    
+    // m_manipulator.back().onTrue(
+    //     new InstantCommand(
+    //         m_lights::setYellow, m_lights).andThen(
+    //             new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+    //             new InstantCommand(m_lights::teamChaser,m_lights)));
+    
+    // m_manipulator.x().onTrue(
+    //     new InstantCommand(
+    //     () -> m_arm.manualAdjustTarget(1.0), m_arm));
+    
+    // m_manipulator.b().onTrue(
+    //     new InstantCommand(
+    //     () -> m_arm.manualAdjustTarget(-1.0), m_arm));
+    
+    // m_manipulator.leftBumper().onTrue(
+    //     new InstantCommand(
+    //     () -> m_arm.pickupFromHumanPlayerStation(), m_arm));
+    // m_manipulator.leftBumper().onFalse(
+    //     new InstantCommand(
+    //     () -> m_arm.setElbowExtended(false), m_arm));
+    // m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
+    // m_manipulator.rightBumper().onFalse(
+    //     new InstantCommand(
+    //         () -> m_arm.setElbowExtended(false), m_arm).andThen(
+    //         () -> m_arm.setElevatorExtended(false), m_arm));
+
+    // HUNTER'S CONTROLS:
+
     m_manipulator.a().onTrue(
         new InstantCommand(
-            () -> m_intake.intakeIn(), m_intake));
+        () -> m_arm.manualAdjustTarget(1.0), m_arm));
+
+    m_manipulator.b().onTrue(
+        new ToggleHigh(m_arm));
+
+    
+    m_manipulator.x().onTrue(
+        new InstantCommand(
+        () -> m_arm.toggleElbowExtended(), m_arm));
+    
+    
+    m_manipulator.y().onTrue(
+        new InstantCommand(
+        () -> m_arm.manualAdjustTarget(-1.0), m_arm));
+    
+    m_manipulator.rightBumper().onTrue(
+        new InstantCommand(
+        () -> m_arm.manualAdjustTarget(3.0), m_arm));
+    
     m_manipulator.rightTrigger().onTrue(
         new InstantCommand(
             () -> m_intake.intakeOut(), m_intake));
-    m_manipulator.a().onFalse(
-        new InstantCommand(
-            m_intake::intakeStop, m_intake));
     m_manipulator.rightTrigger().onFalse(
         new InstantCommand(
             m_intake::intakeStop, m_intake));
+    
+    
     m_manipulator.povUp().onTrue(
         new InstantCommand(
             () -> m_arm.setPistonRaised(true), m_arm));
@@ -146,13 +235,15 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_arm.setPistonRaised(false), m_arm));
 
+    
     m_manipulator.leftTrigger().onTrue(
         new InstantCommand(
-            () -> m_arm.setElbowExtended(true), m_arm));
+            () -> m_intake.intakeIn(), m_intake));
     m_manipulator.leftTrigger().onFalse(
         new InstantCommand(
-            () -> m_arm.setElbowExtended(false), m_arm));
+            m_intake::intakeStop, m_intake));
 
+    
     m_manipulator.povLeft().onTrue(
         new InstantCommand(
             () -> m_arm.setElevatorExtended(false), m_arm));
@@ -160,11 +251,13 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_arm.setElevatorExtended(true), m_arm));
 
+    
     m_manipulator.start().onTrue(
         new InstantCommand(
             m_lights::setViolet, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
                 new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
+    
     
     m_manipulator.back().onTrue(
         new InstantCommand(
@@ -172,26 +265,12 @@ public class RobotContainer {
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
                 new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
     
-    m_manipulator.x().onTrue(
-        new InstantCommand(
-        () -> m_arm.manualAdjustTarget(1.0), m_arm));
-    
-    m_manipulator.b().onTrue(
-        new InstantCommand(
-        () -> m_arm.manualAdjustTarget(-1.0), m_arm));
     
     m_manipulator.leftBumper().onTrue(
         new InstantCommand(
-        () -> m_arm.pickupFromHumanPlayerStation(), m_arm));
-    m_manipulator.leftBumper().onFalse(
-        new InstantCommand(
         () -> m_arm.setElbowExtended(false), m_arm));
-    m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
-    m_manipulator.rightBumper().onFalse(
-        new InstantCommand(
-            () -> m_arm.setElbowExtended(false), m_arm).andThen(
-            () -> m_arm.setElevatorExtended(false), m_arm));
-    }
+
+  }
 
     public void teleopInit() {
         m_arm.init();

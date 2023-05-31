@@ -89,15 +89,15 @@ public final class Constants {
     public static final boolean kElbowMotorInverted = true;
 
     public static final double kElevatorIdleRotations = 1.5;
-    public static final double kElevatorExtendRotations = 18.0 * 1.1d;
+    public static final double kElevatorExtendRotations = 18.8;
     public static final double kElevatorMaximumSpeed = 0.25;
 
     // PID Stop thresholds
     public static final double kElevatorStopThreshold = 0.1;
     public static final double kElbowStopThreshold = 0.1;
 
-    public static final double kElbowLowExtendRotations = 14;
-    public static final double kElbowMidExtendRotations = 18.0;
+    public static final double kElbowLowExtendRotations = 12.75;
+    public static final double kElbowMidExtendRotations = 19.5;
     public static final double kElbowHighExtendRotations = 15.0 - 2;
     public static final double kElbowIdleExtendRotations = 1;
     public static final double kElbowHighHumanPlayerStationRotations = 10;
