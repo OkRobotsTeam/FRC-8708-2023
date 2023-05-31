@@ -197,9 +197,15 @@ public class Drivetrain extends SubsystemBase {
         m_rightMotor2.setOpenLoopRampRate(rampRate);
     }
 
-    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow_brake, boolean slow, boolean auto_correct) {
+    public void tankDrive(double leftController, double rightController, boolean fast, boolean slow_brake, boolean slow, boolean auto_correct, boolean safety) {
         double leftSpeed;
         double rightSpeed;
+        if (safety) {
+            fast = false;
+            slow = true;
+            slow_brake = true;
+
+        }
         // Only update the pneumatics if its state changed from the previous state
         if (fast != previousFast) {
             if (fast) {

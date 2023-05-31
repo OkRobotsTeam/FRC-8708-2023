@@ -59,6 +59,7 @@ public class RobotContainer {
 
   private ShuffleboardTab m_driving_tab = Shuffleboard.getTab("Driving");
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
+  private final SendableChooser<Boolean> m_safety_mode = new SendableChooser<>();
 
 
    // The container for the robot. Contains subsystems, OI devices, and commands.
@@ -88,10 +89,11 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP", new AutonTest(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP TICK", new AutonTestTick(m_drivetrain, m_arm, m_intake));
 
+    m_safety_mode.setDefaultOption("Competition Mode", false);
+    m_safety_mode.setDefaultOption("Demonstration Mode", true);
 
-
-    
     m_driving_tab.add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
+    m_driving_tab.add(m_safety_mode).withPosition(4, 3).withSize(2,1);
     m_objectInIntake = m_driving_tab.add("ObjectInIntake", false).withPosition(4, 1).withSize(2, 2).getEntry();
 
     Shuffleboard.selectTab("Driving");
@@ -162,13 +164,13 @@ public class RobotContainer {
         new InstantCommand(
             m_lights::setViolet, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(m_lights::teamChaser,m_lights)));
+                new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
     
     m_manipulator.back().onTrue(
         new InstantCommand(
             m_lights::setYellow, m_lights).andThen(
                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(m_lights::teamChaser,m_lights)));
+                new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
     
     m_manipulator.x().onTrue(
         new InstantCommand(
@@ -193,11 +195,11 @@ public class RobotContainer {
 
     public void teleopInit() {
         m_arm.init();
-        m_lights.init();
+        m_lights.init(m_safety_mode.getSelected());
     }
     public void autonomousInit() {
         m_arm.init();
-        m_lights.init();
+        m_lights.init(m_safety_mode.getSelected());
     }
 
   /**
@@ -217,9 +219,11 @@ public class RobotContainer {
             m_driverRightJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.top().getAsBoolean(),
-            m_driverRightJoystick.top().getAsBoolean()),
-
-        m_drivetrain);
+            m_driverRightJoystick.top().getAsBoolean(),
+            m_safety_mode.getSelected()
+        ),
+        m_drivetrain
+    );
   }
 
   public Command getIntakeCommand() {
@@ -234,7 +238,7 @@ public class RobotContainer {
 
   public void testInit() {
         m_arm.init();
-        m_lights.init();
+        m_lights.init(m_safety_mode.getSelected());
     }
   
 }
