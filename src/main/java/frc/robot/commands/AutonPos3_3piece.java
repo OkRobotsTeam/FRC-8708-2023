@@ -3,109 +3,58 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.experimental.DriveForTrap;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
-// blue cable ramp
+// Blue cable ramp
 
 public class AutonPos3_3piece extends SequentialCommandGroup {
     public AutonPos3_3piece(
             Drivetrain drive,
             Arm arm,
             Intake intake) {
-        //*        
         addCommands(
             new InstantCommand(() -> drive.gyro.reset(), drive),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setPistonRaised(false), arm),
-            new DriveForTrap(5, 1, drive, true),
-            new TurnTo(-10, 0.6, drive),
-            new DriveForTrap(36, 1, drive, true),
-            new TurnTo(0, 0.6, drive),
-            new DriveForTrap(90, 1, drive, false),
+            new DriveForTick(0, 5, 1, drive, false, 20, 20),
+            new TurnTo(-10, 1, drive),
+            new DriveForTick(-10, 36, 1, drive, false ,20, 20),
+            new TurnTo(0, 0.7, drive),
+            new DriveForTick(0, 90, 1, drive, false, 20, 0),
             new InstantCommand(intake::intakeIn, intake),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
-            new DriveForTrap(30, 1, drive, true),
-            new WaitCommand(0.5), // Added this line
+            new DriveForTick(0, 40, 1, drive, false, 0, 20),
+            new WaitCommand(0.5),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveForTrap(-120, 1, drive, true),
+            new DriveForTick(0, -140, 1, drive, false, 20, 20),
             new WaitCommand(0.75),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new InstantCommand(() -> arm.setPistonRaised(false), arm),
-            new DriveForTrap(78, 1, drive, true),
-            new TurnTo(28, 0.6, drive),
+            new WaitCommand(1),
+            new DriveForTick(0, 96, 1, drive, false, 20, 20),
+            new TurnTo(28, 0.7, drive),
             new InstantCommand(() -> arm.setElbowExtended(true), arm),
             new InstantCommand(intake::intakeIn, intake),
-            new DriveForTrap(60, 1, drive, false),
-            new WaitCommand(0.5), // Added this line
+            new DriveForTick(28, 82, 1, drive, false, 20, 20),
             new InstantCommand(intake::intakeStop, intake),
-            new DriveForTrap(-82, 1, drive, true),
-            new TurnTo(10, 0.6, drive),
             new InstantCommand(() -> arm.setElbowExtended(false), arm),
+            new DriveForTick(28, -94, 1, drive, false, 20, 20),
+            new TurnTo(-10, 0.7, drive),
             new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveForTrap(-82, 1, drive, false),
-            new WaitCommand(0.2),
+            new DriveForTick(-10, -60, 1, drive, false, 20, 20),
+            new TurnTo(-30, 0.7, drive),
+            new DriveForTick(-30, -10, 1, drive, false, 20, 20),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> drive.setBrakeMode(false), drive)
+            new InstantCommand(intake::intakeStop, intake)
         );
-        //*/
-        /*
-        addCommands(
-            new InstantCommand(() -> drive.gyro.reset(), drive),
-            new InstantCommand(intake::intakeOut, intake),
-            new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> arm.setPistonRaised(false), arm),
-            new DriveForTick(0, 5, 0.9, drive, true,20,1),
-            // new TurnTo(-10, 0.6, drive),
-            new DriveForTick(-10, 5, 0.9, drive, true,1, 1),
-            new DriveForTick(-10, 26, 1, drive, true, 1, 1),
-            new DriveForTick(-10, 5, 0.9, drive, true,1,1),
-            // new TurnTo(0, 0.6, drive),
-            new DriveForTick(0, 5, 0.9, drive, false,1,1),
-            new DriveForTick(0, 85, 1, drive, false,1,1),
-            new InstantCommand(intake::intakeIn, intake),
-            new InstantCommand(() -> arm.setElbowExtended(true), arm),
-            new DriveForTick(0, 27, 1, drive, false,1,20),
-            new WaitCommand(0.5), // Added this line
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> arm.setElbowExtended(false), arm),
-            new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveForTick(0, -120, 1, drive, false,20,20),
-            new InstantCommand(intake::intakeOut, intake),
-            new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> arm.setPistonRaised(false), arm),
-            new DriveForTick(0, 78, 1, drive, false,20,1),
-            // new TurnTo(28, 0.6, drive),
-            new InstantCommand(() -> arm.setElbowExtended(true), arm),
-            new InstantCommand(intake::intakeIn, intake),
-            new DriveForTick(28, 5, 0.9, drive, false,1,1),
-            new DriveForTick(28, 55, 1, drive, false,1, 1),
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> arm.setElbowExtended(false), arm),
-            new DriveForTick(28, -77, 1, drive, false,20,1),
-            new DriveForTick(28, -5, 0.9, drive, false,1,1),
-            // new TurnTo(10, 0.6, drive),
-            new InstantCommand(() -> arm.setPistonRaised(true), arm),
-            new DriveForTick(10, -5, 0.9, drive, false,1,1),
-            new DriveForTick(10, -77, 1, drive, false,1,20),
-            new WaitCommand(0.2),
-            new InstantCommand(intake::intakeOut, intake),
-            new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
-            new InstantCommand(() -> drive.setBrakeMode(false), drive)
-        );
-        */
     }
 }
