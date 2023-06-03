@@ -16,16 +16,7 @@ public class AutonTestTick extends SequentialCommandGroup {
         addCommands(
             
             new InstantCommand(() -> drive.gyro.reset(), drive),
-            // new TurnTo(90, 0.6, drive),
-            // new TurnTo(60, 0.6, drive),
-            // new WaitCommand(2),
-            // new TurnTo(70, 0.6, drive),
-            new DriveForTick(0, 40, 0.5, drive, false, 20, 0),
-            new DriveForTick(90, 90, 0.5, drive, false, 0, 20),
-
-            new DriveForTick(90, -90, 0.5, drive, false, 20, 0),
-            //new DriveForTick(0, 40, 0.7, drive, false, 0, 20),
-
+            new DriveForTick(0, 36, 1, drive, false ,20, 20),
             new InstantCommand(()->drive.setBrakeMode(false),drive)
   
         );

@@ -20,7 +20,7 @@ public class AutonChargeStation extends SequentialCommandGroup {
             new WaitCommand(0.2),
             new InstantCommand(intake::intakeStop, intake),
             new WaitCommand(1),
-            new DriveFor(0, 85, 0.35, drive, true),
+            new DriveFor(0, 88, 0.35, drive, true),
             new InstantCommand(() -> drive.setBrakeMode(true), drive),
             new WaitCommand(100)
         );

@@ -28,9 +28,9 @@ public class DriveForTick extends CommandBase {
         m_targetHeading_deg = heading;
         m_targetDistance_in = distance_in;
         if (distance_in < 0) {
-            m_targetSpeed = -unsigned_speed;
-        } else {
             m_targetSpeed = unsigned_speed;
+        } else {
+            m_targetSpeed = -unsigned_speed;
         }
         m_drive = drive;
         m_brake = brake;
