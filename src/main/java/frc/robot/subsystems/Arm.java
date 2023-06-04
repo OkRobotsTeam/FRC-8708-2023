@@ -82,7 +82,7 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean getElbowExtended() {
-        if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold + 2) {
+        if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold + 4) {
             return true;
         } else {
             return false;
@@ -111,7 +111,7 @@ public class Arm extends SubsystemBase {
         if (getPistonRaised() && extended) {
             elevatorDesiredPosition = (ArmConstants.kElevatorExtendRotations);
         } else {
-            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations);
+            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations + 4);
         }
     }
 
