@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 
@@ -28,7 +29,7 @@ public class ToggleHigh extends CommandBase {
         if (elbowDone && pistonDone) {
             System.out.println("Folding");
             m_arm.setElbowExtended(false);
-            m_arm.setElevatorExtended(false);
+            m_arm.elevatorDesiredPosition = Constants.ArmConstants.kElevatorIdleRotations;
             exit = true;
             
         } else {
@@ -44,7 +45,7 @@ public class ToggleHigh extends CommandBase {
     @Override
     public boolean isFinished() {
         double elbowPosition = m_arm.getElbowPosition();
-        elbowDone = (Math.abs(elbowPosition - ArmConstants.kElbowHighExtendRotations) < 3);
+        elbowDone = (Math.abs(elbowPosition - ArmConstants.kElbowHighExtendRotations) < 2);
         if (startTime > 0 && System.currentTimeMillis() - startTime > 3000) {
             System.out.println("MoveToHigh terminated by timeout");
             return true;
@@ -55,7 +56,7 @@ public class ToggleHigh extends CommandBase {
         }
         if (pistonDone && elbowDone) {
             System.out.println("PISTON AND ELBOW DONE; EXITING");
-            m_arm.setElevatorExtended(true);
+            m_arm.elevatorDesiredPosition = Constants.ArmConstants.kElevatorExtendRotations;
             return true;
         }
 

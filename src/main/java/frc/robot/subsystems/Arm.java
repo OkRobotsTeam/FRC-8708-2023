@@ -28,8 +28,8 @@ public class Arm extends SubsystemBase {
     private final PIDController elevatorPID = new PIDController(0.3, 0, 0);
     private final PIDController elbowPID = new PIDController(0.15, 0, 0);
 
-    private double elevatorDesiredPosition = ArmConstants.kElevatorIdleRotations;
-    private double elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
+    public double elevatorDesiredPosition = ArmConstants.kElevatorIdleRotations;
+    public double elbowDesiredPosition = ArmConstants.kElbowIdleExtendRotations;
 
     private boolean elevatorEncoderResetting;
     private double elevatorEncoderResetStartTime;

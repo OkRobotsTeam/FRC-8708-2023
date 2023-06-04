@@ -7,22 +7,16 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
-// blue cable ramp
-
-public class AutonChargeStation extends SequentialCommandGroup {
-    public AutonChargeStation(
-            Drivetrain drive,
-            Arm arm,
-            Intake intake) {
+public class AutonSpit extends SequentialCommandGroup {
+    public AutonSpit(
+        Drivetrain drive,
+        Arm arm,
+        Intake intake) {
         addCommands(
             new InstantCommand(() -> drive.gyro.reset(), drive),
             new InstantCommand(intake::intakeOut, intake),
             new WaitCommand(0.2),
-            new InstantCommand(intake::intakeStop, intake),
-            new WaitCommand(1.5),
-            new DriveFor(0, 87, 0.35, drive, true),
-            new InstantCommand(() -> drive.setBrakeMode(true), drive),
-            new WaitCommand(100)
+            new InstantCommand(intake::intakeStop, intake)
         );
     }
 }
