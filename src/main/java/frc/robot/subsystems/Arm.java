@@ -111,7 +111,7 @@ public class Arm extends SubsystemBase {
         if (getPistonRaised() && extended) {
             elevatorDesiredPosition = (ArmConstants.kElevatorExtendRotations);
         } else {
-            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations + 4);
+            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations);
         }
     }
 
@@ -174,7 +174,7 @@ public class Arm extends SubsystemBase {
                     elevatorPower = -0.15;
                 }
             } else {
-                // The motor started less than 100 msec ago and may not be up to speed, keep going without checking its speed
+                // The motor started less than 150 msec ago and may not be up to speed, keep going without checking its speed
                 elevatorPower = -0.15;
             }
 

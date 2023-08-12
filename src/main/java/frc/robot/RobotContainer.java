@@ -25,6 +25,7 @@ import frc.robot.commands.AutonSpit;
 import frc.robot.commands.AutonTest;
 import frc.robot.commands.AutonTestTick;
 import frc.robot.commands.ToggleHigh;
+import frc.robot.commands.WaveForSeconds;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -92,8 +93,9 @@ public class RobotContainer {
     m_autonomous_selecter.addOption("TEST DO NOT USE DURING COMP TICK", new AutonTestTick(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Charge Station", new AutonChargeStation(m_drivetrain, m_arm, m_intake));
 
+    m_safety_mode.addOption("Competition Mode", false);
+    m_safety_mode.addOption("Demonstration Mode", true);
     m_safety_mode.setDefaultOption("Competition Mode", false);
-    m_safety_mode.setDefaultOption("Demonstration Mode", true);
 
     m_driving_tab.add(m_autonomous_selecter).withPosition(4, 0).withSize(2, 1);
     m_driving_tab.add(m_safety_mode).withPosition(4, 3).withSize(2,1);
@@ -203,8 +205,8 @@ public class RobotContainer {
         new InstantCommand(
         () -> m_arm.manualAdjustTarget(1.0), m_arm));
 
-    m_manipulator.b().onTrue(
-        new ToggleHigh(m_arm));
+    // m_manipulator.b().onTrue(
+    //     new ToggleHigh(m_arm));
 
     
     m_manipulator.x().onTrue(
@@ -220,7 +222,7 @@ public class RobotContainer {
         new InstantCommand(
         () -> m_arm.manualAdjustTarget(3.0), m_arm));
     
-    m_manipulator.rightTrigger().onTrue(
+    m_manipulator.start().onTrue(
         new InstantCommand(
             () -> m_intake.intakeOut(), m_intake));
     m_manipulator.rightTrigger().onFalse(
@@ -270,6 +272,11 @@ public class RobotContainer {
         new InstantCommand(
         () -> m_arm.setElbowExtended(false), m_arm));
 
+    m_manipulator.b().onTrue(
+        new WaveForSeconds(5, 0.4, 8, 17, m_arm));
+        // new WaveForSeconds(10, 0.5, 1, 12, m_arm));
+
+
   }
 
     public void teleopInit() {
@@ -293,9 +300,9 @@ public class RobotContainer {
   public Command getTankDriveCommand() {
     return new InstantCommand(
         () -> m_drivetrain.tankDrive(
-            m_driverLeftJoystick.getY(),
-            m_driverRightJoystick.getY(),
-            m_driverRightJoystick.trigger().getAsBoolean(),
+            m_manipulator.getLeftY(),
+            m_manipulator.getRightY(),
+            m_manipulator.rightTrigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.top().getAsBoolean(),
             m_driverRightJoystick.top().getAsBoolean(),

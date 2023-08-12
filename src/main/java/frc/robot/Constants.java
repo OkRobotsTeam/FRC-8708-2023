@@ -99,7 +99,7 @@ public final class Constants {
     public static final double kElbowLowExtendRotations = 12.75;
     public static final double kElbowMidExtendRotations = 19.5;
     public static final double kElbowHighExtendRotations = 15.0 - 2;
-    public static final double kElbowIdleExtendRotations = 1;
+    public static final double kElbowIdleExtendRotations = 2;
     public static final double kElbowHighHumanPlayerStationRotations = 10;
     public static final double kElbowAllowedTuning = 5;
 
