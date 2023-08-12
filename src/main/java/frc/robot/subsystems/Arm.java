@@ -111,7 +111,7 @@ public class Arm extends SubsystemBase {
         if (getPistonRaised() && extended) {
             elevatorDesiredPosition = (ArmConstants.kElevatorExtendRotations);
         } else {
-            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations + 4);
+            elevatorDesiredPosition = (ArmConstants.kElevatorIdleRotations);
         }
     }
 
