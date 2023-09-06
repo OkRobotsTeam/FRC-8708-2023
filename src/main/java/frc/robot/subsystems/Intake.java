@@ -51,19 +51,21 @@ public class Intake extends SubsystemBase {
     }
 
     public void checkPickedUp(GenericEntry objedtInIntake) {
-        // Don't take reading until 200 milliseconds after the motors start
+        // Don't take reading until 500 milliseconds after the motors start
         if (System.currentTimeMillis() - intakeInStartTime > IntakeConstants.kIntakeMotorStartupTimeMSEC) {
-            if (m_intakeTop.getOutputCurrent() > IntakeConstants.kHoldingObjectCurrent) {
-                // The intake is pulling in and the velocity is lower than the threshhold
-                // Display a green square on the dashboard
-                objedtInIntake.setBoolean(true);
-            } else if (m_intake.get() > 0 &&  m_intakeTopEncoder.getVelocity() > IntakeConstants.kHoldingObjectCurrent) {
-                // The intake is pulling in but the RPM is still higher than the threshhold
-                // Display a red square on the dashboard
-                objedtInIntake.setBoolean(false);
-            } else if (m_intake.get() < 0) {
+            if (m_intake.get() < 0) {
                 // The intake is running in reverse, clear the status light
                 // Display a white square on the dashboard
+                objedtInIntake.setBoolean(false);
+            } else if ((m_intakeTop.getOutputCurrent() > IntakeConstants.kHoldingObjectCurrent) | (m_intakeBottom.getOutputCurrent() > IntakeConstants.kHoldingObjectCurrent)) {
+                // The intake is pulling in and the current is higher than the threshhold
+                // This means we have a game object
+                // Display a green square on the dashboard
+                objedtInIntake.setBoolean(true);
+                intakeStop();
+            } else if (m_intake.get() > 0) {
+                // The intake is pulling in but the RPM is still higher than the threshhold
+                // Display a red square on the dashboard
                 objedtInIntake.setBoolean(false);
             }
         }

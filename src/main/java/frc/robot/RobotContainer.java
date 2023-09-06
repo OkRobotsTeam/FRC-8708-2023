@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutonChargeStation;
 import frc.robot.commands.AutonNothing;
@@ -51,6 +50,8 @@ public class RobotContainer {
   private final CommandJoystick m_driverLeftJoystick = new CommandJoystick(OperatorConstants.kDriverLeftJoystickPort);
   private final CommandJoystick m_driverRightJoystick = new CommandJoystick(OperatorConstants.kDriverRightJoystickPort);
 
+//   private int manipulator_control_style = Constants.DriveConstants.kUninitializedControls;
+
   private final CommandXboxController m_manipulator = new CommandXboxController(
       OperatorConstants.kManipulatorControllerPort);
 
@@ -60,6 +61,7 @@ public class RobotContainer {
 
   private ShuffleboardTab m_driving_tab = Shuffleboard.getTab("Driving");
   private final SendableChooser<Command> m_autonomous_selecter = new SendableChooser<>();
+//   private final SendableChooser<Integer> m_control_style_selecter = new SendableChooser<>();
   private final SendableChooser<Boolean> m_safety_mode = new SendableChooser<>();
 
 
@@ -77,6 +79,8 @@ public class RobotContainer {
       System.out.println("No webcam found, vision inactive");
     }
 
+    // m_control_style_selecter.addOption("Normal controls", Constants.DriveConstants.kNormalControls);
+    // m_control_style_selecter.addOption("Teddys controls", Constants.DriveConstants.kTeddysControls);
 
     m_autonomous_selecter.setDefaultOption("Red cable ramp", new AutonPos1(m_drivetrain, m_arm, m_intake));
     m_autonomous_selecter.addOption("Blue cable ramp", new AutonPos3(m_drivetrain, m_arm, m_intake));
@@ -105,172 +109,163 @@ public class RobotContainer {
     configureBindings();
   }
 
+    private void configureNormalBindings() {
+        m_manipulator.a().onTrue(
+            new InstantCommand(() -> m_arm.manualAdjustTarget(1.0), m_arm)
+        );
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // A = intake in
-    // RT = intake out fast
-    // LT = elbow out/in (hold)
-    // LB/RB = adjust elbow
-    // Start/Back = colors purple start yellow back
+        m_manipulator.b().onTrue(
+            new ToggleHigh(m_arm)
+        );
 
-    m_drivetrain.setDefaultCommand(getTankDriveCommand());
-    m_intake.setDefaultCommand(getIntakeCommand());
+        
+        m_manipulator.x().onTrue(
+            new InstantCommand(m_arm::toggleElbowExtended, m_arm)
+        );
+        
+        m_manipulator.y().onTrue(
+            new InstantCommand(
+            () -> m_arm.manualAdjustTarget(-1.0), m_arm)
+        );
+        
+        m_manipulator.rightBumper().onTrue(
+            new InstantCommand(
+            () -> m_arm.manualAdjustTarget(3.0), m_arm)
+        );
+        
+        m_manipulator.rightTrigger().onTrue(
+            new InstantCommand(m_intake::intakeOut, m_intake)
+        );
 
-    // TEDY'S CONTROLS
+        m_manipulator.rightTrigger().onFalse(
+            new InstantCommand(m_intake::intakeStop, m_intake)
+        );
+        
+        m_manipulator.povUp().onTrue(
+            new InstantCommand(() -> m_arm.setPistonRaised(true), m_arm)
+        );
 
-    // m_manipulator.a().onTrue(
-    //     new InstantCommand(
-    //         () -> m_intake.intakeIn(), m_intake));
-    // m_manipulator.rightTrigger().onTrue(
-    //     new InstantCommand(
-    //         () -> m_intake.intakeOut(), m_intake));
-    // m_manipulator.a().onFalse(
-    //     new InstantCommand(
-    //         m_intake::intakeStop, m_intake));
-    // m_manipulator.rightTrigger().onFalse(
-    //     new InstantCommand(
-    //         m_intake::intakeStop, m_intake));
-    // m_manipulator.povUp().onTrue(
-    //     new InstantCommand(
-    //         () -> m_arm.setPistonRaised(true), m_arm));
-    // m_manipulator.povDown().onTrue(
-    //     new InstantCommand(
-    //         () -> m_arm.setPistonRaised(false), m_arm));
+        m_manipulator.povDown().onTrue(
+            new InstantCommand(() -> m_arm.setPistonRaised(false), m_arm)
+        );
 
-    // m_manipulator.leftTrigger().onTrue(
-    //     new InstantCommand(
-    //         () -> m_arm.setElbowExtended(true), m_arm));
-    // m_manipulator.leftTrigger().onFalse(
-    //     new InstantCommand(
-    //         () -> m_arm.setElbowExtended(false), m_arm));
+        m_manipulator.leftTrigger().onTrue(
+            new InstantCommand(m_intake::intakeIn, m_intake)
+        );
 
-    // m_manipulator.povLeft().onTrue(
-    //     new InstantCommand(
-    //         () -> m_arm.setElevatorExtended(false), m_arm));
-    // m_manipulator.povRight().onTrue(
-    //     new InstantCommand(
-    //         () -> m_arm.setElevatorExtended(true), m_arm));
+        m_manipulator.leftTrigger().onFalse(
+            new InstantCommand(m_intake::intakeStop, m_intake)
+        );
+        
+        m_manipulator.povLeft().onTrue(
+            new InstantCommand(() -> m_arm.setElevatorExtended(false), m_arm)
+        );
 
-    // m_manipulator.start().onTrue(
-    //     new InstantCommand(
-    //         m_lights::setViolet, m_lights).andThen(
-    //             new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-    //             new InstantCommand(m_lights::teamChaser,m_lights)));
-    
-    // m_manipulator.back().onTrue(
-    //     new InstantCommand(
-    //         m_lights::setYellow, m_lights).andThen(
-    //             new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-    //             new InstantCommand(m_lights::teamChaser,m_lights)));
-    
-    // m_manipulator.x().onTrue(
-    //     new InstantCommand(
-    //     () -> m_arm.manualAdjustTarget(1.0), m_arm));
-    
-    // m_manipulator.b().onTrue(
-    //     new InstantCommand(
-    //     () -> m_arm.manualAdjustTarget(-1.0), m_arm));
-    
-    // m_manipulator.leftBumper().onTrue(
-    //     new InstantCommand(
-    //     () -> m_arm.pickupFromHumanPlayerStation(), m_arm));
-    // m_manipulator.leftBumper().onFalse(
-    //     new InstantCommand(
-    //     () -> m_arm.setElbowExtended(false), m_arm));
-    // m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
-    // m_manipulator.rightBumper().onFalse(
-    //     new InstantCommand(
-    //         () -> m_arm.setElbowExtended(false), m_arm).andThen(
-    //         () -> m_arm.setElevatorExtended(false), m_arm));
+        m_manipulator.povRight().onTrue(
+            new InstantCommand(() -> m_arm.setElevatorExtended(true), m_arm)
+        );
 
-    // HUNTER'S CONTROLS:
-
-    m_manipulator.a().onTrue(
-        new InstantCommand(
-        () -> m_arm.manualAdjustTarget(1.0), m_arm));
-
-    m_manipulator.b().onTrue(
-        new ToggleHigh(m_arm));
-
-    
-    m_manipulator.x().onTrue(
-        new InstantCommand(
-        () -> m_arm.toggleElbowExtended(), m_arm));
-    
-    
-    m_manipulator.y().onTrue(
-        new InstantCommand(
-        () -> m_arm.manualAdjustTarget(-1.0), m_arm));
-    
-    m_manipulator.rightBumper().onTrue(
-        new InstantCommand(
-        () -> m_arm.manualAdjustTarget(3.0), m_arm));
-    
-    m_manipulator.rightTrigger().onTrue(
-        new InstantCommand(
-            () -> m_intake.intakeOut(), m_intake));
-    m_manipulator.rightTrigger().onFalse(
-        new InstantCommand(
-            m_intake::intakeStop, m_intake));
-    
-    
-    m_manipulator.povUp().onTrue(
-        new InstantCommand(
-            () -> m_arm.setPistonRaised(true), m_arm));
-    m_manipulator.povDown().onTrue(
-        new InstantCommand(
-            () -> m_arm.setPistonRaised(false), m_arm));
-
-    
-    m_manipulator.leftTrigger().onTrue(
-        new InstantCommand(
-            () -> m_intake.intakeIn(), m_intake));
-    m_manipulator.leftTrigger().onFalse(
-        new InstantCommand(
-            m_intake::intakeStop, m_intake));
-
-    
-    m_manipulator.povLeft().onTrue(
-        new InstantCommand(
-            () -> m_arm.setElevatorExtended(false), m_arm));
-    m_manipulator.povRight().onTrue(
-        new InstantCommand(
-            () -> m_arm.setElevatorExtended(true), m_arm));
-
-    
-    m_manipulator.start().onTrue(
-        new InstantCommand(
-            m_lights::setViolet, m_lights).andThen(
-                new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
-    
-    
-    m_manipulator.back().onTrue(
-        new InstantCommand(
-            m_lights::setYellow, m_lights).andThen(
-                new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
-                new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)));
-    
-    
-    m_manipulator.leftBumper().onTrue(
-        new InstantCommand(
-        () -> m_arm.setElbowExtended(false), m_arm));
-
+        m_manipulator.start().onTrue(
+            new InstantCommand(
+                m_lights::setViolet, m_lights).andThen(
+                    new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+                    new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)
+                )
+        );
+        
+        m_manipulator.back().onTrue(
+            new InstantCommand(
+                m_lights::setYellow, m_lights).andThen(
+                    new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+                    new InstantCommand(() -> m_lights.teamChaser(m_safety_mode.getSelected()),m_lights)
+                )
+        );
+        
+        
+        m_manipulator.leftBumper().onTrue(
+            new InstantCommand(() -> m_arm.setElbowExtended(false), m_arm)
+        );
   }
+
+
+    private void configureBindings() {
+        // manipulator_control_style = m_control_style_selecter.getSelected();
+
+        m_drivetrain.setDefaultCommand(getTankDriveCommand());
+        m_intake.setDefaultCommand(getIntakeCommand());
+
+        configureNormalBindings();
+
+    }
+
+
+//   private void configureTeddysBindings() {
+
+//     m_manipulator.a().onTrue(
+//         new InstantCommand(
+//             () -> m_intake.intakeIn(), m_intake));
+//     m_manipulator.rightTrigger().onTrue(
+//         new InstantCommand(
+//             () -> m_intake.intakeOut(), m_intake));
+//     m_manipulator.a().onFalse(
+//         new InstantCommand(
+//             m_intake::intakeStop, m_intake));
+//     m_manipulator.rightTrigger().onFalse(
+//         new InstantCommand(
+//             m_intake::intakeStop, m_intake));
+//     m_manipulator.povUp().onTrue(
+//         new InstantCommand(
+//             () -> m_arm.setPistonRaised(true), m_arm));
+//     m_manipulator.povDown().onTrue(
+//         new InstantCommand(
+//             () -> m_arm.setPistonRaised(false), m_arm));
+
+//     m_manipulator.leftTrigger().onTrue(
+//         new InstantCommand(
+//             () -> m_arm.setElbowExtended(true), m_arm));
+//     m_manipulator.leftTrigger().onFalse(
+//         new InstantCommand(
+//             () -> m_arm.setElbowExtended(false), m_arm));
+
+//     m_manipulator.povLeft().onTrue(
+//         new InstantCommand(
+//             () -> m_arm.setElevatorExtended(false), m_arm));
+//     m_manipulator.povRight().onTrue(
+//         new InstantCommand(
+//             () -> m_arm.setElevatorExtended(true), m_arm));
+
+//     m_manipulator.start().onTrue(
+//         new InstantCommand(
+//             m_lights::setViolet, m_lights).andThen(
+//                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+//                 new InstantCommand(m_lights::teamChaser,m_lights)));
+    
+//     m_manipulator.back().onTrue(
+//         new InstantCommand(
+//             m_lights::setYellow, m_lights).andThen(
+//                 new WaitCommand(OperatorConstants.kLightsTimeoutSeconds),
+//                 new InstantCommand(m_lights::teamChaser,m_lights)));
+    
+//     m_manipulator.x().onTrue(
+//         new InstantCommand(
+//         () -> m_arm.manualAdjustTarget(1.0), m_arm));
+    
+//     m_manipulator.b().onTrue(
+//         new InstantCommand(
+//         () -> m_arm.manualAdjustTarget(-1.0), m_arm));
+    
+//     m_manipulator.leftBumper().onTrue(
+//         new InstantCommand(
+//         () -> m_arm.pickupFromHumanPlayerStation(), m_arm));
+//     m_manipulator.leftBumper().onFalse(
+//         new InstantCommand(
+//         () -> m_arm.setElbowExtended(false), m_arm));
+//     m_manipulator.rightBumper().onTrue(new MoveToHigh(m_arm));
+//     m_manipulator.rightBumper().onFalse(
+//         new InstantCommand(
+//             () -> m_arm.setElbowExtended(false), m_arm).andThen(
+//             () -> m_arm.setElevatorExtended(false), m_arm));
+//   }
 
     public void teleopInit() {
         m_arm.init();
@@ -297,8 +292,8 @@ public class RobotContainer {
             m_driverRightJoystick.getY(),
             m_driverRightJoystick.trigger().getAsBoolean(),
             m_driverLeftJoystick.trigger().getAsBoolean(),
-            m_driverLeftJoystick.top().getAsBoolean(),
-            m_driverRightJoystick.top().getAsBoolean(),
+            false,
+            false,
             m_safety_mode.getSelected()
         ),
         m_drivetrain

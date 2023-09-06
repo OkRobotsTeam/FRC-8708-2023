@@ -82,7 +82,7 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean getElbowExtended() {
-        if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold + 4) {
+        if (m_elbowEncoder.getPosition() > ArmConstants.kElbowIdleExtendRotations + ArmConstants.kElbowStopThreshold + 2) {
             return true;
         } else {
             return false;

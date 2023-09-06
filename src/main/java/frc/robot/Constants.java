@@ -75,6 +75,10 @@ public final class Constants {
     public static final double kLimelightOffsetXInches = 7.5;
     public static final double kLimelightOffsetYInches = 6.5;
 
+    public static final int kUninitializedControls = 0;
+    public static final int kNormalControls = 1;
+    public static final int kTeddysControls = 2;
+
   }
 
   public static final class ArmConstants {
